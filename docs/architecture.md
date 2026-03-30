@@ -33,5 +33,6 @@ Source
 
 - Policy and testing philosophy: [`AGENTS.md`](../AGENTS.md)
 - Language vs semantics detail: [RoboSharp.Language](language/README.md), [RoboSharp.Semantics](semantics/README.md)
+- Teaching layer (profiles, goals, lessons, packs): [Lessons and content](lessons/README.md)
 - Building and artifacts: [Build and test](build.md)
 - Packages: [NuGet and packages](nuget.md)

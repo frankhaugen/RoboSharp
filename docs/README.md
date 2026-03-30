@@ -20,6 +20,8 @@ The **authoritative** rules for architecture, dependencies, and agent behavior l
 | [RoboSharp.Semantics](semantics/README.md) | Symbols, binding, bound tree, semantic diagnostics (`docs/semantics/`) |
 | [RoboSharp.World](world/README.md) | Terrain, items, actors, movement, snapshots (`docs/world/`) |
 | [Rendering adapters](rendering/README.md) | Projectors and renderers over world snapshots (`docs/rendering/`) |
+| [Lessons, goals, and content packs](lessons/README.md) | Profiles, goals, lesson definitions, packs, JSON direction (`docs/lessons/`) |
+| [RoboSharp.Player](player/README.md) | Compiled-artifact host; lesson run mode (`docs/player/`) |
 | [RoboSharp Studio](studio/README.md) | IDE host specifications (topic index; former `general-specs.md`) |
 | [Documentation stubs — fill order](documentation-todo.md) | Checklist and suggested sequence for authoring the skeleton below |
 | [Agent workflows](agents/README.md) | Repeatable agent tasks (e.g. syncing the documentation checklist with `tools/doc-checklist.ps1`) |
@@ -79,6 +81,17 @@ docs/
 │  ├─ world-actions.md
 │  ├─ movement-rules.md
 │  └─ metrics-and-analysis.md
+│
+├─ lessons/
+│  ├─ README.md
+│  ├─ builtin-profiles.md
+│  ├─ goals-and-evaluation.md
+│  ├─ lesson-model.md
+│  ├─ content-packs-sessions-and-metrics.md
+│  └─ json-formats.md
+│
+├─ player/
+│  └─ README.md
 │
 ├─ rendering/
 │  ├─ render-projection.md

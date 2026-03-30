@@ -3,6 +3,7 @@
     <File Path="docs/README.md" />
     <File Path="docs/architecture.md" />
     <File Path="docs/build.md" />
+    <File Path="docs/docs-for-spreading.md" />
     <File Path="docs/documentation-todo.md" />
     <File Path="docs/nuget.md" />
     <File Path="docs/repository-layout.md" />
@@ -89,6 +90,17 @@
     <File Path="docs/language/syntax.md" />
     <File Path="docs/language/tokens.md" />
     <File Path="docs/language/types.md" />
+  </Folder>
+  <Folder Name="/docs/lessons/">
+    <File Path="docs/lessons/README.md" />
+    <File Path="docs/lessons/builtin-profiles.md" />
+    <File Path="docs/lessons/content-packs-sessions-and-metrics.md" />
+    <File Path="docs/lessons/goals-and-evaluation.md" />
+    <File Path="docs/lessons/json-formats.md" />
+    <File Path="docs/lessons/lesson-model.md" />
+  </Folder>
+  <Folder Name="/docs/player/">
+    <File Path="docs/player/README.md" />
   </Folder>
   <Folder Name="/docs/rendering/">
     <File Path="docs/rendering/README.md" />

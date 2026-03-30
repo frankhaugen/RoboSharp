@@ -1,0 +1,94 @@
+# Semantic version tags (vMAJOR.MINOR.PATCH): same checks as CI, then publish Studio / Player / Web
+# as tar.gz assets with SHA256SUMS on the GitHub Release.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build, test, and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.Packages.props', '**/packages.lock.json', 'RoboSharp.slnx') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Parse version from tag
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          VER="${TAG#v}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+
+      - name: Restore, build, test, verify generated files
+        uses: ./.github/actions/robo-build-verify
+        with:
+          package_version: ${{ steps.version.outputs.version }}
+
+      - name: Publish host applications
+        shell: bash
+        env:
+          PACKAGE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          PUB="$GITHUB_WORKSPACE/release-staging"
+          mkdir -p "$PUB"
+          for proj in Studio Player Web; do
+            dotnet publish "src/RoboSharp.${proj}/RoboSharp.${proj}.csproj" \
+              --configuration Release \
+              --no-build \
+              -p:Version="${PACKAGE_VERSION}" \
+              -o "$PUB/RoboSharp.${proj}"
+          done
+
+      - name: Package artifacts and checksums
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          set -euo pipefail
+          DIST="$GITHUB_WORKSPACE/release-dist"
+          mkdir -p "$DIST"
+          cd "$GITHUB_WORKSPACE/release-staging"
+          for name in Studio Player Web; do
+            tar -czf "$DIST/RoboSharp.${name}-${RELEASE_TAG}-linux-x64.tar.gz" "RoboSharp.${name}"
+          done
+          cd "$DIST"
+          sha256sum *.tar.gz > SHA256SUMS.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.version.outputs.tag }}
+          generate_release_notes: true
+          files: |
+            release-dist/*.tar.gz
+            release-dist/SHA256SUMS.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

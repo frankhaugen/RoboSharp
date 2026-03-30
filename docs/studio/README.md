@@ -15,7 +15,8 @@ Specifications for **RoboSharpStudio**, the desktop IDE host. Authoritative repo
 | Tokens, syntax, bound, IL panels | [inspection-panels.md](inspection-panels.md) |
 | World view in Studio | [visualization.md](visualization.md) |
 | stdout/stderr, metrics, runtime state panes | [output-and-state-panels.md](output-and-state-panels.md) |
-| Lessons, profiles, goals | [lesson-profiles.md](lesson-profiles.md) |
+| Lessons, profiles, goals (cross-layer spec) | [../lessons/README.md](../lessons/README.md) |
+| Lessons, profiles, goals (Studio UX) | [lesson-profiles.md](lesson-profiles.md) |
 | Menus and commands | [menus-and-commands.md](menus-and-commands.md) |
 | Settings | [settings.md](settings.md) |
 | Theming | [theming.md](theming.md) |

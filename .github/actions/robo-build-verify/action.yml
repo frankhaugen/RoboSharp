@@ -1,0 +1,46 @@
+name: RoboSharp build, test, verify
+description: Restore, Release build, test, and verify generated diagram docs and RoboSharp.slnx.
+
+inputs:
+  package_version:
+    description: Optional MSBuild package/application version (no leading v), passed as -p:Version.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Restore
+      shell: bash
+      run: dotnet restore RoboSharp.slnx
+
+    - name: Build (Release)
+      shell: bash
+      env:
+        PACKAGE_VERSION: ${{ inputs.package_version }}
+      run: |
+        set -euo pipefail
+        if [ -n "${PACKAGE_VERSION}" ]; then
+          dotnet build RoboSharp.slnx --configuration Release --no-restore -p:Version="${PACKAGE_VERSION}"
+        else
+          dotnet build RoboSharp.slnx --configuration Release --no-restore
+        fi
+
+    - name: Test (Release)
+      shell: bash
+      run: >
+        dotnet test RoboSharp.slnx
+        --configuration Release
+        --no-build
+        --verbosity normal
+        --logger "trx;LogFileName=test-results.trx"
+        --results-directory "${RUNNER_TEMP}/test-results"
+
+    - name: Verify generated solution and diagram docs
+      shell: bash
+      run: |
+        set -euo pipefail
+        dotnet run --file .githooks/GenerateDocDiagrams.cs -- "$GITHUB_WORKSPACE"
+        dotnet run --file .githooks/UpdateSlnx.cs -- "$GITHUB_WORKSPACE"
+        git diff --exit-code RoboSharp.slnx
+        git diff --exit-code docs/

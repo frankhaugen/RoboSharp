@@ -13,7 +13,7 @@ Project and session semantics on top of [`RoboSharp.IO`](../io/README.md). **IO*
 | `IBuildArtifactLayout`, artifact kinds | [artifact-layout.md](artifact-layout.md) |
 | `IWorkspaceSession`, document sessions | [sessions-and-documents.md](sessions-and-documents.md) |
 | Debug/Release configuration | [configuration.md](configuration.md) |
-| Lesson/profile metadata on the project | [lesson-metadata.md](lesson-metadata.md) |
+| Lesson/profile metadata on the project; full lesson spec | [lesson-metadata.md](lesson-metadata.md), [../lessons/README.md](../lessons/README.md) |
 | `ICompilerPipeline` and workspace | [build-pipeline-integration.md](build-pipeline-integration.md) |
 | Temporary / scratch workspace | [temporary-workspace.md](temporary-workspace.md) |
 | Studio overlay stack, save, validation | [studio-overlay-and-save.md](studio-overlay-and-save.md) |

@@ -20,6 +20,7 @@ Re-scan after large doc or code changes: line counts and `src/` contents drift.
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
 | [README.md](README.md) | Yes | N/A |
+| [docs-for-spreading.md](docs-for-spreading.md) | Stub | N/A |
 | [build.md](build.md) | Yes | N/A |
 | [repository-layout.md](repository-layout.md) | Yes | Partial |
 | [nuget.md](nuget.md) | Yes | N/A |
@@ -82,12 +83,31 @@ Index: [workspaces/README.md](workspaces/README.md).
 | [workspaces/artifact-layout.md](workspaces/artifact-layout.md) | Yes | No |
 | [workspaces/sessions-and-documents.md](workspaces/sessions-and-documents.md) | Yes | No |
 | [workspaces/configuration.md](workspaces/configuration.md) | Stub | No |
-| [workspaces/lesson-metadata.md](workspaces/lesson-metadata.md) | Stub | No |
+| [workspaces/lesson-metadata.md](workspaces/lesson-metadata.md) | Yes | No |
 | [workspaces/build-pipeline-integration.md](workspaces/build-pipeline-integration.md) | Stub | No |
 | [workspaces/temporary-workspace.md](workspaces/temporary-workspace.md) | Stub | No |
 | [workspaces/studio-overlay-and-save.md](workspaces/studio-overlay-and-save.md) | Yes | No |
 | [workspaces/concrete-types-and-di.md](workspaces/concrete-types-and-di.md) | Yes | No |
 | [workspaces/non-goals-and-summary.md](workspaces/non-goals-and-summary.md) | Yes | No |
+
+## Lessons and content (`docs/lessons/`)
+
+Index: [lessons/README.md](lessons/README.md).
+
+| Document | Have content | Implemented |
+| -------- | ------------ | ----------- |
+| [lessons/README.md](lessons/README.md) | Yes | No |
+| [lessons/builtin-profiles.md](lessons/builtin-profiles.md) | Yes | No |
+| [lessons/goals-and-evaluation.md](lessons/goals-and-evaluation.md) | Yes | No |
+| [lessons/lesson-model.md](lessons/lesson-model.md) | Yes | No |
+| [lessons/content-packs-sessions-and-metrics.md](lessons/content-packs-sessions-and-metrics.md) | Yes | No |
+| [lessons/json-formats.md](lessons/json-formats.md) | Yes | No |
+
+## Player (`docs/player/`)
+
+| Document | Have content | Implemented |
+| -------- | ------------ | ----------- |
+| [player/README.md](player/README.md) | Stub | Partial |
 
 ## Language (`RoboSharp.Language`)
 
@@ -125,7 +145,7 @@ Index: [semantics/README.md](semantics/README.md).
 | [semantics/symbols-and-scopes.md](semantics/symbols-and-scopes.md) | Yes | No |
 | [semantics/builtins-and-profiles.md](semantics/builtins-and-profiles.md) | Yes | No |
 | [semantics/binding-and-bound-tree.md](semantics/binding-and-bound-tree.md) | Stub | No |
-| [semantics/conversions.md](semantics/conversions.md) | Yes | No |
+| [semantics/conversions.md](semantics/conversions.md) | Stub | No |
 | [semantics/control-flow-and-conditions.md](semantics/control-flow-and-conditions.md) | Stub | No |
 | [semantics/arrays.md](semantics/arrays.md) | Stub | No |
 | [semantics/operators.md](semantics/operators.md) | Yes | No |
@@ -164,7 +184,7 @@ Index: [world/README.md](world/README.md).
 
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
-| [world/README.md](world/README.md) | Yes | No |
+| [world/README.md](world/README.md) | Stub | No |
 | [world/world-model.md](world/world-model.md) | Yes | No |
 | [world/terrain-grid.md](world/terrain-grid.md) | Yes | No |
 | [world/item-grid.md](world/item-grid.md) | Yes | No |
@@ -179,9 +199,9 @@ Index: [rendering/README.md](rendering/README.md).
 
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
-| [rendering/README.md](rendering/README.md) | Yes | No |
+| [rendering/README.md](rendering/README.md) | Stub | No |
 | [rendering/render-projection.md](rendering/render-projection.md) | Yes | No |
-| [rendering/ascii-renderer.md](rendering/ascii-renderer.md) | Yes | No |
+| [rendering/ascii-renderer.md](rendering/ascii-renderer.md) | Stub | No |
 | [rendering/sprite-renderer.md](rendering/sprite-renderer.md) | Stub | No |
 
 ## Toolchain (`RoboSharp.Toolchain`)
@@ -221,7 +241,7 @@ Split from the former `general-specs.md`; some pages are stubs.
 | [studio/inspection-panels.md](studio/inspection-panels.md) | Yes | Partial |
 | [studio/visualization.md](studio/visualization.md) | Yes | Partial |
 | [studio/output-and-state-panels.md](studio/output-and-state-panels.md) | Yes | Partial |
-| [studio/lesson-profiles.md](studio/lesson-profiles.md) | Stub | Partial |
+| [studio/lesson-profiles.md](studio/lesson-profiles.md) | Yes | Partial |
 | [studio/menus-and-commands.md](studio/menus-and-commands.md) | Yes | Partial |
 | [studio/settings.md](studio/settings.md) | Yes | Partial |
 | [studio/theming.md](studio/theming.md) | Stub | Partial |
@@ -239,7 +259,6 @@ Split from the former `general-specs.md`; some pages are stubs.
 | ----- | ------------ | ----------- |
 | `RoboSharp.Application` — run/debug facades, host-facing orchestration | No (no `docs/application/`) | No |
 | `RoboSharp.Hosting` — composition helpers | No | No |
-| `RoboSharp.Player` — artifact runtime host | No | Partial |
 | `RoboSharp.Web` — Blazor host | No | Partial |
 
 Use [repository-layout.md](repository-layout.md) and [AGENTS.md](../AGENTS.md) until dedicated pages exist.

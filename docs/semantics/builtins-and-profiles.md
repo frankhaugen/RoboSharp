@@ -48,3 +48,19 @@ public enum BuiltinId
 ```
 
 Human-readable list: [../language/built-in-functions.md](../language/built-in-functions.md).
+
+## Profiles (teaching layer)
+
+Semantics cares that binding respects **which** built-ins exist for the active profile. Naming, catalog of starter profiles, and `IBuiltinProfileProvider` are specified with the lesson system:
+
+- [../lessons/builtin-profiles.md](../lessons/builtin-profiles.md)
+
+At a glance, a profile is a named bundle of references to canonical definitions:
+
+```csharp
+public sealed record BuiltinFunctionProfile(
+    string Name,
+    string DisplayName,
+    string Description,
+    IReadOnlyDictionary<string, BuiltinFunctionDefinition> Functions);
+```

@@ -1,0 +1,70 @@
+# Pull requests and pushes to main: Release build, full test suite, TRX artifacts,
+# and verification that RoboSharp.slnx and docs/diagrams match the generators (see docs/build.md).
+
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.Packages.props', '**/packages.lock.json', 'RoboSharp.slnx') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore, build, test, verify generated files
+        uses: ./.github/actions/robo-build-verify
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ github.run_id }}
+          path: ${{ runner.temp }}/test-results/*.trx
+          if-no-files-found: ignore
+
+      - name: Job summary
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "### CI passed"
+            echo ""
+            echo "| Step | Result |"
+            echo "| --- | --- |"
+            echo "| Configuration | Release |"
+            echo "| Solution | \`RoboSharp.slnx\` |"
+            echo "| Generated \`RoboSharp.slnx\` / \`docs/\` | Matches generators |"
+          } >> "$GITHUB_STEP_SUMMARY"
