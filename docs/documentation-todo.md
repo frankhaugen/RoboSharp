@@ -4,6 +4,8 @@ Working index for `docs/`: what exists, how complete it is, and how it lines up 
 
 Many paths are also sketched in [README.md](README.md). Authoritative policy remains [AGENTS.md](../AGENTS.md).
 
+For a **single view of missing product features** (pipeline stages, hosts, lessons, debugger) versus current `src/` code, see [implementation-gaps.md](implementation-gaps.md).
+
 ## How to read the columns
 
 | Column | Meaning |
@@ -20,7 +22,8 @@ Re-scan after large doc or code changes: line counts and `src/` contents drift.
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
 | [README.md](README.md) | Yes | N/A |
-| [docs-for-spreading.md](docs-for-spreading.md) | Stub | N/A |
+| [implementation-gaps.md](implementation-gaps.md) | Yes | N/A |
+| [docs-for-spreading.md](docs-for-spreading.md) | Yes | N/A |
 | [build.md](build.md) | Yes | N/A |
 | [repository-layout.md](repository-layout.md) | Yes | Partial |
 | [nuget.md](nuget.md) | Yes | N/A |
@@ -37,8 +40,8 @@ Policy detail lives in [AGENTS.md](../AGENTS.md); these pages are optional elabo
 
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
-| [governance/mission.md](governance/mission.md) | No | N/A |
-| [governance/design-principles.md](governance/design-principles.md) | No | N/A |
+| [governance/mission.md](governance/mission.md) | Yes | N/A |
+| [governance/design-principles.md](governance/design-principles.md) | Yes | N/A |
 | [governance/dependency-policy.md](governance/dependency-policy.md) | No | N/A |
 | [governance/implementation-order.md](governance/implementation-order.md) | No | N/A |
 
@@ -53,6 +56,7 @@ Policy detail lives in [AGENTS.md](../AGENTS.md); these pages are optional elabo
 | [architecture/workspace-model.md](architecture/workspace-model.md) | Stub | No |
 | [architecture/io-abstractions.md](architecture/io-abstractions.md) | Stub | Yes |
 | [architecture/runtime-hosts.md](architecture/runtime-hosts.md) | No | Partial |
+| [architecture/pipeline-boundaries.md](architecture/pipeline-boundaries.md) | Yes | N/A |
 
 ## IO layer (`docs/io/`)
 
@@ -159,7 +163,8 @@ Index: [semantics/README.md](semantics/README.md).
 
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
-| [compiler/compilation-pipeline.md](compiler/compilation-pipeline.md) | No | Partial |
+| [compiler/compilation-pipeline.md](compiler/compilation-pipeline.md) | Yes | Partial |
+| [compiler/syntax-to-il-lowering.md](compiler/syntax-to-il-lowering.md) | Yes | No |
 | [compiler/lexical-analysis.md](compiler/lexical-analysis.md) | Stub | Yes |
 | [compiler/parsing.md](compiler/parsing.md) | Stub | Yes |
 | [compiler/syntax-tree.md](compiler/syntax-tree.md) | Stub | Yes |
@@ -171,7 +176,7 @@ Index: [semantics/README.md](semantics/README.md).
 
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
-| [runtime/il-instruction-set.md](runtime/il-instruction-set.md) | No | No |
+| [runtime/il-instruction-set.md](runtime/il-instruction-set.md) | Yes | No |
 | [runtime/interpreter.md](runtime/interpreter.md) | No | No |
 | [runtime/execution-model.md](runtime/execution-model.md) | No | No |
 | [runtime/runtime-state.md](runtime/runtime-state.md) | No | No |

@@ -31,8 +31,10 @@ Source
 
 ## Where to go next
 
+- Pipeline ownership (syntax, semantics, IL, world, built-ins): [Pipeline boundaries](architecture/pipeline-boundaries.md)
 - Policy and testing philosophy: [`AGENTS.md`](../AGENTS.md)
 - Language vs semantics detail: [RoboSharp.Language](language/README.md), [RoboSharp.Semantics](semantics/README.md)
 - Teaching layer (profiles, goals, lessons, packs): [Lessons and content](lessons/README.md)
+- Spec vs `src/` (missing pipeline and features): [Implementation gaps](implementation-gaps.md)
 - Building and artifacts: [Build and test](build.md)
 - Packages: [NuGet and packages](nuget.md)

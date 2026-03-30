@@ -5,6 +5,7 @@
     <File Path="docs/build.md" />
     <File Path="docs/docs-for-spreading.md" />
     <File Path="docs/documentation-todo.md" />
+    <File Path="docs/implementation-gaps.md" />
     <File Path="docs/nuget.md" />
     <File Path="docs/repository-layout.md" />
   </Folder>
@@ -27,6 +28,7 @@
     <File Path="docs/architecture/dependency-rules.md" />
     <File Path="docs/architecture/io-abstractions.md" />
     <File Path="docs/architecture/io-workspace-overview.md" />
+    <File Path="docs/architecture/pipeline-boundaries.md" />
     <File Path="docs/architecture/runtime-hosts.md" />
     <File Path="docs/architecture/solution-structure.md" />
     <File Path="docs/architecture/workspace-model.md" />
@@ -38,6 +40,7 @@
     <File Path="docs/compiler/lexical-analysis.md" />
     <File Path="docs/compiler/parsing.md" />
     <File Path="docs/compiler/semantic-analysis.md" />
+    <File Path="docs/compiler/syntax-to-il-lowering.md" />
     <File Path="docs/compiler/syntax-tree.md" />
   </Folder>
   <Folder Name="/docs/debugger/">

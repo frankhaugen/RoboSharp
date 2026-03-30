@@ -13,6 +13,8 @@ The **authoritative** rules for architecture, dependencies, and agent behavior l
 | [Repository layout](repository-layout.md) | Solution structure, projects, and dependency direction |
 | [NuGet and packages](nuget.md) | Central package management, allowed packages, feed policy |
 | [Architecture overview](architecture.md) | High-level pipeline and layer responsibilities (summary only) |
+| [Mission (teaching goals)](governance/mission.md) | Why RoboSharp exists; links to design principles |
+| [Pipeline boundaries](architecture/pipeline-boundaries.md) | Syntax, semantics, IL, world, built-in contracts (end-to-end model) |
 | [IO layer](io/README.md) | `RoboSharp.IO`: filesystem abstractions, physical/in-memory/overlay |
 | [Workspaces](workspaces/README.md) | `RoboSharp.Workspaces`: projects, sessions, artifacts on top of IO |
 | [IO ↔ workspace boundary](architecture/io-workspace-overview.md) | How IO and workspaces divide responsibility (start here) |
@@ -23,6 +25,7 @@ The **authoritative** rules for architecture, dependencies, and agent behavior l
 | [Lessons, goals, and content packs](lessons/README.md) | Profiles, goals, lesson definitions, packs, JSON direction (`docs/lessons/`) |
 | [RoboSharp.Player](player/README.md) | Compiled-artifact host; lesson run mode (`docs/player/`) |
 | [RoboSharp Studio](studio/README.md) | IDE host specifications (topic index; former `general-specs.md`) |
+| [Implementation gaps](implementation-gaps.md) | What is specified vs implemented in `src/` (missing pipeline, hosts, lessons) |
 | [Documentation stubs — fill order](documentation-todo.md) | Checklist and suggested sequence for authoring the skeleton below |
 | [Agent workflows](agents/README.md) | Repeatable agent tasks (e.g. syncing the documentation checklist with `tools/doc-checklist.ps1`) |
 

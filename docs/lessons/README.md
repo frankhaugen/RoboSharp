@@ -6,6 +6,8 @@ Authoritative repo rules remain in [`AGENTS.md`](../../AGENTS.md) (built-ins, pr
 
 ## Why this layer exists
 
+For why the overall product exists and how lessons fit that mission, see [Mission](../governance/mission.md).
+
 Without it, RoboSharp is mostly a visible compiler/runtime stack. With it, the product can answer:
 
 - what the learner sees in a lesson

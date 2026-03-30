@@ -64,3 +64,14 @@ public sealed record BuiltinFunctionProfile(
     string Description,
     IReadOnlyDictionary<string, BuiltinFunctionDefinition> Functions);
 ```
+
+## IL lowering: user `Call` vs `CallBuiltin`
+
+At IL generation time:
+
+- **User-defined functions** lower to a normal **`Call`** (or equivalent) into function metadata the interpreter loads.
+- **Built-ins** resolved under the active profile lower to **`CallBuiltin`**, with an operand that identifies the built-in (exact encoding in the IL spec).
+
+Source always uses ordinary **call syntax** for both; the binder distinguishes user vs built-in. The runtime dispatches `CallBuiltin` to a handler that may mutate [`RobotWorld`](../world/world-model.md), write to stdout/stderr, or return a value—per built-in spec.
+
+See [Pipeline boundaries](../architecture/pipeline-boundaries.md) and [Syntax-to-IL lowering](../compiler/syntax-to-il-lowering.md).

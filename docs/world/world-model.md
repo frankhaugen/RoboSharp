@@ -201,6 +201,10 @@ Recommended layout (names may vary; see [`AGENTS.md`](../../AGENTS.md)):
 - Rendering: snapshot + projector only (see rendering docs).
 - Derived analysis: computed on demand, not stored as authoritative state.
 
+## Interpreter and built-ins (contract)
+
+World mutation from student programs is **not** triggered by the parser or syntax layer. Call expressions lower to IL (`Call` / `CallBuiltin`); the interpreter dispatches **built-in handlers** that use the world API. See [Pipeline boundaries](../architecture/pipeline-boundaries.md) and [World actions](world-actions.md).
+
 ## Related
 
 - [Terrain grid](terrain-grid.md)
