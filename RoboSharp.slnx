@@ -11,6 +11,7 @@
     <File Path="docs/architecture/dependency-injection.md" />
     <File Path="docs/architecture/dependency-rules.md" />
     <File Path="docs/architecture/io-abstractions.md" />
+    <File Path="docs/architecture/io-workspace-overview.md" />
     <File Path="docs/architecture/runtime-hosts.md" />
     <File Path="docs/architecture/solution-structure.md" />
     <File Path="docs/architecture/workspace-model.md" />
@@ -46,14 +47,33 @@
     <File Path="docs/governance/implementation-order.md" />
     <File Path="docs/governance/mission.md" />
   </Folder>
+  <Folder Name="/docs/io/">
+    <File Path="docs/io/README.md" />
+    <File Path="docs/io/canonical-abstractions.md" />
+    <File Path="docs/io/helpers-and-errors.md" />
+    <File Path="docs/io/in-memory-storage.md" />
+    <File Path="docs/io/optional-storage-seam.md" />
+    <File Path="docs/io/overlay-storage.md" />
+    <File Path="docs/io/physical-storage.md" />
+    <File Path="docs/io/principles.md" />
+  </Folder>
   <Folder Name="/docs/language/">
+    <File Path="docs/language/README.md" />
     <File Path="docs/language/arrays.md" />
     <File Path="docs/language/built-in-functions.md" />
     <File Path="docs/language/expressions.md" />
     <File Path="docs/language/functions.md" />
     <File Path="docs/language/language-overview.md" />
+    <File Path="docs/language/lexer.md" />
+    <File Path="docs/language/parser.md" />
+    <File Path="docs/language/project-layout.md" />
+    <File Path="docs/language/public-api.md" />
+    <File Path="docs/language/source-model.md" />
     <File Path="docs/language/statements.md" />
+    <File Path="docs/language/syntax-kinds-and-facts.md" />
+    <File Path="docs/language/syntax-tree.md" />
     <File Path="docs/language/syntax.md" />
+    <File Path="docs/language/tokens.md" />
     <File Path="docs/language/types.md" />
   </Folder>
   <Folder Name="/docs/rendering/">
@@ -69,19 +89,69 @@
     <File Path="docs/runtime/runtime-state.md" />
     <File Path="docs/runtime/standard-output.md" />
   </Folder>
+  <Folder Name="/docs/semantics/">
+    <File Path="docs/semantics/README.md" />
+    <File Path="docs/semantics/arrays.md" />
+    <File Path="docs/semantics/binding-and-bound-tree.md" />
+    <File Path="docs/semantics/builtins-and-profiles.md" />
+    <File Path="docs/semantics/control-flow-and-conditions.md" />
+    <File Path="docs/semantics/conversions.md" />
+    <File Path="docs/semantics/diagnostics.md" />
+    <File Path="docs/semantics/operators.md" />
+    <File Path="docs/semantics/overview.md" />
+    <File Path="docs/semantics/project-layout.md" />
+    <File Path="docs/semantics/public-api.md" />
+    <File Path="docs/semantics/semantic-model-output.md" />
+    <File Path="docs/semantics/summary.md" />
+    <File Path="docs/semantics/symbols-and-scopes.md" />
+    <File Path="docs/semantics/type-system.md" />
+  </Folder>
   <Folder Name="/docs/studio/">
+    <File Path="docs/studio/README.md" />
+    <File Path="docs/studio/build-and-analysis.md" />
+    <File Path="docs/studio/composition-and-domain.md" />
     <File Path="docs/studio/editor-behavior.md" />
+    <File Path="docs/studio/extensibility.md" />
     <File Path="docs/studio/general-specs.md" />
     <File Path="docs/studio/ide-layout.md" />
+    <File Path="docs/studio/inspection-panels.md" />
     <File Path="docs/studio/lesson-profiles.md" />
+    <File Path="docs/studio/menus-and-commands.md" />
+    <File Path="docs/studio/output-and-state-panels.md" />
+    <File Path="docs/studio/overview.md" />
+    <File Path="docs/studio/performance.md" />
+    <File Path="docs/studio/project-modules.md" />
+    <File Path="docs/studio/referenced-solution-shape.md" />
+    <File Path="docs/studio/scope-mvp-and-non-goals.md" />
+    <File Path="docs/studio/settings.md" />
     <File Path="docs/studio/syntax-highlighting.md" />
+    <File Path="docs/studio/technology-stack.md" />
+    <File Path="docs/studio/testing-strategy.md" />
+    <File Path="docs/studio/theming.md" />
     <File Path="docs/studio/visualization.md" />
+    <File Path="docs/studio/workspace-integration.md" />
   </Folder>
   <Folder Name="/docs/toolchain/">
     <File Path="docs/toolchain/artifact-layout.md" />
     <File Path="docs/toolchain/build-process.md" />
     <File Path="docs/toolchain/project-format.md" />
     <File Path="docs/toolchain/roboexe-format.md" />
+  </Folder>
+  <Folder Name="/docs/workspaces/">
+    <File Path="docs/workspaces/README.md" />
+    <File Path="docs/workspaces/artifact-layout.md" />
+    <File Path="docs/workspaces/build-pipeline-integration.md" />
+    <File Path="docs/workspaces/concrete-types-and-di.md" />
+    <File Path="docs/workspaces/configuration.md" />
+    <File Path="docs/workspaces/contracts.md" />
+    <File Path="docs/workspaces/kinds.md" />
+    <File Path="docs/workspaces/lesson-metadata.md" />
+    <File Path="docs/workspaces/non-goals-and-summary.md" />
+    <File Path="docs/workspaces/principles.md" />
+    <File Path="docs/workspaces/project-loading.md" />
+    <File Path="docs/workspaces/sessions-and-documents.md" />
+    <File Path="docs/workspaces/studio-overlay-and-save.md" />
+    <File Path="docs/workspaces/temporary-workspace.md" />
   </Folder>
   <Folder Name="/docs/world/">
     <File Path="docs/world/actor-grid.md" />

@@ -13,6 +13,12 @@ The **authoritative** rules for architecture, dependencies, and agent behavior l
 | [Repository layout](repository-layout.md) | Solution structure, projects, and dependency direction |
 | [NuGet and packages](nuget.md) | Central package management, allowed packages, feed policy |
 | [Architecture overview](architecture.md) | High-level pipeline and layer responsibilities (summary only) |
+| [IO layer](io/README.md) | `RoboSharp.IO`: filesystem abstractions, physical/in-memory/overlay |
+| [Workspaces](workspaces/README.md) | `RoboSharp.Workspaces`: projects, sessions, artifacts on top of IO |
+| [IO ↔ workspace boundary](architecture/io-workspace-overview.md) | How IO and workspaces divide responsibility (start here) |
+| [RoboSharp.Language](language/README.md) | Tokens, lexer, parser, syntax tree (`docs/language/`) |
+| [RoboSharp.Semantics](semantics/README.md) | Symbols, binding, bound tree, semantic diagnostics (`docs/semantics/`) |
+| [RoboSharp Studio](studio/README.md) | IDE host specifications (topic index; former `general-specs.md`) |
 | [Documentation stubs — fill order](documentation-todo.md) | Checklist and suggested sequence for authoring the skeleton below |
 
 ## Contributing to docs
@@ -28,19 +34,22 @@ docs/
 │  ├─ solution-structure.md
 │  ├─ dependency-rules.md
 │  ├─ dependency-injection.md
+│  ├─ io-workspace-overview.md
 │  ├─ io-abstractions.md
 │  ├─ workspace-model.md
 │  └─ runtime-hosts.md
 │
+├─ io/
+│  └─ (README + principles, abstractions, storage topics — see folder)
+│
+├─ workspaces/
+│  └─ (README + project/session/artifact topics — see folder)
+│
 ├─ language/
-│  ├─ language-overview.md
-│  ├─ syntax.md
-│  ├─ types.md
-│  ├─ expressions.md
-│  ├─ statements.md
-│  ├─ functions.md
-│  ├─ arrays.md
-│  └─ built-in-functions.md
+│  └─ (README + overview, syntax, lexer/parser/AST topics — see folder)
+│
+├─ semantics/
+│  └─ (README + types, symbols, binding, diagnostics — see folder)
 │
 ├─ compiler/
 │  ├─ compilation-pipeline.md
