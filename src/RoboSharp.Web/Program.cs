@@ -1,8 +1,10 @@
+using RoboSharp.Hosting;
 using RoboSharp.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddRoboSharpHosting();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 

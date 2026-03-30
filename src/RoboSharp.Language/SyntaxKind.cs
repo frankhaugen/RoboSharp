@@ -24,6 +24,7 @@ public enum SyntaxKind
     NumberKeyword,
     StringKeyword,
     BoolKeyword,
+    VoidKeyword,
     TrueKeyword,
     FalseKeyword,
 

@@ -91,4 +91,12 @@ public class LexerTests
         await Assert.That(eof.Span.Start).IsEqualTo(text.Text.Length);
         await Assert.That(eof.Span.Length).IsEqualTo(0);
     }
+
+    [Test]
+    public async Task Void_Is_VoidKeyword()
+    {
+        var tokens = Lexer.Tokenize(SourceText.From("void"));
+        await Assert.That(tokens[0].Kind).IsEqualTo(SyntaxKind.VoidKeyword);
+        await Assert.That(tokens[0].Text).IsEqualTo("void");
+    }
 }

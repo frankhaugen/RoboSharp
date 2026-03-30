@@ -3,6 +3,9 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RoboSharp.Hosting\RoboSharp.Hosting.csproj" />
+    <ProjectReference Include="..\RoboSharp.Application\RoboSharp.Application.csproj" />
+    <ProjectReference Include="..\RoboSharp.IO\RoboSharp.IO.csproj" />
+    <ProjectReference Include="..\RoboSharp.Toolchain\RoboSharp.Toolchain.csproj" />
+    <ProjectReference Include="..\RoboSharp.World\RoboSharp.World.csproj" />
   </ItemGroup>
 </Project>

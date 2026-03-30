@@ -13,6 +13,9 @@ The **authoritative** rules for architecture, dependencies, and agent behavior l
 | [Repository layout](repository-layout.md) | Solution structure, projects, and dependency direction |
 | [NuGet and packages](nuget.md) | Central package management, allowed packages, feed policy |
 | [Architecture overview](architecture.md) | High-level pipeline and layer responsibilities (summary only) |
+| [Compiler v1 spec](compiler/v1-compiler-spec.md) | Normative compiler phases, lowering model, artifact intent |
+| [Runtime v1 spec](runtime/v1-runtime-spec.md) | Load, stepping, faults, snapshots (contract vs `RoboSharp.Runtime`) |
+| [Toolchain v1 spec](toolchain/v1-toolchain-spec.md) | Studio vs Player, build lifecycle, CLI shape |
 | [Mission (teaching goals)](governance/mission.md) | Why RoboSharp exists; links to design principles |
 | [Pipeline boundaries](architecture/pipeline-boundaries.md) | Syntax, semantics, IL, world, built-in contracts (end-to-end model) |
 | [IO layer](io/README.md) | `RoboSharp.IO`: filesystem abstractions, physical/in-memory/overlay |
@@ -26,6 +29,7 @@ The **authoritative** rules for architecture, dependencies, and agent behavior l
 | [RoboSharp.Player](player/README.md) | Compiled-artifact host; lesson run mode (`docs/player/`) |
 | [RoboSharp Studio](studio/README.md) | IDE host specifications (topic index; former `general-specs.md`) |
 | [Implementation gaps](implementation-gaps.md) | What is specified vs implemented in `src/` (missing pipeline, hosts, lessons) |
+| [Missing specs](missing-specs.md) | Topics that still lack a full written spec (artifacts, debugger, lessons runtime, etc.) |
 | [Documentation stubs — fill order](documentation-todo.md) | Checklist and suggested sequence for authoring the skeleton below |
 | [Agent workflows](agents/README.md) | Repeatable agent tasks (e.g. syncing the documentation checklist with `tools/doc-checklist.ps1`) |
 

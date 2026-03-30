@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using RoboSharp.Hosting;
 using RoboSharp.Language;
 using RoboSharp.Studio.Panels;
 using RoboSharp.Studio.Pipeline;
@@ -16,6 +17,8 @@ public static class StudioServiceRegistration
     public static IServiceCollection AddRoboSharpStudio(this IServiceCollection services)
     {
         services.AddLogging(static b => b.AddConsole().SetMinimumLevel(LogLevel.Warning));
+
+        services.AddRoboSharpHosting();
 
         services.AddSingleton<IPipelineInspectionService, PipelineInspectionService>();
         services.AddSingleton<ISyntaxTreeSerializer, SyntaxTreeSerializer>();

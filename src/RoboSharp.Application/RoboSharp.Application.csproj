@@ -1,5 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RoboSharp.IL\RoboSharp.IL.csproj" />
+    <ProjectReference Include="..\RoboSharp.Runtime\RoboSharp.Runtime.csproj" />
     <ProjectReference Include="..\RoboSharp.Toolchain\RoboSharp.Toolchain.csproj" />
+    <ProjectReference Include="..\RoboSharp.Workspaces\RoboSharp.Workspaces.csproj" />
+    <ProjectReference Include="..\RoboSharp.World\RoboSharp.World.csproj" />
   </ItemGroup>
 </Project>

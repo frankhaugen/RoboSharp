@@ -17,6 +17,7 @@ Orchestration (open project, diagnostics aggregation, emit paths) lives in **`Ro
 
 | Topic | Document |
 | ----- | -------- |
+| **Normative v1 compiler contract** (phases, lowering model, artifacts, interfaces) | [v1-compiler-spec.md](v1-compiler-spec.md) |
 | Lex / parse / syntax tree (host view) | [lexical-analysis.md](lexical-analysis.md), [parsing.md](parsing.md), [syntax-tree.md](syntax-tree.md) |
 | Binding and diagnostics | [semantic-analysis.md](semantic-analysis.md), [diagnostics.md](diagnostics.md) |
 | **Syntax → IL shape (examples)** | [syntax-to-il-lowering.md](syntax-to-il-lowering.md) |

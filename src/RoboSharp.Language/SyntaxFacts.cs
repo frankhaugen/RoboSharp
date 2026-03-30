@@ -21,6 +21,7 @@ public static class SyntaxFacts
             SyntaxKind.NumberKeyword => "number",
             SyntaxKind.StringKeyword => "string",
             SyntaxKind.BoolKeyword => "bool",
+            SyntaxKind.VoidKeyword => "void",
             SyntaxKind.TrueKeyword => "true",
             SyntaxKind.FalseKeyword => "false",
 
@@ -69,6 +70,7 @@ public static class SyntaxFacts
             "number" => SyntaxKind.NumberKeyword,
             "string" => SyntaxKind.StringKeyword,
             "bool" => SyntaxKind.BoolKeyword,
+            "void" => SyntaxKind.VoidKeyword,
             "true" => SyntaxKind.TrueKeyword,
             "false" => SyntaxKind.FalseKeyword,
             _ => null,
@@ -107,8 +109,8 @@ public static class SyntaxFacts
         };
 
     /// <summary>
-    /// Returns whether <paramref name="kind"/> is a primitive type keyword (<c>integer</c>, <c>number</c>, <c>string</c>, <c>bool</c>).
+    /// Returns whether <paramref name="kind"/> is a primitive type keyword (<c>integer</c>, <c>number</c>, <c>string</c>, <c>bool</c>, <c>void</c>).
     /// </summary>
     public static bool IsTypeKeyword(SyntaxKind kind) =>
-        kind is SyntaxKind.IntegerKeyword or SyntaxKind.NumberKeyword or SyntaxKind.StringKeyword or SyntaxKind.BoolKeyword;
+        kind is SyntaxKind.IntegerKeyword or SyntaxKind.NumberKeyword or SyntaxKind.StringKeyword or SyntaxKind.BoolKeyword or SyntaxKind.VoidKeyword;
 }

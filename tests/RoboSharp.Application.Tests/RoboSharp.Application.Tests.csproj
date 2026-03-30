@@ -1,8 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="TUnit" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\RoboSharp.Application\RoboSharp.Application.csproj" />
+    <ProjectReference Include="..\..\src\RoboSharp.Toolchain\RoboSharp.Toolchain.csproj" />
+    <ProjectReference Include="..\..\src\RoboSharp.Workspaces\RoboSharp.Workspaces.csproj" />
+    <ProjectReference Include="..\..\src\RoboSharp.World\RoboSharp.World.csproj" />
   </ItemGroup>
 </Project>

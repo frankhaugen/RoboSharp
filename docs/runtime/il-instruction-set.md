@@ -33,7 +33,7 @@ The set is intentionally small, along the lines of:
 - `Return`
 - Array: `NewArray`, `ArrayGet`, `ArraySet` (names illustrative)
 
-Final names and operand layouts are **TBD** until the IL project is implemented; lowering examples live in [syntax-to-IL lowering](../compiler/syntax-to-il-lowering.md).
+**Implementation (v1):** opcode enum `RoboSharp.IL.RoboOpcode`, operand bundle `RoboSharp.IL.Instruction` (`Op`, `A`, `B`, `C`). Lowering: `RoboSharp.IL.IlLowerer`. Execution: `RoboSharp.Runtime.RoboInterpreter`. Lowering examples remain in [syntax-to-IL lowering](../compiler/syntax-to-il-lowering.md).
 
 ## Boundaries
 

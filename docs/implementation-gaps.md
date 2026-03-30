@@ -21,26 +21,28 @@ Source → Lexer → Parser → Syntax tree → Semantic analysis → Bound tree
 
 | Stage | Project | Code in `src/` today | Notes |
 | ----- | ------- | -------------------- | ----- |
-| Lex / parse / syntax tree | `RoboSharp.Language` | **Yes** | Lexer, parser, syntax model, diagnostics |
-| Semantic analysis / bound tree | `RoboSharp.Semantics` | **No** | Spec in [semantics/](semantics/README.md); no product types yet |
-| Fake IL / lowering | `RoboSharp.IL` | **No** | Spec stubs under [compiler/](compiler/) |
-| Interpreter / stepping / faults | `RoboSharp.Runtime` | **No** | Spec stubs under [runtime/](runtime/) |
-| Grid / actors / movement | `RoboSharp.World` | **No** | Substantive docs in [world/](world/README.md) |
+| Lex / parse / syntax tree | `RoboSharp.Language` | **Yes** | Lexer, parser, syntax model, diagnostics (`void` keyword for `main`) |
+| Semantic analysis / bound tree | `RoboSharp.Semantics` | **Partial** | v1 binder, `BuiltinId`, profiles seam, bound nodes; not full spec in [semantics/](semantics/README.md) |
+| Fake IL / lowering | `RoboSharp.IL` | **Partial** | `RoboOpcode`, `Instruction`, `IlLowerer` → `RoboProgram` |
+| Interpreter / stepping / faults | `RoboSharp.Runtime` | **Partial** | `RoboInterpreter`, structured `RuntimeFault`; no stepping API yet |
+| Grid / actors / movement | `RoboSharp.World` | **Partial** | Grids, `RobotWorld`, snapshots, primary-robot builtins; push not implemented |
 | IO abstractions | `RoboSharp.IO` | **Yes** | Physical, in-memory, overlay filesystems |
-| Workspace / projects / artifacts | `RoboSharp.Workspaces` | **No** | Design in [workspaces/](workspaces/README.md) |
-| Compile orchestration | `RoboSharp.Toolchain` | **No** | Spec stubs under [toolchain/](toolchain/) |
-| Host-agnostic use cases | `RoboSharp.Application` | **No** | No `docs/application/` tree yet |
-| DI / composition helpers | `RoboSharp.Hosting` | **No** | — |
+| Workspace / projects / artifacts | `RoboSharp.Workspaces` | **Yes** | Load/save `.robosharp`, artifact layout, in-memory + physical workspaces |
+| Compile orchestration | `RoboSharp.Toolchain` | **Partial** | `RoboSharpPipeline`, `RoboSharpCompiler`, JSON `.roboexe`; `WorkspaceBuildService` writes IL + exe from workspace sources |
+| Host-agnostic use cases | `RoboSharp.Application` | **Partial** | `IRoboSharpExecutionService` (run source / JSON exe / build+run workspace); no lesson/profile layer yet |
+| DI / composition helpers | `RoboSharp.Hosting` | **Partial** | `AddRoboSharpHosting()` composes workspaces + application services |
 
-Until semantics, IL, runtime, and world exist, there is **no end-to-end compile-and-run** of user programs inside the product layers (only isolated language + IO work).
+There is a **minimal end-to-end path**: parse → bind → lower → interpret with `RoboSharpPipeline` and a `RobotWorld` instance. **`RoboSharpCompiler`** exposes the same compile phases without running; **`RoboExecutable`** + **`RoboExecutableJsonSerializer`** provide a v1 JSON interchange for fake executables (teaching). **`RoboInterpreterSession`** supports instruction stepping and step limits per [runtime/v1-runtime-spec.md](runtime/v1-runtime-spec.md).
+
+Gaps: `.robosharp` project load, workspace integration, binary `.roboexe`, full snapshot model, lesson/profile loading, and parity with per-frame evaluation stacks described in the v1 runtime spec.
 
 ## Hosts and tooling
 
 | Project | Code in `src/` today | Gap vs docs |
 | ------- | -------------------- | ----------- |
 | `RoboSharp.Studio` | **Partial** | Avalonia shell, pipeline **inspection** (tokens, syntax tree, diagnostics). Missing: real workspace/project model, binder/IL/runtime/world integration, full [debugger](debugger/debugger-architecture.md) (step kinds, breakpoints, synchronized panes), lesson/goals/content from [lessons/](lessons/README.md). |
-| `RoboSharp.Player` | **Shell** | Entry point only; no lesson mode or `.roboexe` loop as specified in [player/README.md](player/README.md). |
-| `RoboSharp.Web` | **Shell** | Entry point only; no Blazor teaching UI as implied by layout / `AGENTS.md`. |
+| `RoboSharp.Player` | **Partial** | Runs a v1 JSON `.roboexe` from disk with exit codes per [toolchain/v1-toolchain-spec.md](toolchain/v1-toolchain-spec.md) §11; lesson mode still unspecified in code. |
+| `RoboSharp.Web` | **Partial** | `AddRoboSharpHosting()` + home-page pipeline smoke; full teaching UI still open. |
 
 ## Teaching / product layer (lessons, goals, packs)
 
@@ -59,10 +61,11 @@ That is the largest **feature** gap relative to “teaching platform” intent.
 
 ## Documentation-only areas
 
-These are **policy or skeleton** docs without matching implementation work tracked above:
+These are **policy or skeleton** docs without matching depth, or specs that still lag behind code:
 
-- [governance/](governance/) pages are empty or one-line placeholders.
-- Many [compiler/](compiler/), [runtime/](runtime/), and [toolchain/](toolchain/) pages are stubs or missing prose; they describe intended systems more than current code.
+- [governance/dependency-policy.md](governance/dependency-policy.md) and [governance/implementation-order.md](governance/implementation-order.md) are still thin.
+- Many [compiler/](compiler/), [runtime/](runtime/), and [toolchain/](toolchain/) pages are stubs or missing prose relative to the implemented pipeline.
+- A consolidated list of **missing specs** (not just missing code) lives in [missing-specs.md](missing-specs.md).
 
 Use [documentation-todo.md](documentation-todo.md) for per-file doc status.
 
@@ -87,6 +90,7 @@ Layer ownership summary: [architecture/pipeline-boundaries.md](architecture/pipe
 
 ## Related links
 
+- [Missing specs (doc gaps)](missing-specs.md)
 - [Architecture overview](architecture.md)
 - [Repository layout](repository-layout.md)
 - [Documentation checklist](documentation-todo.md)

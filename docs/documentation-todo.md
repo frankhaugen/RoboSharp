@@ -23,6 +23,7 @@ Re-scan after large doc or code changes: line counts and `src/` contents drift.
 | -------- | ------------ | ----------- |
 | [README.md](README.md) | Yes | N/A |
 | [implementation-gaps.md](implementation-gaps.md) | Yes | N/A |
+| [missing-specs.md](missing-specs.md) | Yes | N/A |
 | [docs-for-spreading.md](docs-for-spreading.md) | Yes | N/A |
 | [build.md](build.md) | Yes | N/A |
 | [repository-layout.md](repository-layout.md) | Yes | Partial |
@@ -164,19 +165,21 @@ Index: [semantics/README.md](semantics/README.md).
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
 | [compiler/compilation-pipeline.md](compiler/compilation-pipeline.md) | Yes | Partial |
+| [compiler/v1-compiler-spec.md](compiler/v1-compiler-spec.md) | Yes | Partial |
 | [compiler/syntax-to-il-lowering.md](compiler/syntax-to-il-lowering.md) | Yes | No |
 | [compiler/lexical-analysis.md](compiler/lexical-analysis.md) | Stub | Yes |
 | [compiler/parsing.md](compiler/parsing.md) | Stub | Yes |
 | [compiler/syntax-tree.md](compiler/syntax-tree.md) | Stub | Yes |
 | [compiler/semantic-analysis.md](compiler/semantic-analysis.md) | Stub | No |
 | [compiler/diagnostics.md](compiler/diagnostics.md) | No | Partial |
-| [compiler/il-generation.md](compiler/il-generation.md) | No | No |
+| [compiler/il-generation.md](compiler/il-generation.md) | No | Partial |
 
 ## Runtime (`RoboSharp.Runtime`)
 
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
-| [runtime/il-instruction-set.md](runtime/il-instruction-set.md) | Yes | No |
+| [runtime/il-instruction-set.md](runtime/il-instruction-set.md) | Yes | Partial |
+| [runtime/v1-runtime-spec.md](runtime/v1-runtime-spec.md) | Yes | Partial |
 | [runtime/interpreter.md](runtime/interpreter.md) | No | No |
 | [runtime/execution-model.md](runtime/execution-model.md) | No | No |
 | [runtime/runtime-state.md](runtime/runtime-state.md) | No | No |
@@ -189,13 +192,13 @@ Index: [world/README.md](world/README.md).
 
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
-| [world/README.md](world/README.md) | Stub | No |
-| [world/world-model.md](world/world-model.md) | Yes | No |
-| [world/terrain-grid.md](world/terrain-grid.md) | Yes | No |
-| [world/item-grid.md](world/item-grid.md) | Yes | No |
-| [world/actor-grid.md](world/actor-grid.md) | Yes | No |
-| [world/world-actions.md](world/world-actions.md) | Yes | No |
-| [world/movement-rules.md](world/movement-rules.md) | Yes | No |
+| [world/README.md](world/README.md) | Stub | Partial |
+| [world/world-model.md](world/world-model.md) | Yes | Partial |
+| [world/terrain-grid.md](world/terrain-grid.md) | Yes | Partial |
+| [world/item-grid.md](world/item-grid.md) | Yes | Partial |
+| [world/actor-grid.md](world/actor-grid.md) | Yes | Partial |
+| [world/world-actions.md](world/world-actions.md) | Yes | Partial |
+| [world/movement-rules.md](world/movement-rules.md) | Yes | Partial |
 | [world/metrics-and-analysis.md](world/metrics-and-analysis.md) | Yes | No |
 
 ## Rendering (adapters over world snapshots)
@@ -215,7 +218,8 @@ Index: [rendering/README.md](rendering/README.md).
 | -------- | ------------ | ----------- |
 | [toolchain/project-format.md](toolchain/project-format.md) | No | No |
 | [toolchain/roboexe-format.md](toolchain/roboexe-format.md) | No | No |
-| [toolchain/build-process.md](toolchain/build-process.md) | No | No |
+| [toolchain/build-process.md](toolchain/build-process.md) | No | Partial |
+| [toolchain/v1-toolchain-spec.md](toolchain/v1-toolchain-spec.md) | Yes | Partial |
 | [toolchain/artifact-layout.md](toolchain/artifact-layout.md) | No | No |
 
 ## Debugger

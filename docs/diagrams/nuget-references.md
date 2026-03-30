@@ -6,6 +6,8 @@ Direct `PackageReference` items per project, with versions from `Directory.Packa
 
 ```mermaid
 flowchart LR
+  RoboSharp_Application["RoboSharp.Application"] --> pkg_Microsoft_Extensions_DependencyInjection_Abstractions["Microsoft.Extensions.DependencyInjection.Abstractions v10.0.5"]
+  RoboSharp_Application_Tests["RoboSharp.Application.Tests"] --> pkg_Microsoft_Extensions_DependencyInjection["Microsoft.Extensions.DependencyInjection v10.0.5"]
   RoboSharp_Application_Tests["RoboSharp.Application.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Architecture_Tests["RoboSharp.Architecture.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Hosting["RoboSharp.Hosting"] --> pkg_Microsoft_Extensions_DependencyInjection["Microsoft.Extensions.DependencyInjection v10.0.5"]
@@ -22,6 +24,8 @@ flowchart LR
   RoboSharp_Studio["RoboSharp.Studio"] --> pkg_Microsoft_Extensions_Logging["Microsoft.Extensions.Logging v10.0.5"]
   RoboSharp_Studio["RoboSharp.Studio"] --> pkg_Microsoft_Extensions_Logging_Console["Microsoft.Extensions.Logging.Console v10.0.5"]
   RoboSharp_Toolchain_Tests["RoboSharp.Toolchain.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
+  RoboSharp_Workspaces["RoboSharp.Workspaces"] --> pkg_Microsoft_Extensions_DependencyInjection_Abstractions["Microsoft.Extensions.DependencyInjection.Abstractions v10.0.5"]
+  RoboSharp_Workspaces_Tests["RoboSharp.Workspaces.Tests"] --> pkg_Microsoft_Extensions_DependencyInjection["Microsoft.Extensions.DependencyInjection v10.0.5"]
   RoboSharp_Workspaces_Tests["RoboSharp.Workspaces.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_World_Tests["RoboSharp.World.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
 ```

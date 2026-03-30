@@ -6,7 +6,7 @@ using RoboSharp.Studio.Composition;
 
 namespace RoboSharp.Studio.Shell;
 
-public sealed class StudioApp : Application
+public sealed class StudioApp : global::Avalonia.Application
 {
     public override void Initialize()
     {

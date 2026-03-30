@@ -6,6 +6,7 @@
     <File Path="docs/docs-for-spreading.md" />
     <File Path="docs/documentation-todo.md" />
     <File Path="docs/implementation-gaps.md" />
+    <File Path="docs/missing-specs.md" />
     <File Path="docs/nuget.md" />
     <File Path="docs/repository-layout.md" />
   </Folder>
@@ -42,6 +43,7 @@
     <File Path="docs/compiler/semantic-analysis.md" />
     <File Path="docs/compiler/syntax-to-il-lowering.md" />
     <File Path="docs/compiler/syntax-tree.md" />
+    <File Path="docs/compiler/v1-compiler-spec.md" />
   </Folder>
   <Folder Name="/docs/debugger/">
     <File Path="docs/debugger/breakpoints.md" />
@@ -118,6 +120,7 @@
     <File Path="docs/runtime/interpreter.md" />
     <File Path="docs/runtime/runtime-state.md" />
     <File Path="docs/runtime/standard-output.md" />
+    <File Path="docs/runtime/v1-runtime-spec.md" />
   </Folder>
   <Folder Name="/docs/semantics/">
     <File Path="docs/semantics/README.md" />
@@ -166,6 +169,7 @@
     <File Path="docs/toolchain/build-process.md" />
     <File Path="docs/toolchain/project-format.md" />
     <File Path="docs/toolchain/roboexe-format.md" />
+    <File Path="docs/toolchain/v1-toolchain-spec.md" />
   </Folder>
   <Folder Name="/docs/workspaces/">
     <File Path="docs/workspaces/README.md" />

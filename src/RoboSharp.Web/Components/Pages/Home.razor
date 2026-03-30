@@ -1,7 +1,59 @@
-﻿@page "/"
+@page "/"
+@using System.IO
+@using RoboSharp.Application
+@using RoboSharp.World
+@inject IRoboSharpExecutionService Execution
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>RoboSharp</h1>
 
-Welcome to your new app.
+<p>Pipeline smoke: compile and run a tiny program on the server.</p>
+
+@if (_error is not null)
+{
+    <p class="text-danger">@_error</p>
+}
+else if (_stdout is not null)
+{
+    <pre>@_stdout</pre>
+    <p>Exit: @_exit</p>
+}
+
+@code {
+    private string? _stdout;
+    private string? _error;
+    private RoboSharpExitCode _exit;
+
+    protected override void OnInitialized()
+    {
+        const string source = """
+            void main()
+            {
+                print(7);
+            }
+            """;
+
+        try
+        {
+            var world = RobotWorldFactory.CreateBorderedEmpty(5, 5);
+            using var @out = new StringWriter();
+            using var err = new StringWriter();
+            var result = Execution.RunSource(source, world, @out, err);
+            _stdout = @out.ToString().Trim();
+            _exit = result.ExitCode;
+            if (!result.Succeeded)
+            {
+                _error = err.ToString().Trim();
+                if (string.IsNullOrEmpty(_error))
+                {
+                    _error = $"Run failed (exit {_exit}).";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+}
