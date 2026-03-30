@@ -28,3 +28,7 @@ Specifications for **RoboSharpStudio**, the desktop IDE host. Authoritative repo
 | Debugger (host integration) | [../debugger/debugger-architecture.md](../debugger/debugger-architecture.md), [../debugger/breakpoints.md](../debugger/breakpoints.md) |
 
 Legacy single-file entry (redirect): [general-specs.md](general-specs.md).
+
+## Implementation layout (`src/RoboSharp.Studio/`)
+
+Code-first Avalonia host (no XAML): **`Composition/`** (DI + root provider), **`Pipeline/`** (lexer/parser inspection seam), **`Panels/`** (`IStudioPanel` tabs in pipeline order), **`Shell/`** (theme tokens, `MainWindow`, `StudioApp`), **`ViewModels/`**. Adding a teaching panel: implement `IStudioPanel`, register in `StudioServiceRegistration`.

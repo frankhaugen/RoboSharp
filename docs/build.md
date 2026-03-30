@@ -22,6 +22,16 @@ dotnet test RoboSharp.slnx
 
 Use `--configuration Release` for release builds.
 
+## Run RoboSharp Studio (desktop host)
+
+From the repository root:
+
+```powershell
+dotnet run --project src/RoboSharp.Studio/RoboSharp.Studio.csproj
+```
+
+The Studio app is a code-first **Avalonia** shell with pipeline inspection tabs; see [`docs/studio/README.md`](studio/README.md).
+
 ## Solution file and pre-commit hook
 
 [`RoboSharp.slnx`](../RoboSharp.slnx) is **generated** after diagram docs. The [.NET 10 file-based app](../.githooks/GenerateDocDiagrams.cs) **`.githooks/GenerateDocDiagrams.cs`** writes Markdown with Mermaid under [`docs/diagrams/`](diagrams/README.md) (project references, NuGet references, layer map). Then [`.githooks/UpdateSlnx.cs`](../.githooks/UpdateSlnx.cs) rewrites the solution so:
