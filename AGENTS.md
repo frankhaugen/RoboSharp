@@ -8,6 +8,10 @@ The product is a teaching compiler and programming environment built around a ve
 
 When making decisions, prefer clarity, observability, determinism, and teaching value over convenience, cleverness, or feature breadth.
 
+## Documentation
+
+Human-oriented documentation (build, repository layout, diagrams, and topic stubs) lives under [`docs/`](docs/README.md). Start at [`docs/README.md`](docs/README.md). If anything in `docs/` disagrees with this file, follow **AGENTS.md**.
+
 ## Non-negotiable architectural rules
 
 - Keep the project agnostic regarding UI and host choices.

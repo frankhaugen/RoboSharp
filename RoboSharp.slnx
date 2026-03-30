@@ -3,8 +3,33 @@
     <File Path="docs/README.md" />
     <File Path="docs/architecture.md" />
     <File Path="docs/build.md" />
+    <File Path="docs/documentation-todo.md" />
     <File Path="docs/nuget.md" />
     <File Path="docs/repository-layout.md" />
+  </Folder>
+  <Folder Name="/docs/architecture/">
+    <File Path="docs/architecture/dependency-injection.md" />
+    <File Path="docs/architecture/dependency-rules.md" />
+    <File Path="docs/architecture/io-abstractions.md" />
+    <File Path="docs/architecture/runtime-hosts.md" />
+    <File Path="docs/architecture/solution-structure.md" />
+    <File Path="docs/architecture/workspace-model.md" />
+  </Folder>
+  <Folder Name="/docs/compiler/">
+    <File Path="docs/compiler/compilation-pipeline.md" />
+    <File Path="docs/compiler/diagnostics.md" />
+    <File Path="docs/compiler/il-generation.md" />
+    <File Path="docs/compiler/lexical-analysis.md" />
+    <File Path="docs/compiler/parsing.md" />
+    <File Path="docs/compiler/semantic-analysis.md" />
+    <File Path="docs/compiler/syntax-tree.md" />
+  </Folder>
+  <Folder Name="/docs/debugger/">
+    <File Path="docs/debugger/breakpoints.md" />
+    <File Path="docs/debugger/debugger-architecture.md" />
+    <File Path="docs/debugger/metrics-view.md" />
+    <File Path="docs/debugger/state-inspection.md" />
+    <File Path="docs/debugger/stepping.md" />
   </Folder>
   <Folder Name="/docs/diagrams/">
     <File Path="docs/diagrams/README.md" />
@@ -14,6 +39,58 @@
   </Folder>
   <Folder Name="/docs/diagrams/architecture/">
     <File Path="docs/diagrams/architecture/notes.md" />
+  </Folder>
+  <Folder Name="/docs/governance/">
+    <File Path="docs/governance/dependency-policy.md" />
+    <File Path="docs/governance/design-principles.md" />
+    <File Path="docs/governance/implementation-order.md" />
+    <File Path="docs/governance/mission.md" />
+  </Folder>
+  <Folder Name="/docs/language/">
+    <File Path="docs/language/arrays.md" />
+    <File Path="docs/language/built-in-functions.md" />
+    <File Path="docs/language/expressions.md" />
+    <File Path="docs/language/functions.md" />
+    <File Path="docs/language/language-overview.md" />
+    <File Path="docs/language/statements.md" />
+    <File Path="docs/language/syntax.md" />
+    <File Path="docs/language/types.md" />
+  </Folder>
+  <Folder Name="/docs/rendering/">
+    <File Path="docs/rendering/ascii-renderer.md" />
+    <File Path="docs/rendering/render-projection.md" />
+    <File Path="docs/rendering/sprite-renderer.md" />
+  </Folder>
+  <Folder Name="/docs/runtime/">
+    <File Path="docs/runtime/error-handling.md" />
+    <File Path="docs/runtime/execution-model.md" />
+    <File Path="docs/runtime/il-instruction-set.md" />
+    <File Path="docs/runtime/interpreter.md" />
+    <File Path="docs/runtime/runtime-state.md" />
+    <File Path="docs/runtime/standard-output.md" />
+  </Folder>
+  <Folder Name="/docs/studio/">
+    <File Path="docs/studio/editor-behavior.md" />
+    <File Path="docs/studio/general-specs.md" />
+    <File Path="docs/studio/ide-layout.md" />
+    <File Path="docs/studio/lesson-profiles.md" />
+    <File Path="docs/studio/syntax-highlighting.md" />
+    <File Path="docs/studio/visualization.md" />
+  </Folder>
+  <Folder Name="/docs/toolchain/">
+    <File Path="docs/toolchain/artifact-layout.md" />
+    <File Path="docs/toolchain/build-process.md" />
+    <File Path="docs/toolchain/project-format.md" />
+    <File Path="docs/toolchain/roboexe-format.md" />
+  </Folder>
+  <Folder Name="/docs/world/">
+    <File Path="docs/world/actor-grid.md" />
+    <File Path="docs/world/item-grid.md" />
+    <File Path="docs/world/metrics-and-analysis.md" />
+    <File Path="docs/world/movement-rules.md" />
+    <File Path="docs/world/terrain-grid.md" />
+    <File Path="docs/world/world-actions.md" />
+    <File Path="docs/world/world-model.md" />
   </Folder>
   <Folder Name="/infrastructure/">
     <File Path=".editorconfig" />
