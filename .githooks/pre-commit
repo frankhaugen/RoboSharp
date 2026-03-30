@@ -1,7 +1,8 @@
 #!/bin/sh
-# Regenerates RoboSharp.slnx so docs and infrastructure files stay visible in the solution.
+# Generate diagram docs, then refresh RoboSharp.slnx (nested docs folders + infrastructure).
 set -eu
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT" || exit 1
+dotnet run --file "$ROOT/.githooks/GenerateDocDiagrams.cs" -- "$ROOT"
 dotnet run --file "$ROOT/.githooks/UpdateSlnx.cs" -- "$ROOT"
-git add -- "RoboSharp.slnx"
+git add -- "docs/" "RoboSharp.slnx"

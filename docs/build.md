@@ -24,17 +24,18 @@ Use `--configuration Release` for release builds.
 
 ## Solution file and pre-commit hook
 
-[`RoboSharp.slnx`](../RoboSharp.slnx) is **generated**. The [.NET 10 file-based app](../.githooks/UpdateSlnx.cs) `.githooks/UpdateSlnx.cs` rewrites it so:
+[`RoboSharp.slnx`](../RoboSharp.slnx) is **generated** after diagram docs. The [.NET 10 file-based app](../.githooks/GenerateDocDiagrams.cs) **`.githooks/GenerateDocDiagrams.cs`** writes Markdown with Mermaid under [`docs/diagrams/`](diagrams/README.md) (project references, NuGet references, layer map). Then [`.githooks/UpdateSlnx.cs`](../.githooks/UpdateSlnx.cs) rewrites the solution so:
 
-- every file under `docs/` appears under a `/docs/` solution folder;
+- every directory under `docs/` becomes its own **sibling** solution folder next to `/docs/` (for example `/docs/diagrams/`, `/docs/diagrams/architecture/`), each holding only `<File/>` entries for that directory—no `<Folder>` nested inside `/docs/`, so the IDE shows a tree of sections;
 - agreed **infrastructure** files (MSBuild, NuGet, `global.json`, `AGENTS.md`, license, hooks, etc.) appear under `/infrastructure/`;
 - all `src/**/*.csproj` and `tests/**/*.csproj` are listed under `/src/` and `/tests/`.
 
 Regenerate manually from the repo root:
 
 ```powershell
+dotnet run --file .githooks/GenerateDocDiagrams.cs -- $PWD.Path
 dotnet run --file .githooks/UpdateSlnx.cs -- $PWD.Path
-# or: dotnet run --file .githooks/UpdateSlnx.cs -- (git rev-parse --show-toplevel)
+# or pass (git rev-parse --show-toplevel) for the root argument
 ```
 
 **Git hook (recommended):** configure Git once so commits refresh and stage `RoboSharp.slnx`:
@@ -43,15 +44,17 @@ dotnet run --file .githooks/UpdateSlnx.cs -- $PWD.Path
 git config core.hooksPath .githooks
 ```
 
-Details: [`.githooks/README.md`](../.githooks/README.md). The hook runs `dotnet run --file .githooks/UpdateSlnx.cs` and then `git add RoboSharp.slnx`.
+Details: [`.githooks/README.md`](../.githooks/README.md). The hook runs **GenerateDocDiagrams** then **UpdateSlnx**, then `git add` on `docs/` and `RoboSharp.slnx`.
 
 The file-based app uses `#:property` directives at the top of `.githooks/UpdateSlnx.cs` to override repo-wide MSBuild settings (for example `UseArtifactsOutput`, `TreatWarningsAsErrors`, `PublishAot`) so hook runs stay lightweight.
 
 In **CI**, you can enforce an up-to-date solution file with:
 
 ```sh
+dotnet run --file .githooks/GenerateDocDiagrams.cs -- "$(pwd)"
 dotnet run --file .githooks/UpdateSlnx.cs -- "$(pwd)"
 git diff --exit-code RoboSharp.slnx
+git diff --exit-code docs/
 ```
 
 ## Build output layout

@@ -33,7 +33,9 @@ var testProjects = DiscoverProjects(root, "tests");
 var sb = new StringBuilder();
 sb.AppendLine("<Solution>");
 
-AppendFileFolder(sb, "/docs/", docFiles);
+// SLNX / IDE: one top-level <Folder> per on-disk directory under docs/ (siblings under <Solution>), e.g.
+// /docs/, /docs/diagrams/, /docs/diagrams/architecture/ — each contains only <File/> entries (no nested Folder).
+AppendDocSolutionFolders(sb, docFiles);
 AppendFileFolder(sb, "/infrastructure/", infraFiles);
 
 AppendProjectFolder(sb, "/src/", srcProjects);
@@ -45,6 +47,30 @@ var newContent = sb.ToString().ReplaceLineEndings("\n");
 var utf8NoBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 File.WriteAllText(slnxPath, newContent, utf8NoBom);
 return 0;
+
+static void AppendDocSolutionFolders(StringBuilder sb, IReadOnlyList<string> docFilesRelative)
+{
+    if (docFilesRelative.Count == 0)
+        return;
+
+    var groups = docFilesRelative
+        .GroupBy(DocDirectoryToSlnxFolderName)
+        .OrderBy(g => g.Key, StringComparer.Ordinal);
+    foreach (var g in groups)
+        AppendFileFolder(sb, g.Key, g.Order(StringComparer.Ordinal).ToList());
+}
+
+/// <summary>
+/// Maps <c>docs/diagrams/a.md</c> → <c>/docs/diagrams/</c>; <c>docs/README.md</c> → <c>/docs/</c>.
+/// </summary>
+static string DocDirectoryToSlnxFolderName(string repoRelativeFilePath)
+{
+    var normalized = repoRelativeFilePath.Replace('\\', '/');
+    var parent = Path.GetDirectoryName(normalized);
+    if (string.IsNullOrEmpty(parent))
+        return "/docs/";
+    return "/" + parent.Replace('\\', '/') + "/";
+}
 
 static void AppendFileFolder(StringBuilder sb, string folderName, IReadOnlyList<string> paths)
 {
@@ -92,19 +118,20 @@ static List<string> CollectInfrastructure(string root)
         [
             "README.md",
             "AGENTS.md",
-        "Directory.Build.props",
-        "Directory.Build.targets",
-        "Directory.Packages.props",
-        "global.json",
-        "nuget.config",
-        ".editorconfig",
-        ".gitignore",
-        ".gitattributes",
-        "LICENSE",
-        ".githooks/UpdateSlnx.cs",
-        ".githooks/pre-commit",
-        ".githooks/README.md",
-    ];
+            "Directory.Build.props",
+            "Directory.Build.targets",
+            "Directory.Packages.props",
+            "global.json",
+            "nuget.config",
+            ".editorconfig",
+            ".gitignore",
+            ".gitattributes",
+            "LICENSE",
+            ".githooks/GenerateDocDiagrams.cs",
+            ".githooks/UpdateSlnx.cs",
+            ".githooks/pre-commit",
+            ".githooks/README.md",
+        ];
 
     return candidates
         .Where(rel => File.Exists(Path.Combine(root, rel)))

@@ -8,7 +8,8 @@ The **authoritative** rules for architecture, dependencies, and agent behavior l
 
 | Document | Purpose |
 | -------- | ------- |
-| [Build and test](build.md) | SDK, restore, tests, regenerating `RoboSharp.slnx`, git hooks |
+| [Build and test](build.md) | SDK, restore, tests, diagram generation, `RoboSharp.slnx`, git hooks |
+| [Diagrams](diagrams/README.md) | Generated Mermaid graphs (projects, NuGet, layers) |
 | [Repository layout](repository-layout.md) | Solution structure, projects, and dependency direction |
 | [NuGet and packages](nuget.md) | Central package management, allowed packages, feed policy |
 | [Architecture overview](architecture.md) | High-level pipeline and layer responsibilities (summary only) |

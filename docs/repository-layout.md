@@ -20,6 +20,11 @@
 
 `RoboSharp.slnx` lists **docs**, **infrastructure** files, and all projects. Do not hand-edit project lists for long; run `dotnet run --file .githooks/UpdateSlnx.cs` or rely on the pre-commit hook (see [Build and test](build.md)).
 
+## Documentation tree
+
+- Hand-written pages live under `docs/` (nested directories on disk are fine).
+- `docs/diagrams/` holds **generated** Mermaid Markdown from `.githooks/GenerateDocDiagrams.cs`; `docs/diagrams/architecture/` adds another level on disk. In `RoboSharp.slnx`, each distinct directory becomes a **top-level** `<Folder Name="/docs/.../"/>` (siblings under `<Solution>`), so the IDE shows nested sections without invalid nested-folder XML. Regenerate diagrams before `UpdateSlnx` (pre-commit does both).
+
 ## Source and test projects
 
 `src/` and `tests/` mirror the layout described in [`AGENTS.md`](../AGENTS.md): language, semantics, IL, runtime, world, IO, workspaces, toolchain, application, hosting, and hosts (Player, Studio, Web), plus matching test projects and `RoboSharp.Architecture.Tests`.

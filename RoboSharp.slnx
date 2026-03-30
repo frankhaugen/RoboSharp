@@ -6,9 +6,19 @@
     <File Path="docs/nuget.md" />
     <File Path="docs/repository-layout.md" />
   </Folder>
+  <Folder Name="/docs/diagrams/">
+    <File Path="docs/diagrams/README.md" />
+    <File Path="docs/diagrams/layer-map.md" />
+    <File Path="docs/diagrams/nuget-references.md" />
+    <File Path="docs/diagrams/project-references.md" />
+  </Folder>
+  <Folder Name="/docs/diagrams/architecture/">
+    <File Path="docs/diagrams/architecture/notes.md" />
+  </Folder>
   <Folder Name="/infrastructure/">
     <File Path=".editorconfig" />
     <File Path=".gitattributes" />
+    <File Path=".githooks/GenerateDocDiagrams.cs" />
     <File Path=".githooks/README.md" />
     <File Path=".githooks/UpdateSlnx.cs" />
     <File Path=".githooks/pre-commit" />
