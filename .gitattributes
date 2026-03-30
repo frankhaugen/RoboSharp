@@ -1,0 +1,5 @@
+# Shell hooks must use LF so Git Bash / Unix sh can execute them on Windows.
+.githooks/pre-commit text eol=lf
+
+# Generated solution file: match .githooks/UpdateSlnx.cs (LF) and avoid CRLF churn on Windows.
+RoboSharp.slnx text eol=lf

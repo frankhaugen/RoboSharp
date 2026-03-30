@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\RoboSharp.Language\RoboSharp.Language.csproj" />
+    <ProjectReference Include="..\RoboSharp.Semantics\RoboSharp.Semantics.csproj" />
+    <ProjectReference Include="..\RoboSharp.IL\RoboSharp.IL.csproj" />
+    <ProjectReference Include="..\RoboSharp.Runtime\RoboSharp.Runtime.csproj" />
+    <ProjectReference Include="..\RoboSharp.World\RoboSharp.World.csproj" />
+    <ProjectReference Include="..\RoboSharp.IO\RoboSharp.IO.csproj" />
+    <ProjectReference Include="..\RoboSharp.Workspaces\RoboSharp.Workspaces.csproj" />
+  </ItemGroup>
+</Project>

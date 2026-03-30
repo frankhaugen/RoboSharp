@@ -1,0 +1,37 @@
+# NuGet and central package management
+
+## Central package management (CPM)
+
+Package versions are defined once in [`Directory.Packages.props`](../Directory.Packages.props). Projects reference packages **without** a `Version` attribute:
+
+```xml
+<PackageReference Include="TUnit" />
+```
+
+Adding a new package:
+
+1. Add `<PackageVersion Include="PackageId" Version="x.y.z" />` to `Directory.Packages.props`.
+2. Add `<PackageReference Include="PackageId" />` to the project(s) that need it.
+
+`CentralPackageTransitivePinningEnabled` is set to `true` so transitive versions are pinned consistently; see NuGet documentation if you need to adjust that behavior.
+
+## Allowed dependencies
+
+Per [`AGENTS.md`](../AGENTS.md), only these NuGet families are in scope unless policy changes:
+
+- .NET BCL (framework references)
+- `Microsoft.Extensions.*`
+- `TUnit` (tests)
+
+`Directory.Packages.props` includes a label reminding maintainers of that surface.
+
+## Feed policy
+
+[`nuget.config`](../nuget.config) uses `<clear />` under `packageSources` and then adds **nuget.org** only. That avoids NU1507 when using CPM alongside extra feeds that might exist in a developer’s global NuGet configuration.
+
+If you must consume packages from another feed (for example in a fork), add the feed **and** either:
+
+- use [package source mapping](https://learn.microsoft.com/nuget/consume-packages/package-source-mapping) so every package ID maps to exactly one source, or  
+- keep a single feed if that matches your policy.
+
+Do not expand package usage beyond what `AGENTS.md` allows without updating that document.

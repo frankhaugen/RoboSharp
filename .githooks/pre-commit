@@ -1,0 +1,7 @@
+#!/bin/sh
+# Regenerates RoboSharp.slnx so docs and infrastructure files stay visible in the solution.
+set -eu
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT" || exit 1
+dotnet run --file "$ROOT/.githooks/UpdateSlnx.cs" -- "$ROOT"
+git add -- "RoboSharp.slnx"

@@ -1,0 +1,65 @@
+# Build and test
+
+## Prerequisites
+
+- [.NET SDK 10](https://dotnet.microsoft.com/download) matching [`global.json`](../global.json) (or compatible via `rollForward`).
+
+## Commands
+
+From the repository root:
+
+```powershell
+dotnet restore RoboSharp.slnx
+dotnet build RoboSharp.slnx
+dotnet test RoboSharp.slnx
+```
+
+Use `--configuration Release` for release builds.
+
+## Solution file and pre-commit hook
+
+[`RoboSharp.slnx`](../RoboSharp.slnx) is **generated**. The [.NET 10 file-based app](../.githooks/UpdateSlnx.cs) `.githooks/UpdateSlnx.cs` rewrites it so:
+
+- every file under `docs/` appears under a `/docs/` solution folder;
+- agreed **infrastructure** files (MSBuild, NuGet, `global.json`, `AGENTS.md`, license, hooks, etc.) appear under `/infrastructure/`;
+- all `src/**/*.csproj` and `tests/**/*.csproj` are listed under `/src/` and `/tests/`.
+
+Regenerate manually from the repo root:
+
+```powershell
+dotnet run --file .githooks/UpdateSlnx.cs -- $PWD.Path
+# or: dotnet run --file .githooks/UpdateSlnx.cs -- (git rev-parse --show-toplevel)
+```
+
+**Git hook (recommended):** configure Git once so commits refresh and stage `RoboSharp.slnx`:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+Details: [`.githooks/README.md`](../.githooks/README.md). The hook runs `dotnet run --file .githooks/UpdateSlnx.cs` and then `git add RoboSharp.slnx`.
+
+The file-based app uses `#:property` directives at the top of `.githooks/UpdateSlnx.cs` to override repo-wide MSBuild settings (for example `UseArtifactsOutput`, `TreatWarningsAsErrors`, `PublishAot`) so hook runs stay lightweight.
+
+In **CI**, you can enforce an up-to-date solution file with:
+
+```sh
+dotnet run --file .githooks/UpdateSlnx.cs -- "$(pwd)"
+git diff --exit-code RoboSharp.slnx
+```
+
+## Build output layout
+
+The repo enables the .NET SDK **artifacts output** layout (`UseArtifactsOutput` in [`Directory.Build.props`](../Directory.Build.props)). Compiled binaries and test outputs go under:
+
+`artifacts/bin/<ProjectName>/<configuration>/`
+
+Intermediate files still use each project’s `obj` folder under the project directory (SDK default). The root [`artifacts/`](../artifacts/) directory is listed in [`.gitignore`](../.gitignore).
+
+## Continuous integration
+
+When `CI`, `GITHUB_ACTIONS`, or `TF_BUILD` is set, [`Directory.Build.props`](../Directory.Build.props) sets `ContinuousIntegrationBuild` for deterministic, CI-friendly behavior. Individual pipelines can set additional properties as needed.
+
+## Code style
+
+[`.editorconfig`](../.editorconfig) applies to C#, MSBuild, JSON, and Markdown. `EnforceCodeStyleInBuild` and `TreatWarningsAsErrors` are enabled globally in `Directory.Build.props`, so new warnings fail the build.

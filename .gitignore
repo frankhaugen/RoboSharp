@@ -1,0 +1,30 @@
+# Build outputs (SDK artifacts layout + legacy bin/obj)
+artifacts/
+**/bin/
+**/obj/
+
+# .githooks: file-based app (dotnet run --file .githooks/UpdateSlnx.cs) writes next to the entry file
+.githooks/bin/
+.githooks/obj/
+.githooks/net*/
+.githooks/artifacts/
+
+# User-specific / IDE
+.vs/
+.idea/
+.cursor/
+*.user
+*.userosscache
+*.suo
+*.rsuser
+
+# Test / tooling
+TestResults/
+*.trx
+coverage/
+*.coverage
+*.coveragexml
+
+# OS
+.DS_Store
+Thumbs.db

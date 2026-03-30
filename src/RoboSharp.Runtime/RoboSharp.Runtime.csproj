@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\RoboSharp.IL\RoboSharp.IL.csproj" />
+    <ProjectReference Include="..\RoboSharp.World\RoboSharp.World.csproj" />
+  </ItemGroup>
+</Project>

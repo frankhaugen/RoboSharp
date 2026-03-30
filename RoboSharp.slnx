@@ -1,0 +1,52 @@
+<Solution>
+  <Folder Name="/docs/">
+    <File Path="docs/README.md" />
+    <File Path="docs/architecture.md" />
+    <File Path="docs/build.md" />
+    <File Path="docs/nuget.md" />
+    <File Path="docs/repository-layout.md" />
+  </Folder>
+  <Folder Name="/infrastructure/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".githooks/README.md" />
+    <File Path=".githooks/UpdateSlnx.cs" />
+    <File Path=".githooks/pre-commit" />
+    <File Path=".gitignore" />
+    <File Path="AGENTS.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="global.json" />
+    <File Path="nuget.config" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/RoboSharp.Application/RoboSharp.Application.csproj" />
+    <Project Path="src/RoboSharp.Hosting/RoboSharp.Hosting.csproj" />
+    <Project Path="src/RoboSharp.IL/RoboSharp.IL.csproj" />
+    <Project Path="src/RoboSharp.IO/RoboSharp.IO.csproj" />
+    <Project Path="src/RoboSharp.Language/RoboSharp.Language.csproj" />
+    <Project Path="src/RoboSharp.Player/RoboSharp.Player.csproj" />
+    <Project Path="src/RoboSharp.Runtime/RoboSharp.Runtime.csproj" />
+    <Project Path="src/RoboSharp.Semantics/RoboSharp.Semantics.csproj" />
+    <Project Path="src/RoboSharp.Studio/RoboSharp.Studio.csproj" />
+    <Project Path="src/RoboSharp.Toolchain/RoboSharp.Toolchain.csproj" />
+    <Project Path="src/RoboSharp.Web/RoboSharp.Web.csproj" />
+    <Project Path="src/RoboSharp.Workspaces/RoboSharp.Workspaces.csproj" />
+    <Project Path="src/RoboSharp.World/RoboSharp.World.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/RoboSharp.Application.Tests/RoboSharp.Application.Tests.csproj" />
+    <Project Path="tests/RoboSharp.Architecture.Tests/RoboSharp.Architecture.Tests.csproj" />
+    <Project Path="tests/RoboSharp.IL.Tests/RoboSharp.IL.Tests.csproj" />
+    <Project Path="tests/RoboSharp.IO.Tests/RoboSharp.IO.Tests.csproj" />
+    <Project Path="tests/RoboSharp.Language.Tests/RoboSharp.Language.Tests.csproj" />
+    <Project Path="tests/RoboSharp.Runtime.Tests/RoboSharp.Runtime.Tests.csproj" />
+    <Project Path="tests/RoboSharp.Semantics.Tests/RoboSharp.Semantics.Tests.csproj" />
+    <Project Path="tests/RoboSharp.Toolchain.Tests/RoboSharp.Toolchain.Tests.csproj" />
+    <Project Path="tests/RoboSharp.Workspaces.Tests/RoboSharp.Workspaces.Tests.csproj" />
+    <Project Path="tests/RoboSharp.World.Tests/RoboSharp.World.Tests.csproj" />
+  </Folder>
+</Solution>

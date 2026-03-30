@@ -1,0 +1,6 @@
+<Project>
+  <!--
+    Shared targets for the RoboSharp repo. Import is automatic for all projects under this directory.
+    Add custom validation targets (e.g. architecture checks) here when needed.
+  -->
+</Project>
