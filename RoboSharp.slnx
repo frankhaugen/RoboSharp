@@ -7,6 +7,20 @@
     <File Path="docs/nuget.md" />
     <File Path="docs/repository-layout.md" />
   </Folder>
+  <Folder Name="/docs/agents/">
+    <File Path="docs/agents/README.md" />
+    <File Path="docs/agents/documentation-checklist-subagents.md" />
+  </Folder>
+  <Folder Name="/docs/agents/documentation-checklist/">
+    <File Path="docs/agents/documentation-checklist/README.md" />
+    <File Path="docs/agents/documentation-checklist/parent-orchestration.md" />
+    <File Path="docs/agents/documentation-checklist/shard-s1-meta.md" />
+    <File Path="docs/agents/documentation-checklist/shard-s2-platform.md" />
+    <File Path="docs/agents/documentation-checklist/shard-s3-language-pipeline.md" />
+    <File Path="docs/agents/documentation-checklist/shard-s4-runtime-tooling.md" />
+    <File Path="docs/agents/documentation-checklist/shard-s5-hosts-debugger.md" />
+    <File Path="docs/agents/documentation-checklist/shard-s6-gaps.md" />
+  </Folder>
   <Folder Name="/docs/architecture/">
     <File Path="docs/architecture/dependency-injection.md" />
     <File Path="docs/architecture/dependency-rules.md" />

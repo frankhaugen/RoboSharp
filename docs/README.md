@@ -20,6 +20,7 @@ The **authoritative** rules for architecture, dependencies, and agent behavior l
 | [RoboSharp.Semantics](semantics/README.md) | Symbols, binding, bound tree, semantic diagnostics (`docs/semantics/`) |
 | [RoboSharp Studio](studio/README.md) | IDE host specifications (topic index; former `general-specs.md`) |
 | [Documentation stubs — fill order](documentation-todo.md) | Checklist and suggested sequence for authoring the skeleton below |
+| [Agent workflows](agents/README.md) | Repeatable agent tasks (e.g. syncing the documentation checklist with `tools/doc-checklist.ps1`) |
 
 ## Contributing to docs
 
