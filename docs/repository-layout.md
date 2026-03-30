@@ -14,7 +14,7 @@
 | `.editorconfig` | Editor and .NET code style |
 | `.gitignore` | Ignores `artifacts/`, `bin/`, `obj/`, IDE cruft, test results |
 | `AGENTS.md` | Architecture, dependency rules, teaching mission |
-| `.gitattributes` | Line-ending rules (e.g. LF for `.githooks/pre-commit`) |
+| `.gitattributes` | Repo-wide `text=auto eol=lf` plus explicit/binary overrides |
 | `.githooks/UpdateSlnx.cs` | .NET 10 **file-based** app (`#:property` overrides) that regenerates `RoboSharp.slnx` |
 | `.githooks/` | Git hooks (`pre-commit`, `README.md`); set `core.hooksPath` to `.githooks` |
 

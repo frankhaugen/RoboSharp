@@ -1,5 +1,23 @@
-# Shell hooks must use LF so Git Bash / Unix sh can execute them on Windows.
+# LF everywhere: Git stores and checks out text as LF so line endings are consistent on all OSes.
+* text=auto eol=lf
+
+# Shell hook (explicit; same as default above)
 .githooks/pre-commit text eol=lf
 
-# Generated solution file: match .githooks/UpdateSlnx.cs (LF) and avoid CRLF churn on Windows.
+# Solution file (explicit; generated as LF by UpdateSlnx.cs)
 RoboSharp.slnx text eol=lf
+
+# Do not treat these as text (avoid CRLF normalization corrupting binaries)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.dll binary
+*.exe binary
+*.pdb binary
+*.nupkg binary
+*.snupkg binary
+*.zip binary
+*.pdf binary

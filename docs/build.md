@@ -4,6 +4,12 @@
 
 - [.NET SDK 10](https://dotnet.microsoft.com/download) matching [`global.json`](../global.json) (or compatible via `rollForward`).
 
+## Line endings
+
+[`.gitattributes`](../.gitattributes) sets `* text=auto eol=lf` so Git keeps text files as **LF** in the object database and on checkout. [`.editorconfig`](../.editorconfig) sets `end_of_line = lf` for editors that honor it.
+
+On Windows, prefer `git config core.autocrlf false` (or `input`) in this repo so Git does not fight `.gitattributes`. After changing attributes, you can re-scan the index with `git add --renormalize .`.
+
 ## Commands
 
 From the repository root:
