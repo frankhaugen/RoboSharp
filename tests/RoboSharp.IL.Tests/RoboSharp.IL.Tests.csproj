@@ -3,6 +3,8 @@
     <PackageReference Include="TUnit" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\RoboSharp.Language\RoboSharp.Language.csproj" />
+    <ProjectReference Include="..\..\src\RoboSharp.Semantics\RoboSharp.Semantics.csproj" />
     <ProjectReference Include="..\..\src\RoboSharp.IL\RoboSharp.IL.csproj" />
   </ItemGroup>
 </Project>

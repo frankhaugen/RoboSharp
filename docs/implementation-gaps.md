@@ -71,7 +71,7 @@ Use [documentation-todo.md](documentation-todo.md) for per-file doc status.
 
 ## Test projects
 
-`tests/` mirrors many `RoboSharp.*` projects. **Meaningful product tests** today align with code that exists (notably Language and IO, plus architecture/dependency guards). Several projects (e.g. Semantics, Runtime, World) still hold **scaffold or placeholder** tests while their matching `src/` projects are empty—do not read those as evidence those layers are implemented.
+`tests/` mirrors `RoboSharp.*` projects. Each area has **behavioral tests** tied to the real pipeline (lexer/parser, binder, lowering, interpreter, toolchain, workspaces, world movement, application/hosting composition, solution layout, and allowed project-reference edges). Expand coverage as features grow; there is no separate TUnit demo suite in-repo.
 
 ## What this is not
 

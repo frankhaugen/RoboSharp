@@ -5,6 +5,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\RoboSharp.Application\RoboSharp.Application.csproj" />
+    <ProjectReference Include="..\..\src\RoboSharp.Hosting\RoboSharp.Hosting.csproj" />
     <ProjectReference Include="..\..\src\RoboSharp.Toolchain\RoboSharp.Toolchain.csproj" />
     <ProjectReference Include="..\..\src\RoboSharp.Workspaces\RoboSharp.Workspaces.csproj" />
     <ProjectReference Include="..\..\src\RoboSharp.World\RoboSharp.World.csproj" />

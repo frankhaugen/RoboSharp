@@ -4,11 +4,11 @@ using RoboSharp.Studio.Pipeline;
 namespace RoboSharp.Studio.Panels;
 
 /// <summary>
-/// One inspectable stage or placeholder in the right-rail tabs. Order = tab order (pipeline narrative).
+/// One inspectable pipeline stage in the right-rail panel stack. Order = top-to-bottom narrative.
 /// </summary>
 public interface IStudioPanel
 {
-    /// <summary>Sort key for tab strip (lower = left).</summary>
+    /// <summary>Sort key for the inspector stack (lower = higher in the list).</summary>
     int Order { get; }
 
     string DisplayName { get; }

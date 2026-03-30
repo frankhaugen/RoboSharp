@@ -1,33 +1,45 @@
 using System.ComponentModel;
 using System.Windows.Input;
+using Avalonia.Threading;
 using RoboSharp.Studio.Pipeline;
+using RoboSharp.World;
 
 namespace RoboSharp.Studio.ViewModels;
 
 /// <summary>
-/// Shell state: sample source buffer + pipeline refresh. Panels listen via <see cref="PipelineUpdated"/>.
+/// Shell state: sample source buffer, separate Build vs Run (run compiles then steps the interpreter).
 /// </summary>
 public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
     private readonly IPipelineInspectionService _pipeline;
+    private CancellationTokenSource? _runCancellation;
+
     private string _sourceDocument = """
-        // RoboSharp Studio — Language pipeline (lexer + parser)
-        integer x = 1 + 2 * 3;
+        // RoboSharp Studio — Karel-style robot on a grid (see left pane after Build / Run)
+        void main()
+        {
+            move();
+        }
 
         """;
 
     private PipelineSnapshot? _currentSnapshot;
+    private StudioRunSpeed _selectedRunSpeed = StudioRunSpeed.Slow;
 
     public MainWindowViewModel(IPipelineInspectionService pipeline)
     {
         _pipeline = pipeline;
-        RefreshCommand = new DelegateCommand(RunPipeline);
+        BuildCommand = new DelegateCommand(Build);
+        RunCommand = new AsyncDelegateCommand(RunAsync);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    /// <summary>Fired after each successful <see cref="RunPipeline"/> with the new snapshot.</summary>
+    /// <summary>Fired after Build or Run with the new snapshot (all inspection panels).</summary>
     public event Action<PipelineSnapshot>? PipelineUpdated;
+
+    /// <summary>Fired during Run between interpreter steps so the Karel pane can animate.</summary>
+    public event Action<RobotWorldSnapshot>? KarelFrameUpdated;
 
     public string SourceDocument
     {
@@ -41,6 +53,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    public StudioRunSpeed SelectedRunSpeed
+    {
+        get => _selectedRunSpeed;
+        set
+        {
+            if (_selectedRunSpeed == value)
+                return;
+            _selectedRunSpeed = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedRunSpeed)));
+        }
+    }
+
     public PipelineSnapshot? CurrentSnapshot
     {
         get => _currentSnapshot;
@@ -51,13 +75,39 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public ICommand RefreshCommand { get; }
+    public ICommand BuildCommand { get; }
+    public ICommand RunCommand { get; }
 
-    public void RunPipeline()
+    public void Build()
     {
-        var snap = _pipeline.Inspect(SourceDocument);
+        var snap = _pipeline.InspectBuildOnly(SourceDocument);
         CurrentSnapshot = snap;
         PipelineUpdated?.Invoke(snap);
+    }
+
+    private async Task RunAsync()
+    {
+        _runCancellation?.Cancel();
+        _runCancellation?.Dispose();
+        _runCancellation = new CancellationTokenSource();
+        var token = _runCancellation.Token;
+
+        try
+        {
+            var progress = new Progress<RobotWorldSnapshot>(snap =>
+                Dispatcher.UIThread.Post(() => KarelFrameUpdated?.Invoke(snap)));
+
+            var snap = await _pipeline
+                .InspectBuildAndRunAsync(SourceDocument, SelectedRunSpeed, progress, token)
+                .ConfigureAwait(true);
+
+            CurrentSnapshot = snap;
+            PipelineUpdated?.Invoke(snap);
+        }
+        catch (OperationCanceledException)
+        {
+            // New Run cancelled the previous token; ignore.
+        }
     }
 
     private sealed class DelegateCommand : ICommand
@@ -66,12 +116,27 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         public DelegateCommand(Action execute) => _execute = execute;
 
-#pragma warning disable CS0067 // Used by WPF-style command consumers; Avalonia may not raise.
+#pragma warning disable CS0067
         public event EventHandler? CanExecuteChanged;
 #pragma warning restore CS0067
 
         public bool CanExecute(object? parameter) => true;
 
         public void Execute(object? parameter) => _execute();
+    }
+
+    private sealed class AsyncDelegateCommand : ICommand
+    {
+        private readonly Func<Task> _execute;
+
+        public AsyncDelegateCommand(Func<Task> execute) => _execute = execute;
+
+#pragma warning disable CS0067
+        public event EventHandler? CanExecuteChanged;
+#pragma warning restore CS0067
+
+        public bool CanExecute(object? parameter) => true;
+
+        public void Execute(object? parameter) => _ = _execute();
     }
 }

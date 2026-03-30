@@ -13,10 +13,15 @@ The **authoritative** rules for architecture, dependencies, and agent behavior l
 | [Repository layout](repository-layout.md) | Solution structure, projects, and dependency direction |
 | [NuGet and packages](nuget.md) | Central package management, allowed packages, feed policy |
 | [Architecture overview](architecture.md) | High-level pipeline and layer responsibilities (summary only) |
+| [Solution structure](architecture/solution-structure.md) | `RoboSharp.slnx`, `src/` projects; see also [dependency-rules](architecture/dependency-rules.md), [dependency-injection](architecture/dependency-injection.md), [runtime-hosts](architecture/runtime-hosts.md) |
 | [Compiler v1 spec](compiler/v1-compiler-spec.md) | Normative compiler phases, lowering model, artifact intent |
+| [Compiler topics](compiler/compilation-pipeline.md) | Pipeline overview; [IL generation](compiler/il-generation.md), [diagnostics](compiler/diagnostics.md) |
 | [Runtime v1 spec](runtime/v1-runtime-spec.md) | Load, stepping, faults, snapshots (contract vs `RoboSharp.Runtime`) |
+| [Runtime topics](runtime/interpreter.md) | Interpreter, [execution model](runtime/execution-model.md), [state](runtime/runtime-state.md), [errors](runtime/error-handling.md), [stdout/stderr](runtime/standard-output.md) |
 | [Toolchain v1 spec](toolchain/v1-toolchain-spec.md) | Studio vs Player, build lifecycle, CLI shape |
-| [Mission (teaching goals)](governance/mission.md) | Why RoboSharp exists; links to design principles |
+| [Toolchain topics](toolchain/build-process.md) | [Project format](toolchain/project-format.md), build/clean, [artifacts](toolchain/artifact-layout.md), [.roboexe JSON](toolchain/roboexe-format.md) |
+| [Debugger topics](debugger/debugger-architecture.md) | [Stepping](debugger/stepping.md), [state inspection](debugger/state-inspection.md), [metrics view](debugger/metrics-view.md) |
+| [Mission (teaching goals)](governance/mission.md) | Why RoboSharp exists; [design principles](governance/design-principles.md); [dependency policy](governance/dependency-policy.md); [implementation order](governance/implementation-order.md) |
 | [Pipeline boundaries](architecture/pipeline-boundaries.md) | Syntax, semantics, IL, world, built-in contracts (end-to-end model) |
 | [IO layer](io/README.md) | `RoboSharp.IO`: filesystem abstractions, physical/in-memory/overlay |
 | [Workspaces](workspaces/README.md) | `RoboSharp.Workspaces`: projects, sessions, artifacts on top of IO |

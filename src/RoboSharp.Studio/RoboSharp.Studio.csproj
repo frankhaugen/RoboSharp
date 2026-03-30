@@ -17,6 +17,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RoboSharp.Hosting\RoboSharp.Hosting.csproj" />
+    <ProjectReference Include="..\RoboSharp.IL\RoboSharp.IL.csproj" />
     <ProjectReference Include="..\RoboSharp.Language\RoboSharp.Language.csproj" />
+    <ProjectReference Include="..\RoboSharp.Runtime\RoboSharp.Runtime.csproj" />
+    <ProjectReference Include="..\RoboSharp.Semantics\RoboSharp.Semantics.csproj" />
+    <ProjectReference Include="..\RoboSharp.Toolchain\RoboSharp.Toolchain.csproj" />
+    <ProjectReference Include="..\RoboSharp.World\RoboSharp.World.csproj" />
   </ItemGroup>
 </Project>

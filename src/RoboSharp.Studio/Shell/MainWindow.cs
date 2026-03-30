@@ -7,6 +7,7 @@ using Avalonia.Media;
 using RoboSharp.Studio.Panels;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.ViewModels;
+using RoboSharp.World;
 
 namespace RoboSharp.Studio.Shell;
 
@@ -14,6 +15,7 @@ public sealed class MainWindow : Window
 {
     private readonly MainWindowViewModel _viewModel;
     private readonly IReadOnlyList<IStudioPanel> _panels;
+    private TextBlock? _karelAscii;
 
     public MainWindow(MainWindowViewModel viewModel, IEnumerable<IStudioPanel> panels)
     {
@@ -32,7 +34,8 @@ public sealed class MainWindow : Window
         Content = BuildRoot();
 
         _viewModel.PipelineUpdated += OnPipelineUpdated;
-        _viewModel.RunPipeline();
+        _viewModel.KarelFrameUpdated += OnKarelFrameUpdated;
+        _viewModel.Build();
     }
 
     private Control BuildRoot()
@@ -136,9 +139,23 @@ public sealed class MainWindow : Window
 
     private Control BuildToolbar()
     {
+        var build = new Button
+        {
+            Content = "Build",
+            Padding = new Thickness(16, 10),
+            CornerRadius = StudioVisual.ButtonRadius,
+            Background = StudioVisual.SurfaceElevatedBrush,
+            Foreground = StudioVisual.TextPrimaryBrush,
+            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderThickness = new Thickness(1),
+            FontWeight = FontWeight.SemiBold,
+            Cursor = new Cursor(StandardCursorType.Hand),
+        };
+        build.Bind(Button.CommandProperty, new Binding(nameof(MainWindowViewModel.BuildCommand)));
+
         var run = new Button
         {
-            Content = "▶  Run pipeline",
+            Content = "▶  Run",
             Padding = new Thickness(20, 10),
             CornerRadius = StudioVisual.ButtonRadius,
             Background = StudioVisual.AccentBrush,
@@ -146,7 +163,26 @@ public sealed class MainWindow : Window
             FontWeight = FontWeight.SemiBold,
             Cursor = new Cursor(StandardCursorType.Hand),
         };
-        run.Bind(Button.CommandProperty, new Binding(nameof(MainWindowViewModel.RefreshCommand)));
+        run.Bind(Button.CommandProperty, new Binding(nameof(MainWindowViewModel.RunCommand)));
+
+        var speedLabel = new TextBlock
+        {
+            Text = "Step speed",
+            VerticalAlignment = VerticalAlignment.Center,
+            Foreground = StudioVisual.TextMutedBrush,
+            FontSize = 13,
+        };
+
+        var speedBox = new ComboBox
+        {
+            MinWidth = 120,
+            ItemsSource = Enum.GetValues<StudioRunSpeed>(),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        speedBox.Bind(ComboBox.SelectedItemProperty, new Binding(nameof(MainWindowViewModel.SelectedRunSpeed))
+        {
+            Mode = BindingMode.TwoWay,
+        });
 
         var title = new TextBlock
         {
@@ -160,7 +196,7 @@ public sealed class MainWindow : Window
 
         var subtitle = new TextBlock
         {
-            Text = "Lexer → Parser → (Semantics • IL • World — coming soon)",
+            Text = "Karel grid (left) · Build = compile only · Run = compile then step interpreter (see speed)",
             VerticalAlignment = VerticalAlignment.Center,
             Foreground = StudioVisual.TextMutedBrush,
             FontSize = 13,
@@ -176,7 +212,7 @@ public sealed class MainWindow : Window
             {
                 Orientation = Orientation.Horizontal,
                 Spacing = 16,
-                Children = { title, run, subtitle },
+                Children = { title, build, run, speedLabel, speedBox, subtitle },
             },
         };
     }
@@ -185,7 +221,7 @@ public sealed class MainWindow : Window
     {
         var grid = new Grid
         {
-            ColumnDefinitions = new ColumnDefinitions("280,6,*,6,400"),
+            ColumnDefinitions = new ColumnDefinitions("280,6,*,6,460"),
             Margin = new Thickness(12),
         };
 
@@ -213,7 +249,7 @@ public sealed class MainWindow : Window
         grid.Children.Add(split2);
         Grid.SetColumn(grid.Children[^1], 3);
 
-        grid.Children.Add(BuildInspectorTabs());
+        grid.Children.Add(BuildInspectorColumn());
         Grid.SetColumn(grid.Children[^1], 4);
 
         return grid;
@@ -221,16 +257,41 @@ public sealed class MainWindow : Window
 
     private Control BuildSidebar()
     {
-        var body = new TextBlock
+        var karelTitle = new TextBlock
+        {
+            Text = "Karel world",
+            FontSize = 14,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.AccentBrush,
+            Margin = new Thickness(0, 0, 0, 8),
+        };
+
+        _karelAscii = new TextBlock
+        {
+            Text = "",
+            FontFamily = StudioVisual.CodeFontFamily,
+            FontSize = 11,
+            Foreground = StudioVisual.TextPrimaryBrush,
+            TextWrapping = TextWrapping.NoWrap,
+        };
+
+        var hint = new TextBlock
         {
             Text =
-                "Workspace\n──────────\nOpen project / explorer will plug into RoboSharp.Workspaces + IO abstractions.\n\n" +
-                "Didactic layout\n──────────\nEach right-rail tab is an IStudioPanel. Registration order in DI is the pipeline story students see.\n\n" +
-                "Try editing the source, then Run pipeline.",
+                "Symbols: # wall  . floor  * goal  ^>v< robot facing N/E/S/W.\n\n" +
+                "Build refreshes compile stages; Run compiles again then animates the robot. " +
+                "Try Realtime for instant finish, Slow or Glacial to watch each IL step.",
             TextWrapping = TextWrapping.Wrap,
             Foreground = StudioVisual.TextMutedBrush,
-            LineHeight = 22,
-            FontSize = 13,
+            LineHeight = 20,
+            FontSize = 12,
+            Margin = new Thickness(0, 16, 0, 0),
+        };
+
+        var stack = new StackPanel
+        {
+            Spacing = 0,
+            Children = { karelTitle, _karelAscii, hint },
         };
 
         return new Border
@@ -240,7 +301,7 @@ public sealed class MainWindow : Window
             BorderBrush = StudioVisual.BorderSubtleBrush,
             BorderThickness = new Thickness(1),
             Padding = new Thickness(16),
-            Child = body,
+            Child = stack,
         };
     }
 
@@ -273,35 +334,90 @@ public sealed class MainWindow : Window
         };
     }
 
-    private Control BuildInspectorTabs()
+    private Control BuildInspectorColumn()
     {
-        var tabs = new TabControl
+        var stack = new StackPanel
         {
-            Background = StudioVisual.SurfaceBrush,
-            Foreground = StudioVisual.TextPrimaryBrush,
-            CornerRadius = StudioVisual.PanelRadius,
-            BorderBrush = StudioVisual.BorderSubtleBrush,
-            BorderThickness = new Thickness(1),
-            Padding = new Thickness(4),
+            Spacing = 10,
         };
 
         foreach (var panel in _panels)
-        {
-            var item = new TabItem
-            {
-                Header = panel.DisplayName,
-                Content = panel.CreateView(),
-                Foreground = StudioVisual.TextPrimaryBrush,
-            };
-            tabs.Items.Add(item);
-        }
+            stack.Children.Add(BuildPanelCard(panel));
 
-        return tabs;
+        var scroll = new ScrollViewer
+        {
+            Content = stack,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        };
+
+        return new Border
+        {
+            Background = StudioVisual.SurfaceBrush,
+            CornerRadius = StudioVisual.PanelRadius,
+            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderThickness = new Thickness(1),
+            Padding = new Thickness(8),
+            Child = scroll,
+        };
+    }
+
+    private Control BuildPanelCard(IStudioPanel panel)
+    {
+        var header = new TextBlock
+        {
+            Text = panel.DisplayName,
+            FontSize = 13,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.AccentBrush,
+            Margin = new Thickness(0, 0, 0, 8),
+        };
+
+        var body = panel.CreateView();
+        var bodyScroll = new ScrollViewer
+        {
+            Content = body,
+            MaxHeight = 280,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+        };
+
+        var inner = new Grid
+        {
+            RowDefinitions = new RowDefinitions("Auto,*"),
+        };
+        inner.Children.Add(header);
+        Grid.SetRow(header, 0);
+        inner.Children.Add(bodyScroll);
+        Grid.SetRow(bodyScroll, 1);
+
+        return new Border
+        {
+            Background = StudioVisual.SurfaceElevatedBrush,
+            CornerRadius = StudioVisual.PanelRadius,
+            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderThickness = new Thickness(1),
+            Padding = new Thickness(12),
+            Child = inner,
+        };
     }
 
     private void OnPipelineUpdated(PipelineSnapshot snapshot)
     {
         foreach (var panel in _panels)
             panel.OnSnapshotChanged(snapshot);
+
+        if (snapshot.WorldVisualization is { } w)
+            ApplyKarelSnapshot(w);
+    }
+
+    private void OnKarelFrameUpdated(RobotWorldSnapshot snapshot) =>
+        ApplyKarelSnapshot(snapshot);
+
+    private void ApplyKarelSnapshot(RobotWorldSnapshot snapshot)
+    {
+        if (_karelAscii is null)
+            return;
+        _karelAscii.Text = KarelWorldAsciiFormatter.Format(snapshot);
     }
 }

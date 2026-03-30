@@ -25,13 +25,13 @@ public static class StudioServiceRegistration
 
         services.AddSingleton<MainWindowViewModel>();
 
-        // Inspection panels: registration order is visible tab order (didactic).
+        // Inspection panels: registration order is top-to-bottom in the stack (pipeline narrative).
         services.AddSingleton<IStudioPanel, TokenPipelinePanel>();
         services.AddSingleton<IStudioPanel, SyntaxTreePipelinePanel>();
         services.AddSingleton<IStudioPanel, DiagnosticsPipelinePanel>();
-        services.AddSingleton<IStudioPanel, BoundTreePlaceholderPanel>();
-        services.AddSingleton<IStudioPanel, IlPlaceholderPanel>();
-        services.AddSingleton<IStudioPanel, WorldPlaceholderPanel>();
+        services.AddSingleton<IStudioPanel, BoundTreePipelinePanel>();
+        services.AddSingleton<IStudioPanel, IlPipelinePanel>();
+        services.AddSingleton<IStudioPanel, WorldRuntimePipelinePanel>();
 
         services.AddSingleton<MainWindow>();
 

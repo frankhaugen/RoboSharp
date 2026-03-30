@@ -37,14 +37,20 @@ public sealed class DiagnosticsPipelinePanel : IStudioPanel
         if (_list is null)
             return;
 
-        if (snapshot.Diagnostics.Count == 0)
-        {
-            _list.ItemsSource = new[] { "No parse diagnostics." };
-            return;
-        }
+        var lines = new List<string>();
 
-        _list.ItemsSource = snapshot.Diagnostics
-            .Select(d => $"@{d.Span.Start}:{d.Span.Length}  {d.Message}")
-            .ToList();
+        foreach (var d in snapshot.ParseDiagnostics)
+            lines.Add($"parse  @{d.Span.Start}:{d.Span.Length}  {d.Message}");
+
+        foreach (var s in snapshot.SemanticDiagnosticLines)
+            lines.Add($"semantic  {s}");
+
+        if (snapshot.RuntimeFaultMessage is not null)
+            lines.Add($"runtime  {snapshot.RuntimeFaultMessage}");
+
+        if (lines.Count == 0)
+            lines.Add("No diagnostics.");
+
+        _list.ItemsSource = lines;
     }
 }

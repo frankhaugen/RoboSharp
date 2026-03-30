@@ -1,12 +1,22 @@
 using RoboSharp.Language;
+using RoboSharp.Toolchain;
+using RoboSharp.World;
 
 namespace RoboSharp.Studio.Pipeline;
 
-/// <summary>
-/// Immutable slice of the compiler front-end for Studio panels (lexer → parser).
-/// </summary>
+/// <summary>Lexer → parser → compile phases → optional interpreter run for Studio inspection panes.</summary>
 public sealed record PipelineSnapshot(
     string Source,
     IReadOnlyList<SyntaxToken> Tokens,
     SyntaxTree SyntaxTree,
-    IReadOnlyList<ParseDiagnostic> Diagnostics);
+    IReadOnlyList<ParseDiagnostic> ParseDiagnostics,
+    CompilePhase CompileReachedPhase,
+    IReadOnlyList<string> SemanticDiagnosticLines,
+    string? BoundTreeText,
+    string? IlDisassemblyText,
+    string? RuntimeStdout,
+    string? RuntimeStderr,
+    bool? RuntimeSucceeded,
+    string? RuntimeFaultMessage,
+    string? WorldAfterRunSummary,
+    RobotWorldSnapshot? WorldVisualization);
