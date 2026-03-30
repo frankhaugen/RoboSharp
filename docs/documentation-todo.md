@@ -95,23 +95,23 @@ Index: [language/README.md](language/README.md).
 
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
-| [language/README.md](language/README.md) | Yes | No |
-| [language/language-overview.md](language/language-overview.md) | Yes | No |
-| [language/syntax.md](language/syntax.md) | Yes | No |
-| [language/functions.md](language/functions.md) | Yes | No |
-| [language/statements.md](language/statements.md) | Stub | No |
-| [language/expressions.md](language/expressions.md) | Stub | No |
-| [language/types.md](language/types.md) | Stub | No |
-| [language/arrays.md](language/arrays.md) | Stub | No |
-| [language/built-in-functions.md](language/built-in-functions.md) | Yes | No |
-| [language/source-model.md](language/source-model.md) | Yes | No |
-| [language/syntax-kinds-and-facts.md](language/syntax-kinds-and-facts.md) | Yes | No |
-| [language/tokens.md](language/tokens.md) | Yes | No |
-| [language/lexer.md](language/lexer.md) | Yes | No |
-| [language/parser.md](language/parser.md) | Yes | No |
-| [language/syntax-tree.md](language/syntax-tree.md) | Yes | No |
-| [language/public-api.md](language/public-api.md) | Yes | No |
-| [language/project-layout.md](language/project-layout.md) | Yes | No |
+| [language/README.md](language/README.md) | Yes | Yes |
+| [language/language-overview.md](language/language-overview.md) | Yes | Yes |
+| [language/syntax.md](language/syntax.md) | Yes | Yes |
+| [language/functions.md](language/functions.md) | Yes | Yes |
+| [language/statements.md](language/statements.md) | Stub | Yes |
+| [language/expressions.md](language/expressions.md) | Stub | Yes |
+| [language/types.md](language/types.md) | Stub | Yes |
+| [language/arrays.md](language/arrays.md) | Stub | Yes |
+| [language/built-in-functions.md](language/built-in-functions.md) | Yes | Yes |
+| [language/source-model.md](language/source-model.md) | Yes | Yes |
+| [language/syntax-kinds-and-facts.md](language/syntax-kinds-and-facts.md) | Yes | Yes |
+| [language/tokens.md](language/tokens.md) | Yes | Yes |
+| [language/lexer.md](language/lexer.md) | Yes | Yes |
+| [language/parser.md](language/parser.md) | Yes | Yes |
+| [language/syntax-tree.md](language/syntax-tree.md) | Yes | Yes |
+| [language/public-api.md](language/public-api.md) | Yes | Yes |
+| [language/project-layout.md](language/project-layout.md) | Yes | Yes |
 
 ## Semantics (`RoboSharp.Semantics`)
 
@@ -139,12 +139,12 @@ Index: [semantics/README.md](semantics/README.md).
 
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
-| [compiler/compilation-pipeline.md](compiler/compilation-pipeline.md) | No | No |
-| [compiler/lexical-analysis.md](compiler/lexical-analysis.md) | Stub | No |
-| [compiler/parsing.md](compiler/parsing.md) | Stub | No |
-| [compiler/syntax-tree.md](compiler/syntax-tree.md) | Stub | No |
+| [compiler/compilation-pipeline.md](compiler/compilation-pipeline.md) | No | Partial |
+| [compiler/lexical-analysis.md](compiler/lexical-analysis.md) | Stub | Yes |
+| [compiler/parsing.md](compiler/parsing.md) | Stub | Yes |
+| [compiler/syntax-tree.md](compiler/syntax-tree.md) | Stub | Yes |
 | [compiler/semantic-analysis.md](compiler/semantic-analysis.md) | Stub | No |
-| [compiler/diagnostics.md](compiler/diagnostics.md) | No | No |
+| [compiler/diagnostics.md](compiler/diagnostics.md) | No | Partial |
 | [compiler/il-generation.md](compiler/il-generation.md) | No | No |
 
 ## Runtime (`RoboSharp.Runtime`)

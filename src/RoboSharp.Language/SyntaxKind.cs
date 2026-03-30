@@ -1,0 +1,78 @@
+namespace RoboSharp.Language;
+
+public enum SyntaxKind
+{
+    // Trivia
+    WhitespaceTrivia,
+    EndOfLineTrivia,
+    CommentTrivia,
+
+    // Tokens
+    BadToken,
+    EndOfFileToken,
+    IdentifierToken,
+    IntegerLiteralToken,
+    NumberLiteralToken,
+    StringLiteralToken,
+
+    // Keywords
+    IfKeyword,
+    ElseKeyword,
+    WhileKeyword,
+    ReturnKeyword,
+    IntegerKeyword,
+    NumberKeyword,
+    StringKeyword,
+    BoolKeyword,
+    TrueKeyword,
+    FalseKeyword,
+
+    // Operators / punctuation
+    PlusToken,
+    MinusToken,
+    StarToken,
+    SlashToken,
+    BangToken,
+    EqualsToken,
+    EqualsEqualsToken,
+    BangEqualsToken,
+    LessToken,
+    LessOrEqualsToken,
+    GreaterToken,
+    GreaterOrEqualsToken,
+    AmpersandAmpersandToken,
+    PipePipeToken,
+    OpenParenToken,
+    CloseParenToken,
+    OpenBraceToken,
+    CloseBraceToken,
+    OpenBracketToken,
+    CloseBracketToken,
+    CommaToken,
+    SemicolonToken,
+
+    // Nodes
+    CompilationUnit,
+    GlobalStatement,
+    FunctionDeclaration,
+    Parameter,
+    ParameterList,
+    PrimitiveType,
+    ArrayType,
+    BlockStatement,
+    VariableDeclarationStatement,
+    AssignmentStatement,
+    ExpressionStatement,
+    IfStatement,
+    ElseClause,
+    WhileStatement,
+    ReturnStatement,
+    LiteralExpression,
+    NameExpression,
+    UnaryExpression,
+    BinaryExpression,
+    ParenthesizedExpression,
+    CallExpression,
+    ArrayLiteralExpression,
+    IndexExpression,
+}
