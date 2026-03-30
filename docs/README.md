@@ -18,6 +18,8 @@ The **authoritative** rules for architecture, dependencies, and agent behavior l
 | [IO ↔ workspace boundary](architecture/io-workspace-overview.md) | How IO and workspaces divide responsibility (start here) |
 | [RoboSharp.Language](language/README.md) | Tokens, lexer, parser, syntax tree (`docs/language/`) |
 | [RoboSharp.Semantics](semantics/README.md) | Symbols, binding, bound tree, semantic diagnostics (`docs/semantics/`) |
+| [RoboSharp.World](world/README.md) | Terrain, items, actors, movement, snapshots (`docs/world/`) |
+| [Rendering adapters](rendering/README.md) | Projectors and renderers over world snapshots (`docs/rendering/`) |
 | [RoboSharp Studio](studio/README.md) | IDE host specifications (topic index; former `general-specs.md`) |
 | [Documentation stubs — fill order](documentation-todo.md) | Checklist and suggested sequence for authoring the skeleton below |
 | [Agent workflows](agents/README.md) | Repeatable agent tasks (e.g. syncing the documentation checklist with `tools/doc-checklist.ps1`) |

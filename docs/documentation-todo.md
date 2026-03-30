@@ -160,23 +160,29 @@ Index: [semantics/README.md](semantics/README.md).
 
 ## World (`RoboSharp.World`)
 
+Index: [world/README.md](world/README.md).
+
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
-| [world/world-model.md](world/world-model.md) | No | No |
-| [world/terrain-grid.md](world/terrain-grid.md) | No | No |
-| [world/item-grid.md](world/item-grid.md) | No | No |
-| [world/actor-grid.md](world/actor-grid.md) | No | No |
-| [world/world-actions.md](world/world-actions.md) | No | No |
-| [world/movement-rules.md](world/movement-rules.md) | No | No |
-| [world/metrics-and-analysis.md](world/metrics-and-analysis.md) | No | No |
+| [world/README.md](world/README.md) | Yes | No |
+| [world/world-model.md](world/world-model.md) | Yes | No |
+| [world/terrain-grid.md](world/terrain-grid.md) | Yes | No |
+| [world/item-grid.md](world/item-grid.md) | Yes | No |
+| [world/actor-grid.md](world/actor-grid.md) | Yes | No |
+| [world/world-actions.md](world/world-actions.md) | Yes | No |
+| [world/movement-rules.md](world/movement-rules.md) | Yes | No |
+| [world/metrics-and-analysis.md](world/metrics-and-analysis.md) | Yes | No |
 
 ## Rendering (adapters over world snapshots)
 
+Index: [rendering/README.md](rendering/README.md).
+
 | Document | Have content | Implemented |
 | -------- | ------------ | ----------- |
-| [rendering/render-projection.md](rendering/render-projection.md) | No | No |
-| [rendering/ascii-renderer.md](rendering/ascii-renderer.md) | No | No |
-| [rendering/sprite-renderer.md](rendering/sprite-renderer.md) | No | No |
+| [rendering/README.md](rendering/README.md) | Yes | No |
+| [rendering/render-projection.md](rendering/render-projection.md) | Yes | No |
+| [rendering/ascii-renderer.md](rendering/ascii-renderer.md) | Yes | No |
+| [rendering/sprite-renderer.md](rendering/sprite-renderer.md) | Stub | No |
 
 ## Toolchain (`RoboSharp.Toolchain`)
 

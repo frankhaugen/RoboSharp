@@ -91,6 +91,7 @@
     <File Path="docs/language/types.md" />
   </Folder>
   <Folder Name="/docs/rendering/">
+    <File Path="docs/rendering/README.md" />
     <File Path="docs/rendering/ascii-renderer.md" />
     <File Path="docs/rendering/render-projection.md" />
     <File Path="docs/rendering/sprite-renderer.md" />
@@ -168,6 +169,7 @@
     <File Path="docs/workspaces/temporary-workspace.md" />
   </Folder>
   <Folder Name="/docs/world/">
+    <File Path="docs/world/README.md" />
     <File Path="docs/world/actor-grid.md" />
     <File Path="docs/world/item-grid.md" />
     <File Path="docs/world/metrics-and-analysis.md" />
