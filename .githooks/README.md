@@ -7,6 +7,8 @@ This repository uses a **pre-commit** hook that:
 
 Then it stages **`docs/`** and **`RoboSharp.slnx`**.
 
+**Default workflow:** run **`git commit`** (after the one-time setup below). That triggers this hook; you do not need to run the `dotnet` commands yourself first.
+
 ## One-time setup
 
 From the repository root, point Git at this folder:
@@ -23,7 +25,9 @@ To use the default `.git/hooks` directory instead, copy `pre-commit` there and e
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download) on `PATH` for `dotnet run --file`.
 
-## Manual run
+## Manual run (hooks off or debugging)
+
+If `core.hooksPath` is not set, hooks are bypassed, or you are debugging the scripts:
 
 ```sh
 ROOT="$(git rev-parse --show-toplevel)"

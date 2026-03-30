@@ -8,10 +8,12 @@ This folder holds **generated** Markdown with embedded **Mermaid** diagrams (plu
 | [nuget-references.md](nuget-references.md) | Direct NuGet packages per project (versions from `Directory.Packages.props`) |
 | [layer-map.md](layer-map.md) | Conceptual layer map aligned with `AGENTS.md` |
 
-Regenerate before the solution file update:
+With `core.hooksPath` set to `.githooks`, a **`git commit`** runs diagram generation, then `UpdateSlnx.cs`, and stages outputs—no separate `dotnet` step in normal use. See [Build and test](../build.md).
+
+To run only the diagram step without committing (for example hooks off or debugging):
 
 ```powershell
 dotnet run --file .githooks/GenerateDocDiagrams.cs -- $PWD.Path
 ```
 
-The **pre-commit** hook runs this automatically, then `UpdateSlnx.cs`. The solution uses **one solution folder per directory** (`/docs/`, `/docs/diagrams/`, `/docs/diagrams/architecture/`, …) as siblings under the solution root so the IDE tree matches the repo layout.
+The solution uses **one solution folder per directory** (`/docs/`, `/docs/diagrams/`, `/docs/diagrams/architecture/`, …) as siblings under the solution root so the IDE tree matches the repo layout.

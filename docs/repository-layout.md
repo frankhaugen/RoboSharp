@@ -18,12 +18,12 @@
 | `.githooks/UpdateSlnx.cs` | .NET 10 **file-based** app (`#:property` overrides) that regenerates `RoboSharp.slnx` |
 | `.githooks/` | Git hooks (`pre-commit`, `README.md`); set `core.hooksPath` to `.githooks` |
 
-`RoboSharp.slnx` lists **docs**, **infrastructure** files, and all projects. Do not hand-edit project lists for long; run `dotnet run --file .githooks/UpdateSlnx.cs` or rely on the pre-commit hook (see [Build and test](build.md)).
+`RoboSharp.slnx` lists **docs**, **infrastructure** files, and all projects. Do not hand-edit project lists for long; refresh with **`git commit`** (pre-commit regenerates the solution—see [Build and test](build.md)). Use `dotnet run --file .githooks/UpdateSlnx.cs` only when hooks are not in use.
 
 ## Documentation tree
 
 - Hand-written pages live under `docs/` (nested directories on disk are fine).
-- `docs/diagrams/` holds **generated** Mermaid Markdown from `.githooks/GenerateDocDiagrams.cs`; `docs/diagrams/architecture/` adds another level on disk. In `RoboSharp.slnx`, each distinct directory becomes a **top-level** `<Folder Name="/docs/.../"/>` (siblings under `<Solution>`), so the IDE shows nested sections without invalid nested-folder XML. Regenerate diagrams before `UpdateSlnx` (pre-commit does both).
+- `docs/diagrams/` holds **generated** Mermaid Markdown from `.githooks/GenerateDocDiagrams.cs`; `docs/diagrams/architecture/` adds another level on disk. In `RoboSharp.slnx`, each distinct directory becomes a **top-level** `<Folder Name="/docs/.../"/>` (siblings under `<Solution>`), so the IDE shows nested sections without invalid nested-folder XML. Pre-commit runs diagram generation then `UpdateSlnx` on each commit.
 
 ## Source and test projects
 

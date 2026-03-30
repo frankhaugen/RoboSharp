@@ -421,3 +421,4 @@ When changing this repository:
 8. Reject XAML.
 9. Reject Blazor host patterns that are not true Server-Side Interactive Blazor.
 10. Prefer concrete, testable, modern C# over cleverness.
+11. Refresh generated diagram docs and `RoboSharp.slnx` by **committing** with `core.hooksPath` set to `.githooks` (pre-commit runs the generators and re-stages outputs). Do not run the hook scripts manually unless hooks are off or you are debugging them; see [`docs/build.md`](docs/build.md).

@@ -30,7 +30,15 @@ Use `--configuration Release` for release builds.
 - agreed **infrastructure** files (MSBuild, NuGet, `global.json`, `AGENTS.md`, license, hooks, etc.) appear under `/infrastructure/`;
 - all `src/**/*.csproj` and `tests/**/*.csproj` are listed under `/src/` and `/tests/`.
 
-Regenerate manually from the repo root:
+**Normal workflow:** configure Git once, then use **`git commit`**; the pre-commit hook runs **GenerateDocDiagrams**, then **UpdateSlnx**, then `git add` on `docs/` and `RoboSharp.slnx`. You do not need to run those `dotnet` commands yourself before committing.
+
+```sh
+git config core.hooksPath .githooks
+```
+
+Details: [`.githooks/README.md`](../.githooks/README.md).
+
+**If hooks are disabled or you are debugging the scripts**, regenerate from the repo root:
 
 ```powershell
 dotnet run --file .githooks/GenerateDocDiagrams.cs -- $PWD.Path
@@ -38,13 +46,7 @@ dotnet run --file .githooks/UpdateSlnx.cs -- $PWD.Path
 # or pass (git rev-parse --show-toplevel) for the root argument
 ```
 
-**Git hook (recommended):** configure Git once so commits refresh and stage `RoboSharp.slnx`:
-
-```sh
-git config core.hooksPath .githooks
-```
-
-Details: [`.githooks/README.md`](../.githooks/README.md). The hook runs **GenerateDocDiagrams** then **UpdateSlnx**, then `git add` on `docs/` and `RoboSharp.slnx`.
+Then stage `docs/` and `RoboSharp.slnx` if they changed.
 
 The file-based app uses `#:property` directives at the top of `.githooks/UpdateSlnx.cs` to override repo-wide MSBuild settings (for example `UseArtifactsOutput`, `TreatWarningsAsErrors`, `PublishAot`) so hook runs stay lightweight.
 
