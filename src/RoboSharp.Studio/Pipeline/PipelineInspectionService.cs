@@ -281,8 +281,10 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
         string? lessonOutcome,
         int? lessonScore,
         int? ilSteps,
-        string? ilFootnote) =>
-        new(
+        string? ilFootnote)
+    {
+        var spans = CollectDiagnosticSpans(built);
+        return new(
             built.Source,
             built.Tokens,
             built.SyntaxTree,
@@ -297,6 +299,7 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
             fault,
             worldSummary,
             worldVis,
+            spans,
             lessonProfileLabel,
             worldPresetLabel,
             lessonProfileHelp,
@@ -304,6 +307,28 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
             lessonScore,
             ilSteps,
             ilFootnote);
+    }
+
+    private static IReadOnlyList<SourceDiagnosticSpan> CollectDiagnosticSpans(BuiltPipeline built)
+    {
+        var list = new List<SourceDiagnosticSpan>();
+        foreach (var d in built.ParseDiagnostics)
+        {
+            if (d.Span.Length > 0)
+                list.Add(new SourceDiagnosticSpan(d.Span.Start, d.Span.Length));
+        }
+
+        if (built.Compile.SemanticModel is not null)
+        {
+            foreach (var d in built.Compile.SemanticModel.Diagnostics)
+            {
+                if (d.Span.Length > 0)
+                    list.Add(new SourceDiagnosticSpan(d.Span.Start, d.Span.Length));
+            }
+        }
+
+        return list;
+    }
 
     private static string FormatWorldSummary(RobotWorld world)
     {

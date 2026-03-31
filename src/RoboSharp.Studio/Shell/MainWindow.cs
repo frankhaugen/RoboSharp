@@ -9,6 +9,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using RoboSharp.Semantics;
+using RoboSharp.Studio.Editor;
 using RoboSharp.Studio.Panels;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.ViewModels;
@@ -28,6 +29,7 @@ public sealed class MainWindow : Window
     private readonly MainWindowViewModel _viewModel;
     private readonly IReadOnlyList<IStudioPanel> _panels;
     private KarelWorldGridView? _karelWorld;
+    private RoboSharpSourceEditor? _sourceEditor;
     private bool _closeBypassDirtyCheck;
 
     public MainWindow(MainWindowViewModel viewModel, IEnumerable<IStudioPanel> panels)
@@ -754,32 +756,23 @@ public sealed class MainWindow : Window
 
     private Control BuildEditorPane()
     {
-        var editor = new TextBox
+        _sourceEditor = new RoboSharpSourceEditor
         {
-            AcceptsReturn = true,
-            Watermark = "Source (.robo)",
-            FontFamily = StudioVisual.CodeFontFamily,
-            FontSize = 13,
-            Foreground = StudioVisual.TextPrimaryBrush,
-            Background = Brushes.Transparent,
-            CaretBrush = StudioVisual.AccentBrush,
-            SelectionBrush = new SolidColorBrush(StudioVisual.Accent) { Opacity = 0.35 },
+            MinHeight = 360,
         };
-        editor.Bind(TextBox.TextProperty, new Binding(nameof(MainWindowViewModel.SourceDocument))
+        _sourceEditor.SetDocumentText(_viewModel.SourceDocument, suspendEvents: true);
+        _sourceEditor.TextChanged += text =>
         {
-            Mode = BindingMode.TwoWay,
-        });
+            if (_viewModel.SourceDocument != text)
+                _viewModel.SourceDocument = text;
+        };
+        _viewModel.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(MainWindowViewModel.SourceDocument))
+                _sourceEditor?.SetDocumentText(_viewModel.SourceDocument, suspendEvents: true);
+        };
 
-        return new Border
-        {
-            Background = StudioVisual.SurfaceElevatedBrush,
-            CornerRadius = StudioVisual.PanelRadius,
-            BorderBrush = StudioVisual.BorderSubtleBrush,
-            BorderThickness = new Thickness(1),
-            Padding = new Thickness(12),
-            BoxShadow = StudioVisual.SubtleCardShadow,
-            Child = editor,
-        };
+        return _sourceEditor;
     }
 
     private Control BuildInspectorColumn()
@@ -874,6 +867,8 @@ public sealed class MainWindow : Window
     {
         foreach (var panel in _panels)
             panel.OnSnapshotChanged(snapshot);
+
+        _sourceEditor?.ApplyDiagnosticSpans(snapshot.SourceDiagnosticSpans);
 
         if (snapshot.WorldVisualization is { } w)
             ApplyKarelSnapshot(w);

@@ -121,7 +121,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         try
         {
             DocumentPath = path;
-            _sourceDocument = text;
+            _sourceDocument = string.IsNullOrEmpty(text) ? text : text.ReplaceLineEndings("\n");
             IsDirty = false;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SourceDocument)));
         }

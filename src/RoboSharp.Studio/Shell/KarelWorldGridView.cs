@@ -31,13 +31,19 @@ public sealed class KarelWorldGridView : Border
         Padding = new Thickness(6);
         ClipToBounds = true;
         BoxShadow = StudioVisual.SoftPanelShadow;
+        // StackPanel gives the child indefinite vertical space; without a definite size the Viewbox
+        // measures the inner Grid at 0×0. Fixed DIP extent + min on this border keeps the grid visible.
+        MinWidth = 232;
+        MinHeight = 232;
+        HorizontalAlignment = HorizontalAlignment.Stretch;
 
         _viewbox = new Viewbox
         {
             Stretch = Stretch.Uniform,
-            MaxWidth = 236,
-            MaxHeight = 236,
+            Width = 220,
+            Height = 220,
             HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Top,
         };
 
         Child = _viewbox;

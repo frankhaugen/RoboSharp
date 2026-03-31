@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!-- RoboSharp surface: keywords, // comments, string literals, numbers (SharpDevelop / AvaloniaEdit XSHD) -->
+<SyntaxDefinition name="RoboSharp" extensions=".robo" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="#8FA3B8" />
+  <Color name="Keyword" foreground="#6EC9C0" />
+  <Color name="String" foreground="#F0A875" />
+  <Color name="Number" foreground="#E8C468" />
+  <RuleSet ignoreCase="false">
+    <Span color="Comment" begin="//" end="\n" />
+    <Span color="String" begin="&quot;" end="&quot;" escape="\" />
+    <Rule color="Number">\b0[xX][0-9a-fA-F]+\b|\b\d+\b</Rule>
+    <Keywords color="Keyword">
+      <Word>if</Word>
+      <Word>else</Word>
+      <Word>while</Word>
+      <Word>return</Word>
+      <Word>integer</Word>
+      <Word>number</Word>
+      <Word>string</Word>
+      <Word>bool</Word>
+      <Word>void</Word>
+      <Word>true</Word>
+      <Word>false</Word>
+    </Keywords>
+  </RuleSet>
+</SyntaxDefinition>

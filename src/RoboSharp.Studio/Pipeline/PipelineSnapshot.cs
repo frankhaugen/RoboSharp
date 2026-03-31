@@ -20,6 +20,7 @@ public sealed record PipelineSnapshot(
     string? RuntimeFaultMessage,
     string? WorldAfterRunSummary,
     RobotWorldSnapshot? WorldVisualization,
+    IReadOnlyList<SourceDiagnosticSpan> SourceDiagnosticSpans,
     string? LessonProfileLabel = null,
     string? WorldPresetLabel = null,
     string? LessonProfileHelpText = null,

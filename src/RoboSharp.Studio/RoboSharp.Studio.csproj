@@ -17,6 +17,9 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Editor\RoboSharp.xshd" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\RoboSharp.Hosting\RoboSharp.Hosting.csproj" />
     <ProjectReference Include="..\RoboSharp.IL\RoboSharp.IL.csproj" />
     <ProjectReference Include="..\RoboSharp.Language\RoboSharp.Language.csproj" />

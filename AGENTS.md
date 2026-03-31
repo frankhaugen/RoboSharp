@@ -24,7 +24,7 @@ Human-oriented documentation (build, repository layout, diagrams, and topic stub
   - the .NET BCL
   - `Microsoft.Extensions.*`
   - `TUnit` for tests
-  - **Avalonia** (`Avalonia`, `Avalonia.Desktop`, `Avalonia.Themes.*`, `Avalonia.Fonts.*`) for **`RoboSharp.Studio` only**, as the approved code-first desktop host UI (see `docs/studio/technology-stack.md` and `docs/nuget.md`)
+  - **Avalonia** (`Avalonia`, `Avalonia.Desktop`, `Avalonia.AvaloniaEdit`, `Avalonia.Themes.*`, `Avalonia.Fonts.*`) for **`RoboSharp.Studio` only**, as the approved code-first desktop host UI (see `docs/studio/technology-stack.md` and `docs/nuget.md`)
 - Do not introduce third-party frameworks, helper libraries, ORMs, serializers, UI frameworks, test helpers, mocking libraries, analyzers, or utility packages beyond the allowed set (the Avalonia line above is the explicit Studio exception).
 
 ## Solution intent
