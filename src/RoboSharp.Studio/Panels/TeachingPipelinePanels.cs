@@ -93,7 +93,10 @@ public sealed class IlPipelinePanel : IStudioPanel
 
         if (snapshot.IlDisassemblyText is { Length: > 0 } il)
         {
-            _text.Text = preamble + il;
+            var body = il;
+            if (snapshot.IlExecutionFootnote is { Length: > 0 } foot)
+                body += "\r\n\r\n" + foot;
+            _text.Text = preamble + body;
             return;
         }
 
@@ -175,8 +178,16 @@ public sealed class WorldRuntimePipelinePanel : IStudioPanel
                 "Tip: add top-level statements at file scope (e.g. move();) and clear parse/semantic diagnostics.\r\n";
         }
 
+        var goalSection =
+            snapshot.LessonOutcomeSummary is { } lo
+                ? "## Goal & score\r\n" +
+                  "What happened on the goal tile and a simple score for kids.\r\n\r\n" +
+                  lo.TrimEnd() + "\r\n" +
+                  (snapshot.LessonScore is { } sc ? $"\r\nScore: {sc}\r\n" : "\r\n")
+                : "";
+
         var worldSection =
-            "## World state (after last Run)\r\n" +
+            "\r\n## World state (after last Run)\r\n" +
             "Summary of the robot on the grid: position, facing, and related teaching fields from the world snapshot.\r\n" +
             "\r\n" +
             (string.IsNullOrWhiteSpace(snapshot.WorldAfterRunSummary)
@@ -211,6 +222,6 @@ public sealed class WorldRuntimePipelinePanel : IStudioPanel
                 ? "(none)\r\n"
                 : snapshot.RuntimeStderr.TrimEnd() + "\r\n");
 
-        return doc + worldSection + outcomeSection + stdoutSection + stderrSection;
+        return doc + goalSection + worldSection + outcomeSection + stdoutSection + stderrSection;
     }
 }

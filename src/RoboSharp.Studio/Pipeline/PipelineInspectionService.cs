@@ -17,12 +17,13 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
     public PipelineInspectionService(ILogger<PipelineInspectionService> logger) =>
         _logger = logger;
 
-    public PipelineSnapshot InspectBuildOnly(string source)
+    public PipelineSnapshot InspectBuildOnly(string source, StudioPipelineOptions options)
     {
         try
         {
-            var built = CompileThroughLowering(source);
-            var templateWorld = RobotWorldFactory.CreateBorderedEmpty(16, 16);
+            var built = CompileThroughLowering(source, options.BuiltinProfile);
+            var templateWorld = options.CreateRunWorld();
+            var profileHelp = BuildProfileHelp(options);
             return FinalizeSnapshot(
                 built,
                 stdout: null,
@@ -30,7 +31,14 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
                 runtimeOk: null,
                 fault: null,
                 worldSummary: null,
-                worldVis: templateWorld.CreateSnapshot());
+                worldVis: templateWorld.CreateSnapshot(),
+                options.ProfileLabel,
+                options.WorldPresetLabel,
+                profileHelp,
+                lessonOutcome: null,
+                lessonScore: null,
+                ilSteps: null,
+                ilFootnote: null);
         }
         catch (Exception ex)
         {
@@ -42,13 +50,15 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
     public async Task<PipelineSnapshot> InspectBuildAndRunAsync(
         string source,
         StudioRunSpeed speed,
-        IProgress<RobotWorldSnapshot>? worldProgress,
+        StudioPipelineOptions options,
+        IProgress<StudioRunProgress>? runProgress,
         CancellationToken cancellationToken)
     {
         try
         {
-            var built = CompileThroughLowering(source);
-            var templateWorld = RobotWorldFactory.CreateBorderedEmpty(16, 16);
+            var built = CompileThroughLowering(source, options.BuiltinProfile);
+            var templateWorld = options.CreateRunWorld();
+            var profileHelp = BuildProfileHelp(options);
 
             if (!built.Compile.Succeeded || built.Compile.Program is null)
             {
@@ -59,10 +69,17 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
                     null,
                     null,
                     null,
-                    templateWorld.CreateSnapshot());
+                    templateWorld.CreateSnapshot(),
+                    options.ProfileLabel,
+                    options.WorldPresetLabel,
+                    profileHelp,
+                    null,
+                    null,
+                    null,
+                    null);
             }
 
-            var world = RobotWorldFactory.CreateBorderedEmpty(16, 16);
+            var world = options.CreateRunWorld();
             using var swOut = new StringWriter();
             using var swErr = new StringWriter();
 
@@ -72,12 +89,16 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
             string? fault;
             string? worldSummary;
             RobotWorldSnapshot worldVis;
+            string? lessonOutcome = null;
+            int? lessonScore = null;
+            int? ilSteps = null;
+            string? ilFootnote = null;
 
             try
             {
                 var session = new RoboInterpreterSession();
                 session.Start(built.Compile.Program, world, swOut, swErr);
-                worldProgress?.Report(world.CreateSnapshot());
+                ReportProgress(runProgress, session, world);
 
                 var delayMs = speed.StepDelayMilliseconds();
                 RuntimeFault? stepFault = null;
@@ -98,7 +119,7 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
                     }
 
                     var step = session.Step();
-                    worldProgress?.Report(world.CreateSnapshot());
+                    ReportProgress(runProgress, session, world);
 
                     switch (step.Kind)
                     {
@@ -123,6 +144,17 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
                 stderr = swErr.ToString();
                 worldSummary = FormatWorldSummary(world);
                 worldVis = world.CreateSnapshot();
+                ilSteps = session.InstructionsExecuted;
+                ilFootnote =
+                    $"# Execution trace (last Run)\r\n" +
+                    $"IL instructions executed: {session.InstructionsExecuted}\r\n" +
+                    (session.CurrentInstructionDescription is { } d
+                        ? $"Last stepped: {d}\r\n"
+                        : "");
+
+                var goal = LessonGoalEvaluator.Evaluate(world, session.InstructionsExecuted);
+                lessonOutcome = goal.SummaryForKids;
+                lessonScore = goal.Score;
 
                 if (stepFault is not null)
                 {
@@ -152,7 +184,21 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
                 worldVis = world.CreateSnapshot();
             }
 
-            return FinalizeSnapshot(built, stdout, stderr, runtimeOk, fault, worldSummary, worldVis);
+            return FinalizeSnapshot(
+                built,
+                stdout,
+                stderr,
+                runtimeOk,
+                fault,
+                worldSummary,
+                worldVis,
+                options.ProfileLabel,
+                options.WorldPresetLabel,
+                profileHelp,
+                lessonOutcome,
+                lessonScore,
+                ilSteps,
+                ilFootnote);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
@@ -161,14 +207,33 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
         }
     }
 
-    private BuiltPipeline CompileThroughLowering(string source)
+    private static void ReportProgress(
+        IProgress<StudioRunProgress>? runProgress,
+        RoboInterpreterSession session,
+        RobotWorld world)
+    {
+        if (runProgress is null)
+            return;
+        runProgress.Report(new StudioRunProgress(
+            world.CreateSnapshot(),
+            session.InstructionsExecuted,
+            session.CurrentInstructionDescription));
+    }
+
+    private static string BuildProfileHelp(StudioPipelineOptions options) =>
+        $"Lesson profile: {options.ProfileLabel}\r\n" +
+        $"World map: {options.WorldPresetLabel}\r\n\r\n" +
+        "You can call:\r\n" +
+        LessonBuiltinProfiles.DescribeBuiltinsForHelp(options.BuiltinProfile);
+
+    private BuiltPipeline CompileThroughLowering(string source, IBuiltinProfileProvider profile)
     {
         var text = SourceText.From(source);
         var tokens = Lexer.Tokenize(text);
         var syntaxTree = SyntaxTree.Parse(text);
         var parseDiagnostics = syntaxTree.Diagnostics;
 
-        var compile = RoboSharpCompiler.Compile(source);
+        var compile = RoboSharpCompiler.Compile(source, profile);
 
         List<string> semanticLines;
         if (compile.SemanticModel is null)
@@ -178,7 +243,8 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
         else
         {
             semanticLines = compile.SemanticModel.Diagnostics
-                .Select(d => $"@{d.Span.Start}:{d.Span.Length}  {d.Message}")
+                .Select(d =>
+                    $"semantic  @{d.Span.Start}:{d.Span.Length}  ({SourceLocationFormatter.FormatLine(source, d.Span)})  {d.Message}")
                 .ToList();
         }
 
@@ -208,7 +274,14 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
         bool? runtimeOk,
         string? fault,
         string? worldSummary,
-        RobotWorldSnapshot? worldVis) =>
+        RobotWorldSnapshot? worldVis,
+        string? lessonProfileLabel,
+        string? worldPresetLabel,
+        string? lessonProfileHelp,
+        string? lessonOutcome,
+        int? lessonScore,
+        int? ilSteps,
+        string? ilFootnote) =>
         new(
             built.Source,
             built.Tokens,
@@ -223,15 +296,24 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
             runtimeOk,
             fault,
             worldSummary,
-            worldVis);
+            worldVis,
+            lessonProfileLabel,
+            worldPresetLabel,
+            lessonProfileHelp,
+            lessonOutcome,
+            lessonScore,
+            ilSteps,
+            ilFootnote);
 
     private static string FormatWorldSummary(RobotWorld world)
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"{world.Terrain.Width}×{world.Terrain.Height} bordered grid");
+        sb.AppendLine($"{world.Terrain.Width}×{world.Terrain.Height} grid ({world.Metadata.Name})");
+        if (world.Metadata.PrimaryGoalPosition is { } g)
+            sb.AppendLine($"Goal tile: ({g.X}, {g.Y}) — drive the robot onto the teal square!");
         if (world.ActorsById.TryGetValue(1, out var actor))
         {
-            sb.AppendLine($"Primary robot (id {actor.Id}): tile ({actor.Position.X}, {actor.Position.Y}), facing {actor.Direction}");
+            sb.AppendLine($"Robot: tile ({actor.Position.X}, {actor.Position.Y}), facing {actor.Direction}");
         }
         else
         {

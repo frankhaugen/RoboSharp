@@ -1,0 +1,26 @@
+<Project>
+  <!--
+    Opt-in single-file publish (self-contained, compressed bundle).
+    Use: dotnet publish -c Release -r win-x64 -p:RoboSharpSingleFilePublish=true
+    See docs/publishing.md
+  -->
+  <PropertyGroup Condition="'$(RoboSharpSingleFilePublish)' == 'true'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <!-- Single exe only: no loose PDBs from referenced projects (use a separate symbols build if needed) -->
+    <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+  </PropertyGroup>
+
+  <!-- SDK still lists reference PDBs as files-to-publish; drop them so the folder is just the bundle + host. -->
+  <Target Name="RoboSharpStripPdbsFromSingleFilePublish"
+          AfterTargets="ComputeFilesToPublish"
+          Condition="'$(RoboSharpSingleFilePublish)' == 'true'">
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::new('%(Identity)').EndsWith('.pdb', System.StringComparison.OrdinalIgnoreCase))" />
+    </ItemGroup>
+  </Target>
+</Project>

@@ -29,31 +29,32 @@ Source → Lexer → Parser → Syntax tree → Semantic analysis → Bound tree
 | IO abstractions | `RoboSharp.IO` | **Yes** | Physical, in-memory, overlay filesystems |
 | Workspace / projects / artifacts | `RoboSharp.Workspaces` | **Yes** | Load/save `.robosharp`, artifact layout, in-memory + physical workspaces |
 | Compile orchestration | `RoboSharp.Toolchain` | **Partial** | `RoboSharpPipeline`, `RoboSharpCompiler`, JSON `.roboexe`; `WorkspaceBuildService` writes IL + exe from workspace sources |
-| Host-agnostic use cases | `RoboSharp.Application` | **Partial** | `IRoboSharpExecutionService` (run source / JSON exe / build+run workspace; optional `RunExecutionOptions.MaxInstructions` for step-capped runs); no lesson/profile layer yet |
+| Host-agnostic use cases | `RoboSharp.Application` | **Partial** | `IRoboSharpExecutionService` (run source / JSON exe / build+run workspace; optional `RunExecutionOptions.MaxInstructions` for step-capped runs); lesson/profile + world presets are wired in **Studio** first, not yet on this API |
 | DI / composition helpers | `RoboSharp.Hosting` | **Partial** | `AddRoboSharpHosting()` composes workspaces + application services |
 
 There is a **minimal end-to-end path**: parse → bind → lower → interpret with `RoboSharpPipeline` and a `RobotWorld` instance. **`RoboSharpCompiler`** exposes the same compile phases without running; **`RoboExecutable`** + **`RoboExecutableJsonSerializer`** provide a v1 JSON interchange for fake executables (teaching). **`RoboInterpreterSession`** supports instruction stepping and step limits per [runtime/v1-runtime-spec.md](runtime/v1-runtime-spec.md).
 
-Gaps: `.robosharp` project load, workspace integration, binary `.roboexe`, full snapshot model, lesson/profile loading, and parity with per-frame evaluation stacks described in the v1 runtime spec.
+Gaps: `.robosharp` project load, workspace integration, binary `.roboexe`, full snapshot model, JSON lesson packs (see `docs/lessons/`), and parity with per-frame evaluation stacks described in the v1 runtime spec.
+
+**Studio (kid-facing):** lesson **builtin profiles**, **world presets** (ASCII layouts in `EmbeddedWorldLayouts`), **goal tile + score** after Run, lexer-based **syntax color preview**, **diagnostics with line/col**, and live **IL step status** are implemented. **True IntelliSense, in-editor squiggles, and live syntax highlighting** still need a richer editor control; the repo avoids extra third-party UI packages per `AGENTS.md`, so the main buffer stays a plain `TextBox` until a deliberate dependency choice is made.
 
 ## Hosts and tooling
 
 | Project | Code in `src/` today | Gap vs docs |
 | ------- | -------------------- | ----------- |
-| `RoboSharp.Studio` | **Partial** | Avalonia shell, pipeline **inspection** (tokens, syntax tree, diagnostics). Missing: real workspace/project model, binder/IL/runtime/world integration, full [debugger](debugger/debugger-architecture.md) (step kinds, breakpoints, synchronized panes), lesson/goals/content from [lessons/](lessons/README.md). |
+| `RoboSharp.Studio` | **Partial** | Avalonia shell, full pipeline inspection, **Run** with stepping, Karel grid, **lesson profile + world preset** dropdowns, goal/score text, syntax-color preview panel. Missing: real workspace/project model, full [debugger](debugger/debugger-architecture.md), JSON lesson packs, in-editor IntelliSense (needs richer editor). |
 | `RoboSharp.Player` | **Partial** | Runs a v1 JSON `.roboexe` from disk with exit codes per [toolchain/v1-toolchain-spec.md](toolchain/v1-toolchain-spec.md) §11; supports `--max-steps` (maps to `RunExecutionOptions`). `--debug` / lesson mode / `--world` still open. |
 | `RoboSharp.Web` | **Partial** | `AddRoboSharpHosting()` + home-page pipeline smoke; full teaching UI still open. |
 
 ## Teaching / product layer (lessons, goals, packs)
 
-The educational backbone is **specified** under [lessons/](lessons/README.md) (profiles, goals, lesson definitions, content packs, JSON direction) but **not implemented** as dedicated types or hosts. Nothing in `src/` yet provides:
+Specs live under [lessons/](lessons/README.md). **In code today:**
 
-- lesson-scoped builtin profile providers (beyond `FullBuiltinProfileProvider` / `IBuiltinProfileProvider` used everywhere today)
-- goal evaluators or lesson sessions
-- content pack loading
-- world file format + loader tied to lessons
+- **Profiles:** `SelectingBuiltinProfileProvider`, `LessonBuiltinProfiles` (named subsets of builtins for Studio).
+- **Worlds:** `RobotWorldPresets`, `EmbeddedWorldLayouts`, `WorldLayoutParser` (ASCII premades; bordered arenas by size).
+- **Goals / scoring:** `LessonGoalEvaluator` + `WorldMetadata.PrimaryGoalPosition` after each Studio Run.
 
-That is the largest **feature** gap relative to “teaching platform” intent.
+**Still open vs spec:** content pack / JSON lesson files, `IRoboSharpExecutionService` lesson hooks, world JSON loader, structured lesson sessions, and hint/progression UI.
 
 ## Debugger documentation vs implementation
 

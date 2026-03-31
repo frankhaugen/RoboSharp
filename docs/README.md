@@ -9,6 +9,7 @@ The **authoritative** rules for architecture, dependencies, and agent behavior l
 | Document | Purpose |
 | -------- | ------- |
 | [Build and test](build.md) | SDK, restore, tests, diagram generation, `RoboSharp.slnx`, git hooks |
+| [Publishing](publishing.md) | Single-file self-contained **Player** / **Studio** executables (`tools/publish-singlefile.ps1`) |
 | [Diagrams](diagrams/README.md) | Generated Mermaid graphs (projects, NuGet, layers) |
 | [Repository layout](repository-layout.md) | Solution structure, projects, and dependency direction |
 | [NuGet and packages](nuget.md) | Central package management, allowed packages, feed policy |

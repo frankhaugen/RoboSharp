@@ -59,13 +59,21 @@ jobs:
           set -euo pipefail
           PUB="$GITHUB_WORKSPACE/release-staging"
           mkdir -p "$PUB"
-          for proj in Studio Player Web; do
-            dotnet publish "src/RoboSharp.${proj}/RoboSharp.${proj}.csproj" \
-              --configuration Release \
-              --no-build \
-              -p:Version="${PACKAGE_VERSION}" \
-              -o "$PUB/RoboSharp.${proj}"
+          for rid in linux-x64 win-x64; do
+            for proj in Studio Player; do
+              dotnet publish "src/RoboSharp.${proj}/RoboSharp.${proj}.csproj" \
+                --configuration Release \
+                --runtime "$rid" \
+                -p:Version="${PACKAGE_VERSION}" \
+                -p:RoboSharpSingleFilePublish=true \
+                -o "$PUB/RoboSharp.${proj}-${rid}"
+            done
           done
+          dotnet publish "src/RoboSharp.Web/RoboSharp.Web.csproj" \
+            --configuration Release \
+            --runtime linux-x64 \
+            -p:Version="${PACKAGE_VERSION}" \
+            -o "$PUB/RoboSharp.Web-linux-x64"
 
       - name: Package artifacts and checksums
         shell: bash
@@ -76,9 +84,12 @@ jobs:
           DIST="$GITHUB_WORKSPACE/release-dist"
           mkdir -p "$DIST"
           cd "$GITHUB_WORKSPACE/release-staging"
-          for name in Studio Player Web; do
-            tar -czf "$DIST/RoboSharp.${name}-${RELEASE_TAG}-linux-x64.tar.gz" "RoboSharp.${name}"
+          for rid in linux-x64 win-x64; do
+            for name in Studio Player; do
+              tar -czf "$DIST/RoboSharp.${name}-${RELEASE_TAG}-${rid}.tar.gz" "RoboSharp.${name}-${rid}"
+            done
           done
+          tar -czf "$DIST/RoboSharp.Web-${RELEASE_TAG}-linux-x64.tar.gz" "RoboSharp.Web-linux-x64"
           cd "$DIST"
           sha256sum *.tar.gz > SHA256SUMS.txt
 

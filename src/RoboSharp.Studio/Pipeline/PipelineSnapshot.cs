@@ -19,4 +19,11 @@ public sealed record PipelineSnapshot(
     bool? RuntimeSucceeded,
     string? RuntimeFaultMessage,
     string? WorldAfterRunSummary,
-    RobotWorldSnapshot? WorldVisualization);
+    RobotWorldSnapshot? WorldVisualization,
+    string? LessonProfileLabel = null,
+    string? WorldPresetLabel = null,
+    string? LessonProfileHelpText = null,
+    string? LessonOutcomeSummary = null,
+    int? LessonScore = null,
+    int? IlInstructionsExecuted = null,
+    string? IlExecutionFootnote = null);

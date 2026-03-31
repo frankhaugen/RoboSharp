@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Input;
 using Avalonia.Threading;
+using RoboSharp.Semantics;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.World;
 
@@ -41,6 +42,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private PipelineSnapshot? _currentSnapshot;
     private StudioRunSpeed _selectedRunSpeed = StudioRunSpeed.Slow;
+    private string _selectedProfileId = LessonBuiltinProfiles.MovementAndPrintId;
+    private string _selectedWorldPresetId = RobotWorldPresets.GoalCornerId;
+    private string _liveRunStatus = "Choose lesson profile + map below, then Build or Run.";
 
     public MainWindowViewModel(IPipelineInspectionService pipeline)
     {
@@ -54,8 +58,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>Fired after Build or Run with the new snapshot (all inspection panels).</summary>
     public event Action<PipelineSnapshot>? PipelineUpdated;
 
-    /// <summary>Fired during Run between interpreter steps so the Karel pane can animate.</summary>
-    public event Action<RobotWorldSnapshot>? KarelFrameUpdated;
+    /// <summary>Fired during Run between IL steps — world snapshot + instruction hint for the status line.</summary>
+    public event Action<StudioRunProgress>? RunProgressUpdated;
 
     /// <summary>Full path when the buffer is linked to disk; <see langword="null"/> for a new unsaved document.</summary>
     public string? DocumentPath
@@ -185,12 +189,60 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>Lesson builtin profile id (<see cref="LessonBuiltinProfiles.OrderedProfileIds"/>).</summary>
+    public string SelectedProfileId
+    {
+        get => _selectedProfileId;
+        set
+        {
+            if (_selectedProfileId == value)
+                return;
+            _selectedProfileId = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedProfileId)));
+            Build();
+        }
+    }
+
+    /// <summary>World preset id (<see cref="RobotWorldPresets.OrderedPresets"/>).</summary>
+    public string SelectedWorldPresetId
+    {
+        get => _selectedWorldPresetId;
+        set
+        {
+            if (_selectedWorldPresetId == value)
+                return;
+            _selectedWorldPresetId = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedWorldPresetId)));
+            Build();
+        }
+    }
+
+    /// <summary>Shown under the world during Run and after for kids-friendly feedback.</summary>
+    public string LiveRunStatus
+    {
+        get => _liveRunStatus;
+        private set
+        {
+            if (_liveRunStatus == value)
+                return;
+            _liveRunStatus = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LiveRunStatus)));
+        }
+    }
+
     public ICommand BuildCommand { get; }
     public ICommand RunCommand { get; }
 
+    public StudioPipelineOptions CreatePipelineOptions() =>
+        new(
+            LessonBuiltinProfiles.GetProvider(SelectedProfileId),
+            () => RobotWorldPresets.Create(SelectedWorldPresetId),
+            LessonBuiltinProfiles.GetDisplayName(SelectedProfileId),
+            RobotWorldPresets.GetDisplayName(SelectedWorldPresetId));
+
     public void Build()
     {
-        var snap = _pipeline.InspectBuildOnly(SourceDocument);
+        var snap = _pipeline.InspectBuildOnly(SourceDocument, CreatePipelineOptions());
         CurrentSnapshot = snap;
         PipelineUpdated?.Invoke(snap);
     }
@@ -204,15 +256,29 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         try
         {
-            var progress = new Progress<RobotWorldSnapshot>(snap =>
-                Dispatcher.UIThread.Post(() => KarelFrameUpdated?.Invoke(snap)));
+            LiveRunStatus = "Running…";
+            var options = CreatePipelineOptions();
+            var progress = new Progress<StudioRunProgress>(p =>
+                Dispatcher.UIThread.Post(() =>
+                {
+                    LiveRunStatus =
+                        $"{p.InstructionsExecutedSoFar} IL steps · {p.InstructionDescription ?? "…"}";
+                    RunProgressUpdated?.Invoke(p);
+                }));
 
             var snap = await _pipeline
-                .InspectBuildAndRunAsync(SourceDocument, SelectedRunSpeed, progress, token)
+                .InspectBuildAndRunAsync(SourceDocument, SelectedRunSpeed, options, progress, token)
                 .ConfigureAwait(true);
 
             CurrentSnapshot = snap;
             PipelineUpdated?.Invoke(snap);
+
+            if (snap.LessonOutcomeSummary is { } story)
+                LiveRunStatus = snap.LessonScore is { } sc ? $"{story}  →  Score: {sc}" : story;
+            else if (snap.RuntimeSucceeded == true)
+                LiveRunStatus = "Finished run.";
+            else
+                LiveRunStatus = snap.RuntimeFaultMessage ?? "Run stopped.";
         }
         catch (OperationCanceledException)
         {

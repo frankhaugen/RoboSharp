@@ -8,4 +8,5 @@
     <ProjectReference Include="..\RoboSharp.Toolchain\RoboSharp.Toolchain.csproj" />
     <ProjectReference Include="..\RoboSharp.World\RoboSharp.World.csproj" />
   </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\..\eng\RoboSharp.SingleFile.props" />
 </Project>

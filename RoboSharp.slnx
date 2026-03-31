@@ -8,6 +8,7 @@
     <File Path="docs/implementation-gaps.md" />
     <File Path="docs/missing-specs.md" />
     <File Path="docs/nuget.md" />
+    <File Path="docs/publishing.md" />
     <File Path="docs/repository-layout.md" />
   </Folder>
   <Folder Name="/docs/agents/">

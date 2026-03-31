@@ -34,6 +34,9 @@ public static class BuiltinCatalog
 
     public static bool TryGet(string name, out BuiltinSignature signature) => ByName.TryGetValue(name, out signature!);
 
+    /// <summary>All names that appear in the canonical map (for lesson help / UI).</summary>
+    public static IReadOnlyList<string> AllBuiltinNames { get; } = ByName.Keys.OrderBy(static n => n, StringComparer.Ordinal).ToArray();
+
     /// <summary>Resolves <c>print</c> overload by first argument type.</summary>
     public static bool TryResolvePrint(TypeSymbol argType, out BuiltinSignature signature)
     {

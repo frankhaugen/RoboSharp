@@ -26,6 +26,8 @@ public static class StudioServiceRegistration
         services.AddSingleton<MainWindowViewModel>();
 
         // Inspection panels: registration order is top-to-bottom in the stack (pipeline narrative).
+        services.AddSingleton<IStudioPanel, ColoredSourcePreviewPanel>();
+        services.AddSingleton<IStudioPanel, LessonToolboxPanel>();
         services.AddSingleton<IStudioPanel, TokenPipelinePanel>();
         services.AddSingleton<IStudioPanel, SyntaxTreePipelinePanel>();
         services.AddSingleton<IStudioPanel, DiagnosticsPipelinePanel>();

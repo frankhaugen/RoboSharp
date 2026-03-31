@@ -22,6 +22,10 @@ dotnet test RoboSharp.slnx
 
 Use `--configuration Release` for release builds.
 
+## Publishing a single-file executable
+
+For self-contained **Player** or **Studio** binaries (one executable per RID), see [publishing.md](publishing.md) and `tools/publish-singlefile.ps1`.
+
 ## Run RoboSharp Studio (desktop host)
 
 From the repository root:

@@ -42,7 +42,10 @@ public sealed class DiagnosticsPipelinePanel : IStudioPanel
         var lines = new List<string>();
 
         foreach (var d in snapshot.ParseDiagnostics)
-            lines.Add($"parse     @{d.Span.Start}:{d.Span.Length}  {d.Message}");
+        {
+            var loc = SourceLocationFormatter.FormatLine(snapshot.Source, d.Span);
+            lines.Add($"parse     @{d.Span.Start}:{d.Span.Length}  ({loc})  {d.Message}");
+        }
 
         foreach (var s in snapshot.SemanticDiagnosticLines)
             lines.Add($"semantic  {s}");

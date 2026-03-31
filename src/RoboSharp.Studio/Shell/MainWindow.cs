@@ -8,6 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using RoboSharp.Semantics;
 using RoboSharp.Studio.Panels;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.ViewModels;
@@ -53,7 +54,7 @@ public sealed class MainWindow : Window
         Closing += OnWindowClosing;
 
         _viewModel.PipelineUpdated += OnPipelineUpdated;
-        _viewModel.KarelFrameUpdated += OnKarelFrameUpdated;
+        _viewModel.RunProgressUpdated += OnRunProgress;
         _viewModel.Build();
     }
 
@@ -639,6 +640,72 @@ public sealed class MainWindow : Window
 
     private Control BuildSidebar()
     {
+        var lessonHeading = new TextBlock
+        {
+            Text = "Lesson & map",
+            FontSize = 14,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.AccentBrush,
+            Margin = new Thickness(0, 0, 0, 8),
+        };
+
+        var profileCaption = new TextBlock
+        {
+            Text = "Profile (which commands work)",
+            FontSize = 11,
+            Foreground = StudioVisual.TextMutedBrush,
+            Margin = new Thickness(0, 0, 0, 4),
+        };
+
+        var profileBox = new ComboBox
+        {
+            MinWidth = 220,
+            Margin = new Thickness(0, 0, 0, 10),
+        };
+        foreach (var id in LessonBuiltinProfiles.OrderedProfileIds)
+            profileBox.Items.Add(new ProfilePick(id, LessonBuiltinProfiles.GetDisplayName(id)));
+        profileBox.SelectedItem = profileBox.Items.Cast<ProfilePick>().First(p => p.Id == _viewModel.SelectedProfileId);
+        profileBox.SelectionChanged += (_, _) =>
+        {
+            if (profileBox.SelectedItem is ProfilePick pick)
+                _viewModel.SelectedProfileId = pick.Id;
+        };
+
+        var worldCaption = new TextBlock
+        {
+            Text = "World (size & obstacles)",
+            FontSize = 11,
+            Foreground = StudioVisual.TextMutedBrush,
+            Margin = new Thickness(0, 0, 0, 4),
+        };
+
+        var worldBox = new ComboBox
+        {
+            MinWidth = 220,
+            Margin = new Thickness(0, 0, 0, 10),
+        };
+        foreach (var (id, title) in RobotWorldPresets.OrderedPresets)
+            worldBox.Items.Add(new WorldPick(id, title));
+        worldBox.SelectedItem = worldBox.Items.Cast<WorldPick>().First(p => p.Id == _viewModel.SelectedWorldPresetId);
+        worldBox.SelectionChanged += (_, _) =>
+        {
+            if (worldBox.SelectedItem is WorldPick pick)
+                _viewModel.SelectedWorldPresetId = pick.Id;
+        };
+
+        var runStatus = new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            LineHeight = 18,
+            FontSize = 12,
+            Foreground = StudioVisual.TextPrimaryBrush,
+            Margin = new Thickness(0, 0, 0, 12),
+        };
+        runStatus.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.LiveRunStatus))
+        {
+            Mode = BindingMode.OneWay,
+        });
+
         var karelTitle = new TextBlock
         {
             Text = "Karel world",
@@ -666,7 +733,11 @@ public sealed class MainWindow : Window
         var stack = new StackPanel
         {
             Spacing = 0,
-            Children = { karelTitle, _karelWorld, hint },
+            Children =
+            {
+                lessonHeading, profileCaption, profileBox, worldCaption, worldBox, runStatus,
+                karelTitle, _karelWorld, hint,
+            },
         };
 
         return new Border
@@ -808,13 +879,23 @@ public sealed class MainWindow : Window
             ApplyKarelSnapshot(w);
     }
 
-    private void OnKarelFrameUpdated(RobotWorldSnapshot snapshot) =>
-        ApplyKarelSnapshot(snapshot);
+    private void OnRunProgress(StudioRunProgress progress) =>
+        ApplyKarelSnapshot(progress.World);
 
     private void ApplyKarelSnapshot(RobotWorldSnapshot snapshot)
     {
         if (_karelWorld is null)
             return;
         _karelWorld.Update(snapshot);
+    }
+
+    private sealed record ProfilePick(string Id, string Title)
+    {
+        public override string ToString() => Title;
+    }
+
+    private sealed record WorldPick(string Id, string Title)
+    {
+        public override string ToString() => Title;
     }
 }
