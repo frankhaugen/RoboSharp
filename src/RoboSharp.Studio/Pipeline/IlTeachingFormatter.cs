@@ -1,5 +1,6 @@
 using System.Text;
 using RoboSharp.IL;
+using RoboSharp.Semantics;
 
 namespace RoboSharp.Studio.Pipeline;
 
@@ -8,7 +9,7 @@ public static class IlTeachingFormatter
     public static string Format(RoboProgram program)
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"entryFunctionIndex = {program.EntryFunctionIndex}");
+        sb.AppendLine($"entryFunctionIndex = {program.EntryFunctionIndex}  (starts execution here)");
         sb.AppendLine($"stringTable ({program.StringTable.Count}): {string.Join(", ", program.StringTable.Select(Quote))}");
         sb.AppendLine($"numberTable ({program.NumberTable.Count}): {string.Join(", ", program.NumberTable)}");
         sb.AppendLine();
@@ -17,7 +18,10 @@ public static class IlTeachingFormatter
         {
             var fn = program.Functions[fi];
             var mark = fi == program.EntryFunctionIndex ? "  ← entry" : string.Empty;
-            sb.AppendLine($"--- fn[{fi}] {fn.Name}{mark} ---");
+            var display = fn.Name == CompilationArtifacts.TopLevelStatementsFunctionName
+                ? "top-level statements"
+                : fn.Name;
+            sb.AppendLine($"--- fn[{fi}] {display}{mark} ---");
             sb.AppendLine($"    params={fn.ParameterCount} localSlots={fn.LocalSlotCount} returnsVoid={fn.ReturnsVoid}");
             for (var ip = 0; ip < fn.Instructions.Count; ip++)
             {

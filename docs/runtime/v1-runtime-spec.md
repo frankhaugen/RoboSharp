@@ -101,9 +101,9 @@ On start:
 * heap empty
 * statistics zeroed
 * stdout/stderr empty
-* call stack contains one frame for `__main`
+* call stack contains one frame for the **entry** function (the lowered top-level program body, implementation name `TopLevel`)
 
-The `__main` frame has:
+That entry frame has:
 
 * zero parameters
 * locals array sized to compiled local count

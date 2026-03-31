@@ -11,10 +11,7 @@ public class InterpreterSessionTests
     public async Task Step_Until_Completed_For_Print_Main()
     {
         const string source = """
-            void main()
-            {
-                print(1);
-            }
+            print(1);
             """;
 
         var compiled = RoboSharpCompiler.Compile(source);
@@ -42,12 +39,9 @@ public class InterpreterSessionTests
     public async Task RunToEnd_Respects_Step_Limit()
     {
         const string source = """
-            void main()
+            while (true)
             {
-                while (true)
-                {
-                    print(1);
-                }
+                print(1);
             }
             """;
 

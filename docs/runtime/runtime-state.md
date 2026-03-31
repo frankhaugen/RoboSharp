@@ -19,7 +19,7 @@
 On start ([v1-runtime-spec.md](v1-runtime-spec.md) §6):
 
 - Validate executable/program (entry function, indices, builtins profile compatibility).
-- Create the entry frame for `__main` (or compiled entry), empty heap, cleared output, zeroed stats.
+- Create the entry frame for the compiled entry function (lowered top-level statements), empty heap, cleared output, zeroed stats.
 
 ## Session boundary
 

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RoboSharp.Player (samples/hello.roboexe)": {
+      "commandName": "Project",
+      "commandLineArgs": "../../samples/hello.roboexe"
+    }
+  }
+}

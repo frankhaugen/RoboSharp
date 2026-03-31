@@ -4,6 +4,8 @@ Freeze this shape as the v1 baseline.
 
 ## Keywords
 
+v1 uses a **small fixed set** of reserved words (lexer keywords). Built-in calls such as `print` and `move` are **identifiers**, not keywords; availability is decided in semantic analysis via the active profile.
+
 ```text
 if
 else
@@ -13,7 +15,10 @@ integer
 number
 string
 bool
+void
 ```
+
+`void` is a **type** keyword you can write for procedure return types (e.g. `void helper()`). For procedures you may **omit** `void` in source and write `Name(parameters) { … }` instead; the parser still builds a `void` return type in the syntax tree. See [functions.md](functions.md) and [parser.md](parser.md).
 
 ## Primitive types
 

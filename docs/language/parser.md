@@ -32,9 +32,24 @@ A member is:
 FunctionDeclaration | Statement
 ```
 
+`FunctionDeclaration` is either:
+
+```text
+Type Identifier "(" ParameterList ")" Block
+```
+
+or a **procedure** with omitted return type (defaults to void):
+
+```text
+Identifier "(" ParameterList ")" Block
+```
+
+The second form is allowed only when `(` is immediately followed by `)` or by a **parameter type** (`integer` / `number` / `string` / `bool` / `void` / array thereof), and the closing `)` is followed by `{`. That distinguishes `MoveMany(integer n) { }` from `MoveMany(5);` (a top-level call).
+
 ## Ambiguity rule
 
-A declaration is recognized because it begins with a **type keyword**. Otherwise it is parsed as assignment/expression statement. Simple and sufficient for v1.
+- A member that begins with a **type keyword** is either a typed function (`Type id "(" …`) or a top-level variable declaration (`Type id "=" …`).
+- A member that begins with **`Identifier "("`** is parsed as a procedure declaration only if the header matches the procedure rule above; otherwise it is parsed as a **statement** (typically a call).
 
 ## Parser recovery
 

@@ -1,7 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia.Media;
 using RoboSharp.Language;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.Shell;
@@ -11,8 +9,7 @@ namespace RoboSharp.Studio.Panels;
 public sealed class SyntaxTreePipelinePanel : IStudioPanel
 {
     private readonly ISyntaxTreeSerializer _serializer;
-    private ScrollViewer? _scroll;
-    private TextBlock? _text;
+    private TextBox? _text;
 
     public SyntaxTreePipelinePanel(ISyntaxTreeSerializer serializer) =>
         _serializer = serializer;
@@ -21,27 +18,17 @@ public sealed class SyntaxTreePipelinePanel : IStudioPanel
 
     public string DisplayName => "Syntax tree";
 
+    public string? InspectorSubtitle =>
+        "Parser output: indented tree of syntax nodes. The copyable area includes a heading so pasted text explains itself.";
+
     public Control CreateView()
     {
-        _text = new TextBlock
-        {
-            FontFamily = StudioVisual.CodeFontFamily,
-            FontSize = 12,
-            Foreground = StudioVisual.TextPrimaryBrush,
-            TextWrapping = TextWrapping.Wrap,
-        };
-
-        _scroll = new ScrollViewer
-        {
-            Content = _text,
-            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-        };
+        _text = StudioCopyableText.CreateReadOnlyOutput();
 
         return new Border
         {
             Padding = new Thickness(8),
-            Child = _scroll,
+            Child = _text,
         };
     }
 
@@ -50,6 +37,11 @@ public sealed class SyntaxTreePipelinePanel : IStudioPanel
         if (_text is null)
             return;
 
-        _text.Text = _serializer.Serialize(snapshot.SyntaxTree.Root);
+        const string preamble =
+            "# Syntax tree (output of the parser)\r\n" +
+            "Concrete syntax: nesting shows how the parser grouped tokens into declarations, statements, and expressions.\r\n" +
+            "\r\n";
+
+        _text.Text = preamble + _serializer.Serialize(snapshot.SyntaxTree.Root);
     }
 }

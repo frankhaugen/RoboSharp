@@ -13,10 +13,7 @@ public class WorkspaceBuildAndExecutionTests
     public async Task WorkspaceBuildService_WritesExecutableAndIl_ForValidProject()
     {
         const string source = """
-            void main()
-            {
-                print(1);
-            }
+            print(1);
             """;
 
         var project = new RoboSharpProject("T", ["Main.robo"], "Main.robo");
@@ -39,10 +36,7 @@ public class WorkspaceBuildAndExecutionTests
     public async Task ExecutionService_BuildAndRunWorkspace_PrintsOutput()
     {
         const string source = """
-            void main()
-            {
-                print(99);
-            }
+            print(99);
             """;
 
         var project = new RoboSharpProject("App", ["Entry.robo"], "Entry.robo");

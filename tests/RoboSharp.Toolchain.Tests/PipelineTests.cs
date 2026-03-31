@@ -10,10 +10,7 @@ public class PipelineTests
     public async Task CompileAndRun_Prints_Integer()
     {
         const string source = """
-            void main()
-            {
-                print(42);
-            }
+            print(42);
             """;
 
         var world = RobotWorldFactory.CreateBorderedEmpty(5, 5);
@@ -28,10 +25,7 @@ public class PipelineTests
     public async Task CompileAndRun_Move_Updates_World()
     {
         const string source = """
-            void main()
-            {
-                move();
-            }
+            move();
             """;
 
         var world = RobotWorldFactory.CreateBorderedEmpty(6, 6);

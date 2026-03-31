@@ -3,6 +3,7 @@ using RoboSharp.Language.Syntax;
 
 namespace RoboSharp.Semantics;
 
+/// <summary>Binds a compilation unit. The entry point is always top-level statements, lowered under <see cref="CompilationArtifacts.TopLevelStatementsFunctionName"/>. The name <c>main</c> is not a valid user function.</summary>
 public sealed class Binder
 {
     private readonly IBuiltinProfileProvider _profile;
@@ -21,13 +22,14 @@ public sealed class Binder
         _canonicalFunctionDeclaration.Clear();
         _diagnostics.Clear();
 
+        var globalStatements = new List<GlobalStatementSyntax>();
         var functionSyntaxes = new List<FunctionDeclarationSyntax>();
         foreach (var member in syntax.Members)
         {
             switch (member)
             {
                 case GlobalStatementSyntax g:
-                    Report(GetStatementSpan(g.Statement), "Top-level statements are not supported; define void main() { ... } instead.");
+                    globalStatements.Add(g);
                     break;
                 case FunctionDeclarationSyntax f:
                     functionSyntaxes.Add(f);
@@ -39,6 +41,17 @@ public sealed class Binder
             TryDeclareFunction(f);
 
         var boundFunctions = new List<BoundFunctionDeclaration>();
+        var addedSyntheticEntry = false;
+
+        if (globalStatements.Count > 0)
+        {
+            var syntheticDecl = CreateTopLevelStatementsWrapperSyntax(globalStatements);
+            _functions[CompilationArtifacts.TopLevelStatementsFunctionName] =
+                new FunctionSymbol(CompilationArtifacts.TopLevelStatementsFunctionName, PrimitiveTypeSymbol.Void, []);
+            boundFunctions.Add(BindFunctionBody(syntheticDecl));
+            addedSyntheticEntry = true;
+        }
+
         foreach (var f in functionSyntaxes)
         {
             var name = f.Identifier.Text;
@@ -52,36 +65,55 @@ public sealed class Binder
         }
 
         FunctionSymbol? entry = null;
-        foreach (var bf in boundFunctions)
+        if (globalStatements.Count > 0)
         {
-            if (bf.Symbol.Name != "main")
-                continue;
-
-            if (bf.Symbol.ReturnType is not PrimitiveTypeSymbol { Kind: PrimitiveTypeKind.Void })
-            {
-                Report(bf.Syntax.ReturnType is PrimitiveTypeSyntax pt ? pt.Keyword.Span : bf.Syntax.Identifier.Span, "main must have return type void.");
-                continue;
-            }
-
-            if (bf.Symbol.Parameters.Count != 0)
-            {
-                Report(bf.Syntax.Parameters.OpenParenToken.Span, "main must take no parameters.");
-                continue;
-            }
-
-            entry = bf.Symbol;
+            if (addedSyntheticEntry && boundFunctions.Count > 0 &&
+                boundFunctions[0].Symbol.Name == CompilationArtifacts.TopLevelStatementsFunctionName)
+                entry = boundFunctions[0].Symbol;
         }
-
-        if (entry is null)
-            Report(syntax.EndOfFileToken.Span, "Program must define void main() with no parameters.");
+        else
+        {
+            Report(syntax.EndOfFileToken.Span, "Program must contain top-level statements.");
+        }
 
         var root = new BoundCompilationUnit(boundFunctions, entry);
         return new SemanticModel(syntax, root, _diagnostics.ToArray());
     }
 
+    private static FunctionDeclarationSyntax CreateTopLevelStatementsWrapperSyntax(IReadOnlyList<GlobalStatementSyntax> globals)
+    {
+        var voidKw = new SyntaxToken(SyntaxKind.VoidKeyword, default, "void");
+        var voidType = new PrimitiveTypeSyntax(voidKw);
+        var nameTok = new SyntaxToken(SyntaxKind.IdentifierToken, default, CompilationArtifacts.TopLevelStatementsFunctionName);
+        var openParen = new SyntaxToken(SyntaxKind.OpenParenToken, default, "(");
+        var closeParen = new SyntaxToken(SyntaxKind.CloseParenToken, default, ")");
+        var paramList = new ParameterListSyntax(openParen, [], [], closeParen);
+        var openBrace = new SyntaxToken(SyntaxKind.OpenBraceToken, default, "{");
+        var closeBrace = new SyntaxToken(SyntaxKind.CloseBraceToken, default, "}");
+        var stmts = globals.Select(g => g.Statement).ToList();
+        var block = new BlockStatementSyntax(openBrace, stmts, closeBrace);
+        return new FunctionDeclarationSyntax(voidType, nameTok, paramList, block);
+    }
+
     private void TryDeclareFunction(FunctionDeclarationSyntax syntax)
     {
         var name = syntax.Identifier.Text;
+        if (name == CompilationArtifacts.TopLevelStatementsFunctionName)
+        {
+            Report(
+                syntax.Identifier.Span,
+                $"Function name '{CompilationArtifacts.TopLevelStatementsFunctionName}' is reserved for top-level program code.");
+            return;
+        }
+
+        if (string.Equals(name, "main", StringComparison.Ordinal))
+        {
+            Report(
+                syntax.Identifier.Span,
+                "Function name 'main' is not allowed; write the program body as top-level statements at file scope.");
+            return;
+        }
+
         if (_functions.ContainsKey(name))
         {
             Report(syntax.Identifier.Span, $"Duplicate function '{name}'.");

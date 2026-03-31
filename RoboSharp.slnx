@@ -233,6 +233,7 @@
     <Project Path="tests/RoboSharp.Application.Tests/RoboSharp.Application.Tests.csproj" />
     <Project Path="tests/RoboSharp.Architecture.Tests/RoboSharp.Architecture.Tests.csproj" />
     <Project Path="tests/RoboSharp.IL.Tests/RoboSharp.IL.Tests.csproj" />
+    <Project Path="tests/RoboSharp.Integration.Tests/RoboSharp.Integration.Tests.csproj" />
     <Project Path="tests/RoboSharp.IO.Tests/RoboSharp.IO.Tests.csproj" />
     <Project Path="tests/RoboSharp.Language.Tests/RoboSharp.Language.Tests.csproj" />
     <Project Path="tests/RoboSharp.Runtime.Tests/RoboSharp.Runtime.Tests.csproj" />

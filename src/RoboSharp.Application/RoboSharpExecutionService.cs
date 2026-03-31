@@ -11,23 +11,61 @@ public sealed class RoboSharpExecutionService(WorkspaceBuildService workspaceBui
 {
     private readonly WorkspaceBuildService _workspaceBuild = workspaceBuild ?? throw new ArgumentNullException(nameof(workspaceBuild));
 
-    public ProgramRunResult RunSource(string source, RobotWorld world, TextWriter stdout, TextWriter stderr)
+    public ProgramRunResult RunSource(
+        string source,
+        RobotWorld world,
+        TextWriter stdout,
+        TextWriter stderr,
+        RunExecutionOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(world);
         ArgumentNullException.ThrowIfNull(stdout);
         ArgumentNullException.ThrowIfNull(stderr);
 
+        if (options?.MaxInstructions is int cap && cap > 0)
+        {
+            var compiled = RoboSharpCompiler.Compile(source);
+            if (!compiled.Succeeded)
+                return MapFailedCompile(compiled);
+            return RunRoboProgram(compiled.Program!, world, stdout, stderr, options);
+        }
+
         var pipeline = RoboSharpPipeline.CompileAndRun(source, world, stdout, stderr);
         return MapPipelineResult(pipeline);
     }
 
-    public ProgramRunResult RunRoboProgram(RoboProgram program, RobotWorld world, TextWriter stdout, TextWriter stderr)
+    public ProgramRunResult RunRoboProgram(
+        RoboProgram program,
+        RobotWorld world,
+        TextWriter stdout,
+        TextWriter stderr,
+        RunExecutionOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(program);
         ArgumentNullException.ThrowIfNull(world);
         ArgumentNullException.ThrowIfNull(stdout);
         ArgumentNullException.ThrowIfNull(stderr);
+
+        if (options?.MaxInstructions is int max && max > 0)
+        {
+            try
+            {
+                var session = new RoboInterpreterSession();
+                session.Start(program, world, stdout, stderr);
+                var limited = session.RunToEnd(max);
+                return MapExecution(limited);
+            }
+            catch (Exception ex)
+            {
+                return new ProgramRunResult
+                {
+                    Succeeded = false,
+                    ExitCode = RoboSharpExitCode.RuntimeFault,
+                    Fault = new RuntimeFault(ex.Message, -1, -1),
+                };
+            }
+        }
 
         var interpreter = new RoboInterpreter();
         var execution = interpreter.Run(program, world, stdout, stderr);
@@ -39,6 +77,7 @@ public sealed class RoboSharpExecutionService(WorkspaceBuildService workspaceBui
         RobotWorld world,
         TextWriter stdout,
         TextWriter stderr,
+        RunExecutionOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(json);
@@ -61,7 +100,7 @@ public sealed class RoboSharpExecutionService(WorkspaceBuildService workspaceBui
             };
         }
 
-        return RunRoboProgram(executable.Program, world, stdout, stderr);
+        return RunRoboProgram(executable.Program, world, stdout, stderr, options);
     }
 
     public async ValueTask<WorkspaceBuildResult> BuildWorkspaceAsync(
@@ -77,6 +116,7 @@ public sealed class RoboSharpExecutionService(WorkspaceBuildService workspaceBui
         RobotWorld world,
         TextWriter stdout,
         TextWriter stderr,
+        RunExecutionOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(workspace);
@@ -91,7 +131,7 @@ public sealed class RoboSharpExecutionService(WorkspaceBuildService workspaceBui
         }
 
         var program = build.CompileResult.Executable!.Program;
-        return RunRoboProgram(program, world, stdout, stderr);
+        return RunRoboProgram(program, world, stdout, stderr, options);
     }
 
     private static ProgramRunResult MapPipelineResult(PipelineResult pipeline)

@@ -87,8 +87,67 @@ internal sealed class ParserCore
             return new GlobalStatementSyntax(SyntheticExpressionStatement());
         }
 
+        // Procedure: Identifier "(" ParameterList? ")" Block — return type defaults to void (omitted in source).
+        if (LooksLikeProcedureDeclaration())
+        {
+            var id = Match(SyntaxKind.IdentifierToken);
+            var parameters = ParseParameterList();
+            var body = ParseBlock();
+            var voidKw = new SyntaxToken(SyntaxKind.VoidKeyword, id.Span, "void");
+            var voidType = new PrimitiveTypeSyntax(voidKw);
+            return new FunctionDeclarationSyntax(voidType, id, parameters, body);
+        }
+
         var statement = ParseStatement();
         return new GlobalStatementSyntax(statement);
+    }
+
+    /// <summary>Distinguishes <c>MoveMany(integer x) { }</c> from <c>MoveMany(5);</c> (call statement).</summary>
+    private bool LooksLikeProcedureDeclaration()
+    {
+        var save = _index;
+        if (Current.Kind != SyntaxKind.IdentifierToken || Peek(1).Kind != SyntaxKind.OpenParenToken)
+            return false;
+
+        Advance(); // name
+        Advance(); // (
+        if (Current.Kind == SyntaxKind.CloseParenToken)
+        {
+            Advance();
+        }
+        else
+        {
+            if (!SyntaxFacts.IsTypeKeyword(Current.Kind))
+            {
+                _index = save;
+                return false;
+            }
+
+            while (true)
+            {
+                _ = ParseType();
+                _ = Match(SyntaxKind.IdentifierToken);
+                if (Current.Kind == SyntaxKind.CommaToken)
+                {
+                    Advance();
+                    continue;
+                }
+
+                break;
+            }
+
+            if (Current.Kind != SyntaxKind.CloseParenToken)
+            {
+                _index = save;
+                return false;
+            }
+
+            Advance();
+        }
+
+        var isBlock = Current.Kind == SyntaxKind.OpenBraceToken;
+        _index = save;
+        return isBlock;
     }
 
     private void SkipToMemberSync()

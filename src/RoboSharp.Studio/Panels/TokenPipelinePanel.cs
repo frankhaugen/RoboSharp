@@ -1,7 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia.Media;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.Shell;
 
@@ -9,38 +7,40 @@ namespace RoboSharp.Studio.Panels;
 
 public sealed class TokenPipelinePanel : IStudioPanel
 {
-    private ListBox? _list;
+    private TextBox? _text;
 
     public int Order => 10;
 
     public string DisplayName => "Tokens";
 
+    public string? InspectorSubtitle =>
+        "Lexer output: one line per token (kind, source index, length, escaped text). Click inside, then Ctrl+A / Ctrl+C to copy.";
+
     public Control CreateView()
     {
-        _list = new ListBox
-        {
-            FontFamily = StudioVisual.CodeFontFamily,
-            FontSize = 12,
-            Background = Brushes.Transparent,
-            Foreground = StudioVisual.TextPrimaryBrush,
-        };
+        _text = StudioCopyableText.CreateReadOnlyOutput();
 
         return new Border
         {
             Padding = new Thickness(8),
-            Child = _list,
+            Child = _text,
         };
     }
 
     public void OnSnapshotChanged(PipelineSnapshot snapshot)
     {
-        if (_list is null)
+        if (_text is null)
             return;
+
+        const string preamble =
+            "# Lexer tokens (output of lexical analysis)\r\n" +
+            "Each line is one token from your source before parsing: kind, @start index, length in characters, and token text (escape sequences shown as \\r, \\n, \\t).\r\n" +
+            "\r\n";
 
         var rows = snapshot.Tokens.Select(t =>
             $"{t.Kind,-22}  @{t.Span.Start,4} len {t.Span.Length,3}  {VisualizeText(t.Text)}");
 
-        _list.ItemsSource = rows.ToList();
+        _text.Text = preamble + string.Join(Environment.NewLine, rows);
     }
 
     private static string VisualizeText(string text)

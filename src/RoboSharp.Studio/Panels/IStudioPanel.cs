@@ -13,6 +13,9 @@ public interface IStudioPanel
 
     string DisplayName { get; }
 
+    /// <summary>Short line under the title explaining what this pane shows (not included in the copyable body).</summary>
+    string? InspectorSubtitle => null;
+
     /// <summary>Build the view once; subsequent updates go through <see cref="OnSnapshotChanged"/>.</summary>
     Control CreateView();
 

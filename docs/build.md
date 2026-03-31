@@ -32,6 +32,34 @@ dotnet run --project src/RoboSharp.Studio/RoboSharp.Studio.csproj
 
 The Studio app is a code-first **Avalonia** shell with pipeline inspection tabs; see [`docs/studio/README.md`](studio/README.md).
 
+## Run RoboSharp Player (compiled `.roboexe` host)
+
+The **Player** is a thin console host that loads a v1 **JSON** `.roboexe`, runs it on a default Karel world, and prints **stdout/stderr** with a process exit code (see [`docs/player/README.md`](player/README.md) and [`toolchain/v1-toolchain-spec.md`](toolchain/v1-toolchain-spec.md)).
+
+From the repository root, using the checked-in sample:
+
+```powershell
+dotnet run --project src/RoboSharp.Player/RoboSharp.Player.csproj -- samples/hello.roboexe
+```
+
+General form:
+
+```powershell
+dotnet run --project src/RoboSharp.Player/RoboSharp.Player.csproj -- path\to\your.roboexe
+```
+
+Optional cap on IL steps (matches toolchain spec intent for bounded runs):
+
+```powershell
+dotnet run --project src/RoboSharp.Player/RoboSharp.Player.csproj -- --max-steps 5000 path\to\your.roboexe
+```
+
+Use `RoboSharp.Player --help` for the full option list.
+
+After `dotnet build`, you can also run the built assembly under `artifacts/` (layout depends on `Directory.Build.props`) and pass the `.roboexe` path as the only argument.
+
+Visual Studio / Rider / VS Code with C# Dev Kit: set **RoboSharp.Player** as the startup project and use the launch profile **RoboSharp.Player (samples/hello.roboexe)** (see `src/RoboSharp.Player/Properties/launchSettings.json`).
+
 ## Solution file and pre-commit hook
 
 [`RoboSharp.slnx`](../RoboSharp.slnx) is **generated** after diagram docs. The [.NET 10 file-based app](../.githooks/GenerateDocDiagrams.cs) **`.githooks/GenerateDocDiagrams.cs`** writes Markdown with Mermaid under [`docs/diagrams/`](diagrams/README.md) (project references, NuGet references, layer map). Then [`.githooks/UpdateSlnx.cs`](../.githooks/UpdateSlnx.cs) rewrites the solution so:

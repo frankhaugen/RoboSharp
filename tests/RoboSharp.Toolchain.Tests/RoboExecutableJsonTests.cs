@@ -17,7 +17,7 @@ public class RoboExecutableJsonTests
             [
                 new CompiledFunction
                 {
-                    Name = "main",
+                    Name = "TopLevel",
                     ParameterCount = 0,
                     LocalSlotCount = 0,
                     ReturnsVoid = true,

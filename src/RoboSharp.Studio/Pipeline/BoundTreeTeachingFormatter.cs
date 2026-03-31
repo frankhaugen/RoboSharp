@@ -9,15 +9,32 @@ public static class BoundTreeTeachingFormatter
     public static string Format(BoundCompilationUnit unit)
     {
         var sb = new StringBuilder();
-        AppendLine(sb, 0, $"BoundCompilationUnit  entry={unit.EntryPoint?.Name ?? "(none)"}");
+        AppendLine(sb, 0, $"BoundCompilationUnit  entry: {FormatEntry(unit.EntryPoint)}");
         foreach (var fn in unit.Functions)
             FormatFunction(fn, sb, 1);
 
         return sb.ToString();
     }
 
+    private static string FormatEntry(FunctionSymbol? entry) =>
+        entry is null
+            ? "(none)"
+            : IsTopLevelEntry(entry)
+                ? "top-level statements (your file body runs here first)"
+                : entry.Name;
+
+    private static bool IsTopLevelEntry(FunctionSymbol symbol) =>
+        symbol.Name == CompilationArtifacts.TopLevelStatementsFunctionName;
+
     private static void FormatFunction(BoundFunctionDeclaration fn, StringBuilder sb, int depth)
     {
+        if (IsTopLevelEntry(fn.Symbol))
+        {
+            AppendLine(sb, depth, "Your top-level statements (grouped for the interpreter — you did not write a function with this name):");
+            FormatBlock(fn.Body, sb, depth + 1);
+            return;
+        }
+
         var ps = string.Join(", ", fn.Symbol.Parameters.Select(p => $"{FormatType(p.Type)} {p.Name}"));
         AppendLine(sb, depth, $"Function {fn.Symbol.Name}({ps}): {FormatType(fn.Symbol.ReturnType)}");
         FormatBlock(fn.Body, sb, depth + 1);

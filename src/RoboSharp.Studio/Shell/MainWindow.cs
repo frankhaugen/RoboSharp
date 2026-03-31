@@ -1,9 +1,13 @@
+using System.IO;
+using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using RoboSharp.Studio.Panels;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.ViewModels;
@@ -13,16 +17,23 @@ namespace RoboSharp.Studio.Shell;
 
 public sealed class MainWindow : Window
 {
+    private static readonly FilePickerFileType RoboSourceFileType = new("RoboSharp source (.robo)")
+    {
+        Patterns = ["*.robo"],
+    };
+
+    private static readonly UTF8Encoding Utf8NoBom = new(encoderShouldEmitUTF8Identifier: false);
+
     private readonly MainWindowViewModel _viewModel;
     private readonly IReadOnlyList<IStudioPanel> _panels;
-    private TextBlock? _karelAscii;
+    private KarelWorldGridView? _karelWorld;
+    private bool _closeBypassDirtyCheck;
 
     public MainWindow(MainWindowViewModel viewModel, IEnumerable<IStudioPanel> panels)
     {
         _viewModel = viewModel;
         _panels = panels.OrderBy(p => p.Order).ToList();
 
-        Title = "RoboSharp Studio";
         Width = 1320;
         Height = 840;
         MinWidth = 1024;
@@ -31,7 +42,15 @@ public sealed class MainWindow : Window
         FontFamily = StudioVisual.UiFontFamily;
         DataContext = _viewModel;
 
+        Bind(
+            TitleProperty,
+            new Binding(nameof(MainWindowViewModel.WindowTitle)) { Mode = BindingMode.OneWay });
+
         Content = BuildRoot();
+
+        AddHandler(KeyDownEvent, OnWindowPreviewKeyDown, RoutingStrategies.Tunnel);
+
+        Closing += OnWindowClosing;
 
         _viewModel.PipelineUpdated += OnPipelineUpdated;
         _viewModel.KarelFrameUpdated += OnKarelFrameUpdated;
@@ -59,8 +78,36 @@ public sealed class MainWindow : Window
 
     private Menu BuildMenu()
     {
-        var exit = new MenuItem { Header = "E_xit" };
-        exit.Click += (_, _) => Close();
+        var fileNew = new MenuItem
+        {
+            Header = "_New",
+            HotKey = new KeyGesture(Key.N, KeyModifiers.Control),
+        };
+        fileNew.Click += (_, _) => _ = NewDocumentWithPromptAsync();
+
+        var fileOpen = new MenuItem
+        {
+            Header = "_Open…",
+            HotKey = new KeyGesture(Key.O, KeyModifiers.Control),
+        };
+        fileOpen.Click += (_, _) => _ = OpenDocumentWithPromptAsync();
+
+        var fileSave = new MenuItem
+        {
+            Header = "_Save",
+            HotKey = new KeyGesture(Key.S, KeyModifiers.Control),
+        };
+        fileSave.Click += (_, _) => _ = TrySaveDocumentAsync();
+
+        var fileSaveAs = new MenuItem
+        {
+            Header = "Save _As…",
+            HotKey = new KeyGesture(Key.S, KeyModifiers.Control | KeyModifiers.Shift),
+        };
+        fileSaveAs.Click += (_, _) => _ = TrySaveAsAsync();
+
+        var fileExit = new MenuItem { Header = "E_xit" };
+        fileExit.Click += (_, _) => Close();
 
         var about = new MenuItem { Header = "_About…" };
         about.Click += (_, _) => ShowAbout();
@@ -74,7 +121,16 @@ public sealed class MainWindow : Window
                 new MenuItem
                 {
                     Header = "_File",
-                    Items = { exit },
+                    Items =
+                    {
+                        fileNew,
+                        fileOpen,
+                        new MenuItem { Header = "-" },
+                        fileSave,
+                        fileSaveAs,
+                        new MenuItem { Header = "-" },
+                        fileExit,
+                    },
                 },
                 new MenuItem
                 {
@@ -83,6 +139,327 @@ public sealed class MainWindow : Window
                 },
             },
         };
+    }
+
+    private void OnWindowPreviewKeyDown(object? sender, KeyEventArgs e)
+    {
+        var ctrl = e.KeyModifiers.HasFlag(KeyModifiers.Control);
+        if (!ctrl)
+            return;
+
+        var shift = e.KeyModifiers.HasFlag(KeyModifiers.Shift);
+        if (e.Key == Key.N)
+        {
+            e.Handled = true;
+            _ = NewDocumentWithPromptAsync();
+            return;
+        }
+
+        if (e.Key == Key.O)
+        {
+            e.Handled = true;
+            _ = OpenDocumentWithPromptAsync();
+            return;
+        }
+
+        if (e.Key == Key.S)
+        {
+            e.Handled = true;
+            _ = shift ? TrySaveAsAsync() : TrySaveDocumentAsync();
+        }
+    }
+
+    private async void OnWindowClosing(object? sender, WindowClosingEventArgs e)
+    {
+        if (_closeBypassDirtyCheck || !_viewModel.IsDirty)
+            return;
+
+        e.Cancel = true;
+        var choice = await ShowUnsavedChangesDialogAsync();
+        switch (choice)
+        {
+            case UnsavedChoice.Save:
+                if (!await TrySaveDocumentAsync())
+                    return;
+                _closeBypassDirtyCheck = true;
+                Close();
+                break;
+            case UnsavedChoice.Discard:
+                _closeBypassDirtyCheck = true;
+                Close();
+                break;
+            case UnsavedChoice.Cancel:
+                break;
+        }
+    }
+
+    private async Task NewDocumentWithPromptAsync()
+    {
+        if (!await EnsureBufferSavedOrDiscardAsync())
+            return;
+        _viewModel.NewUntitledDocument();
+        _viewModel.Build();
+    }
+
+    private async Task OpenDocumentWithPromptAsync()
+    {
+        if (!await EnsureBufferSavedOrDiscardAsync())
+            return;
+
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Open RoboSharp source",
+            AllowMultiple = false,
+            FileTypeFilter = [RoboSourceFileType],
+        });
+
+        if (files.Count == 0)
+            return;
+
+        var file = files[0];
+        var path = file.TryGetLocalPath();
+        string text;
+        try
+        {
+            if (path is not null)
+                text = await File.ReadAllTextAsync(path, Utf8NoBom);
+            else
+            {
+                await using var stream = await file.OpenReadAsync();
+                using var reader = new StreamReader(stream, Utf8NoBom, detectEncodingFromByteOrderMarks: true);
+                text = await reader.ReadToEndAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            await ShowMessageDialogAsync("Open failed", ex.Message);
+            return;
+        }
+
+        _viewModel.LoadDocument(path, text);
+        _viewModel.Build();
+    }
+
+    private async Task<bool> EnsureBufferSavedOrDiscardAsync()
+    {
+        if (!_viewModel.IsDirty)
+            return true;
+
+        var choice = await ShowUnsavedChangesDialogAsync();
+        return choice switch
+        {
+            UnsavedChoice.Cancel => false,
+            UnsavedChoice.Discard => true,
+            UnsavedChoice.Save => await TrySaveDocumentAsync(),
+            _ => false,
+        };
+    }
+
+    private async Task<bool> TrySaveDocumentAsync()
+    {
+        if (_viewModel.DocumentPath is { } existing)
+        {
+            try
+            {
+                await File.WriteAllTextAsync(existing, _viewModel.SourceDocument, Utf8NoBom);
+                _viewModel.MarkSavedInPlace();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await ShowMessageDialogAsync("Save failed", ex.Message);
+                return false;
+            }
+        }
+
+        return await TrySaveAsAsync();
+    }
+
+    private async Task<bool> TrySaveAsAsync()
+    {
+        var suggested = _viewModel.DocumentPath is { } p
+            ? Path.GetFileName(p)
+            : "Untitled.robo";
+
+        var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Save RoboSharp source",
+            DefaultExtension = "robo",
+            ShowOverwritePrompt = true,
+            SuggestedFileName = suggested,
+            FileTypeChoices = [RoboSourceFileType],
+        });
+
+        if (file is null)
+            return false;
+
+        var path = file.TryGetLocalPath();
+        if (path is null)
+        {
+            await ShowMessageDialogAsync(
+                "Save failed",
+                "Could not resolve a local file path. Try saving to a folder on this computer.");
+            return false;
+        }
+
+        try
+        {
+            await File.WriteAllTextAsync(path, _viewModel.SourceDocument, Utf8NoBom);
+            _viewModel.MarkSaved(path);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            await ShowMessageDialogAsync("Save failed", ex.Message);
+            return false;
+        }
+    }
+
+    private async Task ShowMessageDialogAsync(string title, string message)
+    {
+        var ok = new Button
+        {
+            Content = "OK",
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Padding = new Thickness(20, 8),
+            CornerRadius = StudioVisual.ButtonRadius,
+            Background = StudioVisual.AccentBrush,
+            Foreground = new SolidColorBrush(Color.Parse("#0B0F14")),
+        };
+
+        var w = new Window
+        {
+            Title = title,
+            Width = 440,
+            MinHeight = 160,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize = false,
+            Background = StudioVisual.SurfaceBrush,
+            Content = new Border
+            {
+                Padding = new Thickness(24),
+                Child = new StackPanel
+                {
+                    Spacing = 16,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = message,
+                            TextWrapping = TextWrapping.Wrap,
+                            Foreground = StudioVisual.TextPrimaryBrush,
+                            LineHeight = 22,
+                        },
+                        ok,
+                    },
+                },
+            },
+        };
+
+        ok.Click += (_, _) => w.Close();
+        await w.ShowDialog(this);
+    }
+
+    private async Task<UnsavedChoice> ShowUnsavedChangesDialogAsync()
+    {
+        var choice = UnsavedChoice.Cancel;
+
+        var save = new Button
+        {
+            Content = "Save",
+            Padding = new Thickness(16, 8),
+            CornerRadius = StudioVisual.ButtonRadius,
+            Background = StudioVisual.AccentBrush,
+            Foreground = new SolidColorBrush(Color.Parse("#0B0F14")),
+        };
+        var discard = new Button
+        {
+            Content = "Don't save",
+            Padding = new Thickness(16, 8),
+            CornerRadius = StudioVisual.ButtonRadius,
+            Background = StudioVisual.SurfaceElevatedBrush,
+            Foreground = StudioVisual.TextPrimaryBrush,
+            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderThickness = new Thickness(1),
+        };
+        var cancel = new Button
+        {
+            Content = "Cancel",
+            Padding = new Thickness(16, 8),
+            CornerRadius = StudioVisual.ButtonRadius,
+            Background = StudioVisual.SurfaceElevatedBrush,
+            Foreground = StudioVisual.TextPrimaryBrush,
+            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderThickness = new Thickness(1),
+        };
+
+        var w = new Window
+        {
+            Title = "RoboSharp Studio",
+            Width = 420,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize = false,
+            Background = StudioVisual.SurfaceBrush,
+            Content = new Border
+            {
+                Padding = new Thickness(24),
+                Child = new StackPanel
+                {
+                    Spacing = 20,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = "Save changes to the current document?",
+                            FontSize = 15,
+                            FontWeight = FontWeight.SemiBold,
+                            Foreground = StudioVisual.TextPrimaryBrush,
+                            TextWrapping = TextWrapping.Wrap,
+                        },
+                        new TextBlock
+                        {
+                            Text = "Your source buffer has unsaved edits. Choose Save to write the .robo file, Don't save to discard them, or Cancel to stay in the editor.",
+                            Foreground = StudioVisual.TextMutedBrush,
+                            TextWrapping = TextWrapping.Wrap,
+                            LineHeight = 20,
+                        },
+                        new StackPanel
+                        {
+                            Orientation = Orientation.Horizontal,
+                            Spacing = 10,
+                            HorizontalAlignment = HorizontalAlignment.Right,
+                            Children = { save, discard, cancel },
+                        },
+                    },
+                },
+            },
+        };
+
+        save.Click += (_, _) =>
+        {
+            choice = UnsavedChoice.Save;
+            w.Close();
+        };
+        discard.Click += (_, _) =>
+        {
+            choice = UnsavedChoice.Discard;
+            w.Close();
+        };
+        cancel.Click += (_, _) =>
+        {
+            choice = UnsavedChoice.Cancel;
+            w.Close();
+        };
+
+        await w.ShowDialog(this);
+        return choice;
+    }
+
+    private enum UnsavedChoice
+    {
+        Cancel,
+        Save,
+        Discard,
     }
 
     private void ShowAbout()
@@ -208,6 +585,7 @@ public sealed class MainWindow : Window
             BorderThickness = new Thickness(0, 0, 0, 1),
             BorderBrush = StudioVisual.BorderSubtleBrush,
             Padding = new Thickness(16, 10),
+            BoxShadow = StudioVisual.ToolbarShadow,
             Child = new StackPanel
             {
                 Orientation = Orientation.Horizontal,
@@ -231,7 +609,9 @@ public sealed class MainWindow : Window
         var split1 = new GridSplitter
         {
             Width = 6,
-            Background = StudioVisual.BorderSubtleBrush,
+            Background = Brushes.Transparent,
+            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderThickness = new Thickness(1, 0, 1, 0),
             ResizeDirection = GridResizeDirection.Columns,
         };
         grid.Children.Add(split1);
@@ -243,7 +623,9 @@ public sealed class MainWindow : Window
         var split2 = new GridSplitter
         {
             Width = 6,
-            Background = StudioVisual.BorderSubtleBrush,
+            Background = Brushes.Transparent,
+            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderThickness = new Thickness(1, 0, 1, 0),
             ResizeDirection = GridResizeDirection.Columns,
         };
         grid.Children.Add(split2);
@@ -266,19 +648,12 @@ public sealed class MainWindow : Window
             Margin = new Thickness(0, 0, 0, 8),
         };
 
-        _karelAscii = new TextBlock
-        {
-            Text = "",
-            FontFamily = StudioVisual.CodeFontFamily,
-            FontSize = 11,
-            Foreground = StudioVisual.TextPrimaryBrush,
-            TextWrapping = TextWrapping.NoWrap,
-        };
+        _karelWorld = new KarelWorldGridView();
 
         var hint = new TextBlock
         {
             Text =
-                "Symbols: # wall  . floor  * goal  ^>v< robot facing N/E/S/W.\n\n" +
+                "Tiles: dark = wall, blue-gray = floor, teal tint = goal. Arrows show the robot facing.\n\n" +
                 "Build refreshes compile stages; Run compiles again then animates the robot. " +
                 "Try Realtime for instant finish, Slow or Glacial to watch each IL step.",
             TextWrapping = TextWrapping.Wrap,
@@ -291,7 +666,7 @@ public sealed class MainWindow : Window
         var stack = new StackPanel
         {
             Spacing = 0,
-            Children = { karelTitle, _karelAscii, hint },
+            Children = { karelTitle, _karelWorld, hint },
         };
 
         return new Border
@@ -301,6 +676,7 @@ public sealed class MainWindow : Window
             BorderBrush = StudioVisual.BorderSubtleBrush,
             BorderThickness = new Thickness(1),
             Padding = new Thickness(16),
+            BoxShadow = StudioVisual.SubtleCardShadow,
             Child = stack,
         };
     }
@@ -330,6 +706,7 @@ public sealed class MainWindow : Window
             BorderBrush = StudioVisual.BorderSubtleBrush,
             BorderThickness = new Thickness(1),
             Padding = new Thickness(12),
+            BoxShadow = StudioVisual.SubtleCardShadow,
             Child = editor,
         };
     }
@@ -358,20 +735,39 @@ public sealed class MainWindow : Window
             BorderBrush = StudioVisual.BorderSubtleBrush,
             BorderThickness = new Thickness(1),
             Padding = new Thickness(8),
+            BoxShadow = StudioVisual.SubtleCardShadow,
             Child = scroll,
         };
     }
 
     private Control BuildPanelCard(IStudioPanel panel)
     {
-        var header = new TextBlock
+        var title = new TextBlock
         {
             Text = panel.DisplayName,
             FontSize = 13,
             FontWeight = FontWeight.SemiBold,
             Foreground = StudioVisual.AccentBrush,
+        };
+
+        var header = new StackPanel
+        {
+            Spacing = 0,
             Margin = new Thickness(0, 0, 0, 8),
         };
+        header.Children.Add(title);
+        if (panel.InspectorSubtitle is { Length: > 0 } sub)
+        {
+            header.Children.Add(new TextBlock
+            {
+                Text = sub,
+                FontSize = 11,
+                Foreground = StudioVisual.TextMutedBrush,
+                TextWrapping = TextWrapping.Wrap,
+                LineHeight = 16,
+                Margin = new Thickness(0, 4, 0, 0),
+            });
+        }
 
         var body = panel.CreateView();
         var bodyScroll = new ScrollViewer
@@ -398,6 +794,7 @@ public sealed class MainWindow : Window
             BorderBrush = StudioVisual.BorderSubtleBrush,
             BorderThickness = new Thickness(1),
             Padding = new Thickness(12),
+            BoxShadow = StudioVisual.SubtleCardShadow,
             Child = inner,
         };
     }
@@ -416,8 +813,8 @@ public sealed class MainWindow : Window
 
     private void ApplyKarelSnapshot(RobotWorldSnapshot snapshot)
     {
-        if (_karelAscii is null)
+        if (_karelWorld is null)
             return;
-        _karelAscii.Text = KarelWorldAsciiFormatter.Format(snapshot);
+        _karelWorld.Update(snapshot);
     }
 }

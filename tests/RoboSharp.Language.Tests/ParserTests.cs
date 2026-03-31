@@ -1,3 +1,4 @@
+using RoboSharp.Language;
 using RoboSharp.Language.Syntax;
 
 namespace RoboSharp.Language.Tests;
@@ -12,6 +13,50 @@ public class ParserTests
         var tree = Parse("");
         await Assert.That(tree.Root.Members).IsEmpty();
         await Assert.That(tree.Diagnostics).IsEmpty();
+    }
+
+    [Test]
+    public async Task Procedure_Declaration_Omits_Return_Type_Defaults_To_Void_In_Syntax_Tree()
+    {
+        const string src = """
+            MoveMany(5);
+
+            MoveMany(integer stepsCount)
+            {
+                print(1);
+            }
+            """;
+
+        var tree = Parse(src);
+        await Assert.That(tree.Diagnostics).IsEmpty();
+        await Assert.That(tree.Root.Members).HasCount(2);
+
+        var call = (GlobalStatementSyntax)tree.Root.Members[0];
+        await Assert.That(call.Statement).IsAssignableTo(typeof(ExpressionStatementSyntax));
+
+        var fn = (FunctionDeclarationSyntax)tree.Root.Members[1];
+        await Assert.That(fn.Identifier.Text).IsEqualTo("MoveMany");
+        await Assert.That(fn.ReturnType).IsAssignableTo(typeof(PrimitiveTypeSyntax));
+        var ret = (PrimitiveTypeSyntax)fn.ReturnType;
+        await Assert.That(ret.Keyword.Kind).IsEqualTo(SyntaxKind.VoidKeyword);
+        await Assert.That(fn.Parameters.Parameters).HasCount(1);
+    }
+
+    [Test]
+    public async Task Main_Without_Void_Keyword_Parse()
+    {
+        const string src = """
+            main()
+            {
+            }
+            """;
+
+        var tree = Parse(src);
+        await Assert.That(tree.Diagnostics).IsEmpty();
+        var fn = (FunctionDeclarationSyntax)tree.Root.Members[0];
+        await Assert.That(fn.Identifier.Text).IsEqualTo("main");
+        var ret = (PrimitiveTypeSyntax)fn.ReturnType;
+        await Assert.That(ret.Keyword.Kind).IsEqualTo(SyntaxKind.VoidKeyword);
     }
 
     [Test]

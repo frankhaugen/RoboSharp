@@ -14,8 +14,8 @@ public static class StudioRunSpeedExtensions
         speed switch
         {
             StudioRunSpeed.Realtime => 0,
-            StudioRunSpeed.Slow => 220,
-            StudioRunSpeed.Glacial => 900,
+            StudioRunSpeed.Slow => 110,
+            StudioRunSpeed.Glacial => 220,
             _ => 0,
         };
 }

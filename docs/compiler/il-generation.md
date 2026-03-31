@@ -8,7 +8,7 @@ IL generation runs **after** semantic analysis succeeds (no error-level diagnost
 
 ```text
 BoundProgram
-  → assign function ids, local slots, synthetic __main
+  → assign function ids, local slots, entry function for top-level statements (`TopLevel` in IL tables)
   → emit Instruction stream per function
   → build constant / string / number tables
   → RoboProgram
@@ -20,7 +20,7 @@ See [compilation-pipeline.md](compilation-pipeline.md) for the full stage list.
 ## Responsibilities
 
 - **Lowering:** Map bound statements and expressions to `RoboOpcode` sequences (branches, calls, builtins, arrays, locals).
-- **Entry:** Ensure a single entry function index consistent with the toolchain (synthetic `__main` for top-level code).
+- **Entry:** Ensure a single entry function index consistent with the toolchain (top-level code → one function, name `TopLevel` in artifacts).
 - **Debug metadata:** When enabled, preserve instruction-to-source and local-slot-to-name mappings for `.robo.pdb.json` (see v1 compiler spec outputs).
 - **Determinism:** Same bound input yields the same IL shape (no hidden nondeterminism).
 

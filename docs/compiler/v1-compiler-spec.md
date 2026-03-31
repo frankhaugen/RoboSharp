@@ -172,7 +172,7 @@ Lowering is deterministic and must not perform additional type reasoning beyond 
 
 * assign function ids
 * assign local slots
-* assign synthetic `__main`
+* assign a single compiled function that holds top-level statements (implementation name: `TopLevel`)
 * emit instructions in execution order
 * generate branch targets / labels
 * produce instruction-to-source mapping
@@ -184,13 +184,9 @@ Lowering is deterministic and must not perform additional type reasoning beyond 
 
 ## 4.1 Entry point
 
-Top-level statements lower into a synthetic function:
+Top-level statements lower into **one** compiled function so the runtime has a normal call frame to start from. The stable implementation name for that function is **`TopLevel`**; hosts and learner-facing text should describe it as *top-level statements* or *program entry*, not as a user-defined procedure.
 
-```text
-__main
-```
-
-That function becomes the executable entry point. This matches the earlier file/toolchain direction. 
+A valid program must contain at least one top-level statement. The name **`main`** is not a user entry point; declaring `main` is a semantic error.
 
 ---
 
@@ -446,7 +442,7 @@ return expr
 Return
 ```
 
-For no-value return in the synthetic `__main`, emit `Return` with no required stack value.
+For no-value return in the top-level entry function (`TopLevel`), emit `Return` with no required stack value.
 
 ---
 

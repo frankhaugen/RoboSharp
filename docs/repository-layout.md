@@ -5,6 +5,7 @@
 | Path | Role |
 | ---- | ---- |
 | `README.md` | Short entry point; links to `AGENTS.md` and `docs/` |
+| `samples/` | Optional teaching artifacts (e.g. `hello.roboexe` for [`RoboSharp.Player`](../src/RoboSharp.Player/Program.cs)) |
 | `RoboSharp.slnx` | XML solution (SDK 10+), folders for `src/` and `tests/` |
 | `Directory.Build.props` | Shared MSBuild properties: TFM, nullable, analyzers, artifacts output, test project defaults |
 | `Directory.Build.targets` | Shared MSBuild targets (placeholder for repo-wide custom targets) |

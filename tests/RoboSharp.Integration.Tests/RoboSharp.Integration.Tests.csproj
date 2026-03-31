@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="TUnit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\RoboSharp.Toolchain\RoboSharp.Toolchain.csproj" />
+    <ProjectReference Include="..\..\src\RoboSharp.Runtime\RoboSharp.Runtime.csproj" />
+    <ProjectReference Include="..\..\src\RoboSharp.World\RoboSharp.World.csproj" />
+    <ProjectReference Include="..\..\src\RoboSharp.Semantics\RoboSharp.Semantics.csproj" />
+    <ProjectReference Include="..\..\src\RoboSharp.IL\RoboSharp.IL.csproj" />
+    <ProjectReference Include="..\..\src\RoboSharp.Workspaces\RoboSharp.Workspaces.csproj" />
+  </ItemGroup>
+</Project>

@@ -12,6 +12,7 @@ flowchart LR
   RoboSharp_Architecture_Tests["RoboSharp.Architecture.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Hosting["RoboSharp.Hosting"] --> pkg_Microsoft_Extensions_DependencyInjection["Microsoft.Extensions.DependencyInjection v10.0.5"]
   RoboSharp_IL_Tests["RoboSharp.IL.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
+  RoboSharp_Integration_Tests["RoboSharp.Integration.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_IO_Tests["RoboSharp.IO.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Language_Tests["RoboSharp.Language.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Runtime_Tests["RoboSharp.Runtime.Tests"] --> pkg_TUnit["TUnit v0.55.23"]

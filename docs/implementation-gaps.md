@@ -21,15 +21,15 @@ Source → Lexer → Parser → Syntax tree → Semantic analysis → Bound tree
 
 | Stage | Project | Code in `src/` today | Notes |
 | ----- | ------- | -------------------- | ----- |
-| Lex / parse / syntax tree | `RoboSharp.Language` | **Yes** | Lexer, parser, syntax model, diagnostics (`void` keyword for `main`) |
+| Lex / parse / syntax tree | `RoboSharp.Language` | **Yes** | Lexer, parser, syntax model, diagnostics (`void` keyword; top-level members) |
 | Semantic analysis / bound tree | `RoboSharp.Semantics` | **Partial** | v1 binder, `BuiltinId`, profiles seam, bound nodes; not full spec in [semantics/](semantics/README.md) |
 | Fake IL / lowering | `RoboSharp.IL` | **Partial** | `RoboOpcode`, `Instruction`, `IlLowerer` → `RoboProgram` |
-| Interpreter / stepping / faults | `RoboSharp.Runtime` | **Partial** | `RoboInterpreter`, structured `RuntimeFault`; no stepping API yet |
+| Interpreter / stepping / faults | `RoboSharp.Runtime` | **Partial** | `RoboInterpreter`, `RoboInterpreterSession` (`Step`, `RunToEnd`), structured `RuntimeFault`; no debugger UI or breakpoints |
 | Grid / actors / movement | `RoboSharp.World` | **Partial** | Grids, `RobotWorld`, snapshots, primary-robot builtins; push not implemented |
 | IO abstractions | `RoboSharp.IO` | **Yes** | Physical, in-memory, overlay filesystems |
 | Workspace / projects / artifacts | `RoboSharp.Workspaces` | **Yes** | Load/save `.robosharp`, artifact layout, in-memory + physical workspaces |
 | Compile orchestration | `RoboSharp.Toolchain` | **Partial** | `RoboSharpPipeline`, `RoboSharpCompiler`, JSON `.roboexe`; `WorkspaceBuildService` writes IL + exe from workspace sources |
-| Host-agnostic use cases | `RoboSharp.Application` | **Partial** | `IRoboSharpExecutionService` (run source / JSON exe / build+run workspace); no lesson/profile layer yet |
+| Host-agnostic use cases | `RoboSharp.Application` | **Partial** | `IRoboSharpExecutionService` (run source / JSON exe / build+run workspace; optional `RunExecutionOptions.MaxInstructions` for step-capped runs); no lesson/profile layer yet |
 | DI / composition helpers | `RoboSharp.Hosting` | **Partial** | `AddRoboSharpHosting()` composes workspaces + application services |
 
 There is a **minimal end-to-end path**: parse → bind → lower → interpret with `RoboSharpPipeline` and a `RobotWorld` instance. **`RoboSharpCompiler`** exposes the same compile phases without running; **`RoboExecutable`** + **`RoboExecutableJsonSerializer`** provide a v1 JSON interchange for fake executables (teaching). **`RoboInterpreterSession`** supports instruction stepping and step limits per [runtime/v1-runtime-spec.md](runtime/v1-runtime-spec.md).
@@ -41,14 +41,14 @@ Gaps: `.robosharp` project load, workspace integration, binary `.roboexe`, full 
 | Project | Code in `src/` today | Gap vs docs |
 | ------- | -------------------- | ----------- |
 | `RoboSharp.Studio` | **Partial** | Avalonia shell, pipeline **inspection** (tokens, syntax tree, diagnostics). Missing: real workspace/project model, binder/IL/runtime/world integration, full [debugger](debugger/debugger-architecture.md) (step kinds, breakpoints, synchronized panes), lesson/goals/content from [lessons/](lessons/README.md). |
-| `RoboSharp.Player` | **Partial** | Runs a v1 JSON `.roboexe` from disk with exit codes per [toolchain/v1-toolchain-spec.md](toolchain/v1-toolchain-spec.md) §11; lesson mode still unspecified in code. |
+| `RoboSharp.Player` | **Partial** | Runs a v1 JSON `.roboexe` from disk with exit codes per [toolchain/v1-toolchain-spec.md](toolchain/v1-toolchain-spec.md) §11; supports `--max-steps` (maps to `RunExecutionOptions`). `--debug` / lesson mode / `--world` still open. |
 | `RoboSharp.Web` | **Partial** | `AddRoboSharpHosting()` + home-page pipeline smoke; full teaching UI still open. |
 
 ## Teaching / product layer (lessons, goals, packs)
 
 The educational backbone is **specified** under [lessons/](lessons/README.md) (profiles, goals, lesson definitions, content packs, JSON direction) but **not implemented** as dedicated types or hosts. Nothing in `src/` yet provides:
 
-- builtin profile providers for the binder
+- lesson-scoped builtin profile providers (beyond `FullBuiltinProfileProvider` / `IBuiltinProfileProvider` used everywhere today)
 - goal evaluators or lesson sessions
 - content pack loading
 - world file format + loader tied to lessons

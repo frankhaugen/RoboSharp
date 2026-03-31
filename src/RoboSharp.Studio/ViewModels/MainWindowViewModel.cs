@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Input;
 using Avalonia.Threading;
 using RoboSharp.Studio.Pipeline;
@@ -11,17 +12,32 @@ namespace RoboSharp.Studio.ViewModels;
 /// </summary>
 public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
-    private readonly IPipelineInspectionService _pipeline;
-    private CancellationTokenSource? _runCancellation;
+    /// <summary>Starter buffer for first launch (untitled, not dirty until edited).</summary>
+    public const string DefaultStarterSource = """
+        // RoboSharp Studio — top-level call + procedure (return type optional on procedures).
+        MoveMany(5);
 
-    private string _sourceDocument = """
-        // RoboSharp Studio — Karel-style robot on a grid (see left pane after Build / Run)
-        void main()
+        MoveMany(integer stepsCount)
         {
-            move();
+            print("Moving multiple steps!");
+
+            integer index = 0;
+            while (index < stepsCount)
+            {
+                move();
+                index = index + 1;
+            }
         }
 
         """;
+
+    private readonly IPipelineInspectionService _pipeline;
+    private CancellationTokenSource? _runCancellation;
+
+    private string _sourceDocument = DefaultStarterSource;
+    private string? _documentPath;
+    private bool _isDirty;
+    private bool _loadingContent;
 
     private PipelineSnapshot? _currentSnapshot;
     private StudioRunSpeed _selectedRunSpeed = StudioRunSpeed.Slow;
@@ -41,6 +57,45 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     /// <summary>Fired during Run between interpreter steps so the Karel pane can animate.</summary>
     public event Action<RobotWorldSnapshot>? KarelFrameUpdated;
 
+    /// <summary>Full path when the buffer is linked to disk; <see langword="null"/> for a new unsaved document.</summary>
+    public string? DocumentPath
+    {
+        get => _documentPath;
+        private set
+        {
+            if (_documentPath == value)
+                return;
+            _documentPath = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DocumentPath)));
+            NotifyWindowTitleChanged();
+        }
+    }
+
+    /// <summary>True when the buffer differs from the last saved/opened state.</summary>
+    public bool IsDirty
+    {
+        get => _isDirty;
+        private set
+        {
+            if (_isDirty == value)
+                return;
+            _isDirty = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDirty)));
+            NotifyWindowTitleChanged();
+        }
+    }
+
+    /// <summary>Title bar text: file name, dirty star, app name.</summary>
+    public string WindowTitle
+    {
+        get
+        {
+            var name = DocumentPath is null ? "Untitled.robo" : Path.GetFileName(DocumentPath);
+            var star = IsDirty ? " *" : "";
+            return $"{name}{star} — RoboSharp Studio";
+        }
+    }
+
     public string SourceDocument
     {
         get => _sourceDocument;
@@ -49,9 +104,64 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             if (_sourceDocument == value)
                 return;
             _sourceDocument = value;
+            if (!_loadingContent)
+                IsDirty = true;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SourceDocument)));
         }
     }
+
+    /// <summary>Replace buffer from disk (or New); does not mark dirty.</summary>
+    public void LoadDocument(string? path, string text)
+    {
+        _loadingContent = true;
+        try
+        {
+            DocumentPath = path;
+            _sourceDocument = text;
+            IsDirty = false;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SourceDocument)));
+        }
+        finally
+        {
+            _loadingContent = false;
+        }
+    }
+
+    /// <summary>Empty untitled document.</summary>
+    public void NewUntitledDocument() =>
+        LoadDocument(path: null, text: string.Empty);
+
+    /// <summary>After a successful save to the current path.</summary>
+    public void MarkSaved(string savedPath)
+    {
+        _loadingContent = true;
+        try
+        {
+            DocumentPath = savedPath;
+            IsDirty = false;
+        }
+        finally
+        {
+            _loadingContent = false;
+        }
+    }
+
+    /// <summary>Save to existing path without changing path text (Save after edits).</summary>
+    public void MarkSavedInPlace()
+    {
+        _loadingContent = true;
+        try
+        {
+            IsDirty = false;
+        }
+        finally
+        {
+            _loadingContent = false;
+        }
+    }
+
+    private void NotifyWindowTitleChanged() =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WindowTitle)));
 
     public StudioRunSpeed SelectedRunSpeed
     {
