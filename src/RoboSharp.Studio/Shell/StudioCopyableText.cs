@@ -22,7 +22,7 @@ internal static class StudioCopyableText
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
             Padding = new Thickness(0),
-            MinHeight = 48,
+            MinHeight = 36,
         };
     }
 }

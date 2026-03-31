@@ -1,7 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
-using Avalonia.Layout;
 using Avalonia.Media;
 using RoboSharp.Application.Teaching;
 using RoboSharp.Language;
@@ -22,7 +20,6 @@ public sealed class SyntaxTreePipelinePanel : IStudioPanel
     private TextBlock? _footer;
     private TextBox? _fallbackText;
     private Grid? _structuredRoot;
-    private ScrollViewer? _listingScroll;
     private StackPanel? _listingHost;
     private readonly List<(Border box, int start, int len)> _stepRows = new();
 
@@ -47,16 +44,9 @@ public sealed class SyntaxTreePipelinePanel : IStudioPanel
         _fallbackText = StudioCopyableText.CreateReadOnlyOutput();
 
         _listingHost = new StackPanel { Spacing = 0 };
-        _listingScroll = new ScrollViewer
-        {
-            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            Content = _listingHost,
-            MinHeight = 140,
-        };
 
         _structuredRoot = new Grid();
-        _structuredRoot.Children.Add(_listingScroll);
+        _structuredRoot.Children.Add(_listingHost);
 
         var layered = new Grid();
         layered.Children.Add(_fallbackText);

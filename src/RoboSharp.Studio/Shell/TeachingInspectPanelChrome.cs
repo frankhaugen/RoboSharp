@@ -44,7 +44,8 @@ internal static class TeachingInspectPanelChrome
             Margin = new Thickness(0, 0, 0, 10),
         };
 
-        dataContent.MinHeight = dataMinHeight;
+        if (dataMinHeight > 0)
+            dataContent.MinHeight = dataMinHeight;
 
         var dataCard = new Border
         {

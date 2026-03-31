@@ -29,15 +29,8 @@ public sealed class DiagnosticsPipelinePanel : IStudioPanel
     public Control CreateView()
     {
         _text = StudioCopyableText.CreateReadOnlyOutput();
-        var scroll = new ScrollViewer
-        {
-            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-            Content = _text,
-            MinHeight = 140,
-        };
 
-        var (root, parts) = TeachingInspectPanelChrome.CreateWithTier(scroll, AbstractionTier, dataMinHeight: 0);
+        var (root, parts) = TeachingInspectPanelChrome.CreateWithTier(_text, AbstractionTier, dataMinHeight: 0);
         _lead = parts.Lead;
         _guide = parts.Guide;
         _footer = parts.Footer;

@@ -1,7 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
-using Avalonia.Layout;
 using Avalonia.Media;
 using RoboSharp.Application.Teaching;
 using RoboSharp.Locales;
@@ -21,7 +19,6 @@ public sealed class SharpAssemblyPipelinePanel : IStudioPanel
     private TextBlock? _guideBlock;
     private TextBlock? _footerBlock;
     private StackPanel? _listingHost;
-    private ScrollViewer? _listingScroll;
     private readonly List<(Border box, int fi, int ip)> _stepRows = new();
     private int? _lastHighlightFi;
     private int? _lastHighlightIp;
@@ -63,14 +60,6 @@ public sealed class SharpAssemblyPipelinePanel : IStudioPanel
 
         _listingHost = new StackPanel { Spacing = 0 };
 
-        _listingScroll = new ScrollViewer
-        {
-            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            Content = _listingHost,
-            MinHeight = 120,
-        };
-
         var accent = StudioVisual.TierBrush(AbstractionTier);
         var listingCard = new Border
         {
@@ -79,7 +68,7 @@ public sealed class SharpAssemblyPipelinePanel : IStudioPanel
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(8),
             Padding = new Thickness(10, 8),
-            Child = _listingScroll,
+            Child = _listingHost,
         };
 
         _footerBlock = new TextBlock
@@ -93,7 +82,7 @@ public sealed class SharpAssemblyPipelinePanel : IStudioPanel
 
         _structuredRoot = new Grid
         {
-            RowDefinitions = new RowDefinitions("Auto,Auto,*,Auto"),
+            RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto"),
             IsVisible = false,
             Children =
             {

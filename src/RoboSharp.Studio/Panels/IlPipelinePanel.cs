@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -25,7 +24,6 @@ public sealed class IlPipelinePanel : IStudioPanel
     private StackPanel? _listingHost;
     private TextBlock? _footnoteBlock;
     private Button? _copyButton;
-    private ScrollViewer? _listingScroll;
     private string? _copyPayload;
     private readonly List<(Border box, int fi, int ip)> _stepRows = new();
     private int? _lastHighlightFi;
@@ -76,14 +74,6 @@ public sealed class IlPipelinePanel : IStudioPanel
 
         _listingHost = new StackPanel { Spacing = 0 };
 
-        _listingScroll = new ScrollViewer
-        {
-            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            Content = _listingHost,
-            MinHeight = 140,
-        };
-
         var ilAccent = StudioVisual.TierBrush(AbstractionTier);
         var listingCard = new Border
         {
@@ -92,7 +82,7 @@ public sealed class IlPipelinePanel : IStudioPanel
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(8),
             Padding = new Thickness(10, 8),
-            Child = _listingScroll,
+            Child = _listingHost,
         };
 
         _footnoteBlock = new TextBlock
@@ -107,7 +97,7 @@ public sealed class IlPipelinePanel : IStudioPanel
 
         _structuredRoot = new Grid
         {
-            RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*,Auto"),
+            RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto,Auto"),
             IsVisible = false,
             Children =
             {
