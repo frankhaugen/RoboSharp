@@ -34,7 +34,7 @@ public class PhysicalRoboFileSystemTests
             var fs = new PhysicalRoboFileSystem(new DirectoryInfo(temp.FullName));
             var foreign = new UriBuilder(RoboUriSchemes.Memory, string.Empty, -1, "/elsewhere/file.robo").Uri;
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => fs.GetFile(foreign));
+            await Assert.That(() => fs.GetFile(foreign)).Throws<ArgumentOutOfRangeException>();
         }
         finally
         {

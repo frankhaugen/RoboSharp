@@ -219,7 +219,9 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
         runProgress.Report(new StudioRunProgress(
             world.CreateSnapshot(),
             session.InstructionsExecuted,
-            session.CurrentInstructionDescription));
+            session.CurrentInstructionDescription,
+            session.ProgressHighlightFunctionIndex,
+            session.ProgressHighlightInstructionIndex));
     }
 
     private string BuildProfileHelp(StudioPipelineOptions options) =>
@@ -312,7 +314,8 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
             lessonOutcome,
             lessonScore,
             ilSteps,
-            ilFootnote);
+            ilFootnote,
+            built.Compile.Program);
     }
 
     private static IReadOnlyList<SourceDiagnosticSpan> CollectDiagnosticSpans(BuiltPipeline built)

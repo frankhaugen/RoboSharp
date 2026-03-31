@@ -14,4 +14,6 @@ runs:
       shell: bash
       env:
         PACKAGE_VERSION: ${{ inputs.package_version }}
+        TESTINGPLATFORM_TELEMETRY_OPTOUT: "1"
+        TUNIT_GITHUB_REPORTER_STYLE: collapsible
       run: bash "${GITHUB_WORKSPACE}/tools/ci-verify.sh"

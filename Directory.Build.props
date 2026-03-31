@@ -27,4 +27,9 @@
   <PropertyGroup Label="Continuous integration" Condition="'$(CI)' == 'true' Or '$(GITHUB_ACTIONS)' == 'true' Or '$(TF_BUILD)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
+
+  <!-- TRX files for CI artifacts / Azure DevOps; TUnit MTP does not enable the VSTest trx logger. -->
+  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
+  </ItemGroup>
 </Project>

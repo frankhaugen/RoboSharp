@@ -85,6 +85,8 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
     public string IlNoTextUnexpected =>
         "(Lowering reported success but IL text is missing — unexpected. Try Build again and check Diagnostics.)";
 
+    public string IlCopyDisassembly => "Copy IL text";
+
     public string WorldRuntimeTitle => "World & interpreter";
     public string WorldRuntimeSubtitle =>
         "After Run: world summary, completion vs fault, print() stdout, and stderr. Sections are labeled so pasted copies stay understandable.";

@@ -21,7 +21,8 @@ public static class StudioServiceRegistration
 
         services.AddRoboSharpHosting();
 
-        services.AddSingleton<ITeachingLocale>(_ => TeachingLocaleResolver.FromEnvironment());
+        services.AddSingleton<StudioLocaleHost>();
+        services.AddSingleton<ITeachingLocale>(static sp => sp.GetRequiredService<StudioLocaleHost>());
         services.AddSingleton<IPipelineInspectionService, PipelineInspectionService>();
         services.AddSingleton<ISyntaxTreeSerializer, SyntaxTreeSerializer>();
 
@@ -39,7 +40,11 @@ public static class StudioServiceRegistration
         services.AddSingleton<IStudioPanel>(sp => new IlPipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
         services.AddSingleton<IStudioPanel>(sp => new WorldRuntimePipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
 
-        services.AddSingleton<MainWindow>();
+        services.AddSingleton<MainWindow>(static sp =>
+            new MainWindow(
+                sp.GetRequiredService<MainWindowViewModel>(),
+                sp.GetRequiredService<StudioLocaleHost>(),
+                sp.GetServices<IStudioPanel>()));
 
         return services;
     }

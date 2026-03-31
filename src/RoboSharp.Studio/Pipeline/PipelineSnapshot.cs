@@ -1,3 +1,4 @@
+using RoboSharp.IL;
 using RoboSharp.Language;
 using RoboSharp.Toolchain;
 using RoboSharp.World;
@@ -27,4 +28,5 @@ public sealed record PipelineSnapshot(
     string? LessonOutcomeSummary = null,
     int? LessonScore = null,
     int? IlInstructionsExecuted = null,
-    string? IlExecutionFootnote = null);
+    string? IlExecutionFootnote = null,
+    RoboProgram? IlProgram = null);

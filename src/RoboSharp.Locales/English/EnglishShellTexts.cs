@@ -62,4 +62,12 @@ internal sealed class EnglishShellTexts : IStudioShellTexts
 
     public string InterpreterUnexpectedStop =>
         "The interpreter stopped without a normal completion or a structured fault. That should not happen — note what you ran and tell a teacher or file an issue.";
+
+    public string SettingsMenuHeader => "_Settings";
+
+    public string LanguageMenuHeader => "_Language";
+
+    public string LanguageEnglishMenuLabel => "English (en)";
+
+    public string LanguageLatinMenuLabel => "Latin — demo (la)";
 }

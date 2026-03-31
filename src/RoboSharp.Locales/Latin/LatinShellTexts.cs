@@ -62,4 +62,13 @@ internal sealed class LatinShellTexts : IStudioShellTexts
 
     public string InterpreterUnexpectedStop =>
         "Interpres sine fine ordinario aut culpa structa substitit. Hoc non debet fieri — nota quid cucurristi et magistrum adi aut indicium mitte.";
+
+    public string SettingsMenuHeader => "_Optiones";
+
+    public string LanguageMenuHeader => "_Lingua";
+
+    public string LanguageEnglishMenuLabel => "English (en)";
+
+    public string LanguageLatinMenuLabel => "Latina — demonstratio (la)";
 }
+

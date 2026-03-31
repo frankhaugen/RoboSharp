@@ -35,12 +35,19 @@ else
   dotnet build RoboSharp.slnx --configuration Release --no-restore
 fi
 
+# TUnit runs on Microsoft.Testing.Platform; TRX comes from Microsoft.Testing.Extensions.TrxReport
+# (see Directory.Build.props). Arguments after -- are passed to the test host.
+# See https://tunit.dev/docs/execution/ci-cd-reporting and https://tunit.dev/docs/guides/best-practices
 dotnet test RoboSharp.slnx \
   --configuration Release \
   --no-build \
   --verbosity normal \
-  --logger "trx;LogFileName=test-results.trx" \
-  --results-directory "$RESULTS_DIR"
+  --results-directory "$RESULTS_DIR" \
+  -- \
+  --report-trx \
+  --results-directory "$RESULTS_DIR" \
+  --timeout 15m \
+  --disable-logo
 
 dotnet run --file .githooks/GenerateDocDiagrams.cs -- "$REPO_ROOT"
 dotnet run --file .githooks/UpdateSlnx.cs -- "$REPO_ROOT"

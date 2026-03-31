@@ -47,23 +47,37 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _selectedProfileId = LessonBuiltinProfiles.MovementAndPrintId;
     private string _selectedWorldPresetId = RobotWorldPresets.GoalCornerId;
     private string _liveRunStatus;
+    private IReadOnlyList<RunSpeedOption> _runSpeedOptions;
 
     public MainWindowViewModel(IPipelineInspectionService pipeline, ITeachingLocale locale)
     {
         _pipeline = pipeline;
         _locale = locale;
         _liveRunStatus = locale.Shell.DefaultLiveRunStatus;
-        RunSpeedOptions =
-        [
-            new(StudioRunSpeed.Realtime, locale.Shell.RunSpeedRealtime),
-            new(StudioRunSpeed.Slow, locale.Shell.RunSpeedSlow),
-            new(StudioRunSpeed.Glacial, locale.Shell.RunSpeedGlacial),
-        ];
+        _runSpeedOptions = BuildRunSpeedOptions(locale);
         BuildCommand = new DelegateCommand(Build);
         RunCommand = new AsyncDelegateCommand(RunAsync);
     }
 
-    public IReadOnlyList<RunSpeedOption> RunSpeedOptions { get; }
+    public IReadOnlyList<RunSpeedOption> RunSpeedOptions => _runSpeedOptions;
+
+    /// <summary>Rebuilds run-speed labels and status line after the shell language changes.</summary>
+    public void ApplyLocaleRefresh()
+    {
+        _runSpeedOptions = BuildRunSpeedOptions(_locale);
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RunSpeedOptions)));
+        _liveRunStatus = _locale.Shell.DefaultLiveRunStatus;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LiveRunStatus)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WindowTitle)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedRunSpeedOption)));
+    }
+
+    static IReadOnlyList<RunSpeedOption> BuildRunSpeedOptions(ITeachingLocale locale) =>
+    [
+        new(StudioRunSpeed.Realtime, locale.Shell.RunSpeedRealtime),
+        new(StudioRunSpeed.Slow, locale.Shell.RunSpeedSlow),
+        new(StudioRunSpeed.Glacial, locale.Shell.RunSpeedGlacial),
+    ];
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

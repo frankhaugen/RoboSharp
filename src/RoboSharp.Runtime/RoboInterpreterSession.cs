@@ -15,6 +15,12 @@ public sealed class RoboInterpreterSession
     /// <summary>Human-readable description of the instruction about to run (updated at the start of each <see cref="Step"/>).</summary>
     public string? CurrentInstructionDescription { get; private set; }
 
+    /// <summary>Function index of the IL instruction highlighted for the current interpreter tick (the next instruction before <see cref="Step"/> runs it; after <see cref="Start"/>, the first instruction).</summary>
+    public int? ProgressHighlightFunctionIndex { get; private set; }
+
+    /// <summary>Instruction index within <see cref="ProgressHighlightFunctionIndex"/>.</summary>
+    public int? ProgressHighlightInstructionIndex { get; private set; }
+
     public void Start(RoboProgram program, RobotWorld world, TextWriter stdout, TextWriter stderr)
     {
         ArgumentNullException.ThrowIfNull(program);
@@ -22,9 +28,12 @@ public sealed class RoboInterpreterSession
         _program = program;
         InstructionsExecuted = 0;
         CurrentInstructionDescription = null;
+        ProgressHighlightFunctionIndex = null;
+        ProgressHighlightInstructionIndex = null;
         var err = _engine.Initialize(program, world, stdout, stderr);
         if (err is not null)
             throw new InvalidOperationException(err.Fault?.Message ?? "Initialization failed.");
+        CaptureProgressHighlight();
         CurrentInstructionDescription = DescribeNextInstruction(program);
     }
 
@@ -38,6 +47,7 @@ public sealed class RoboInterpreterSession
     public InterpreterStepResult Step()
     {
         var program = _program ?? throw new InvalidOperationException("Call Start first.");
+        CaptureProgressHighlight();
         CurrentInstructionDescription = DescribeNextInstruction(program);
         var r = _engine.ExecuteNext(program);
         InstructionsExecuted++;
@@ -46,6 +56,17 @@ public sealed class RoboInterpreterSession
         if (r.Succeeded)
             return InterpreterStepResult.Completed;
         return InterpreterStepResult.Faulted(r.Fault!);
+    }
+
+    private void CaptureProgressHighlight()
+    {
+        if (_engine.HasActiveFrames &&
+            _engine.CurrentFunctionIndex is { } fi &&
+            _engine.CurrentInstructionPointer is { } ip)
+        {
+            ProgressHighlightFunctionIndex = fi;
+            ProgressHighlightInstructionIndex = ip;
+        }
     }
 
     private string? DescribeNextInstruction(RoboProgram program)

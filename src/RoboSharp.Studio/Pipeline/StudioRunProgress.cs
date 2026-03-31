@@ -6,4 +6,6 @@ namespace RoboSharp.Studio.Pipeline;
 public readonly record struct StudioRunProgress(
     RobotWorldSnapshot World,
     int InstructionsExecutedSoFar,
-    string? InstructionDescription);
+    string? InstructionDescription,
+    int? IlHighlightFunctionIndex,
+    int? IlHighlightInstructionIndex);

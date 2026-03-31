@@ -1,5 +1,7 @@
-# Pull requests and pushes to main: Release build, full test suite, TRX artifacts,
-# and verification that RoboSharp.slnx and docs/diagrams match the generators (see docs/build.md).
+# Pull requests and pushes to main: Release build, full test suite, TRX (Microsoft.Testing.Platform),
+# self-contained RoboSharp.Studio linux-x64 + win-x64 CI artifacts, and verification that
+# RoboSharp.slnx and docs/diagrams match the generators (see docs/build.md).
+# Does not trigger Release (CD); releases are tag-driven (release.yml).
 
 name: CI
 
@@ -47,13 +49,52 @@ jobs:
       - name: Restore, build, test, verify generated files
         uses: ./.github/actions/robo-build-verify
 
-      - name: Upload test results
+      - name: Upload test results (TRX)
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-${{ github.run_id }}
-          path: ${{ runner.temp }}/test-results/*.trx
-          if-no-files-found: ignore
+          name: ci-test-results-${{ github.run_id }}
+          path: ${{ runner.temp }}/test-results/
+          if-no-files-found: warn
+          retention-days: 28
+
+      - name: Publish RoboSharp.Studio (self-contained)
+        if: success()
+        shell: bash
+        env:
+          STUDIO_CI_OUT: ${{ runner.temp }}/studio-ci
+        run: |
+          set -euo pipefail
+          VERSION="0.0.0-ci.${{ github.run_number }}"
+          mkdir -p "$STUDIO_CI_OUT/linux-x64" "$STUDIO_CI_OUT/win-x64"
+          dotnet publish src/RoboSharp.Studio/RoboSharp.Studio.csproj \
+            --configuration Release \
+            --runtime linux-x64 \
+            -p:Version="${VERSION}" \
+            -p:RoboSharpSingleFilePublish=true \
+            -o "$STUDIO_CI_OUT/linux-x64"
+          dotnet publish src/RoboSharp.Studio/RoboSharp.Studio.csproj \
+            --configuration Release \
+            --runtime win-x64 \
+            -p:Version="${VERSION}" \
+            -p:RoboSharpSingleFilePublish=true \
+            -o "$STUDIO_CI_OUT/win-x64"
+          {
+            echo "# RoboSharp.Studio CI build (${VERSION})"
+            echo ""
+            echo "- **linux-x64:** self-contained bundle \`RoboSharp.Studio\` (no \`.exe\`)"
+            echo "- **win-x64:** self-contained \`RoboSharp.Studio.exe\`"
+            echo ""
+            echo "Same publish switches as release packaging; for tagged releases use \`release.yml\`."
+          } > "$STUDIO_CI_OUT/README.md"
+
+      - name: Upload RoboSharp.Studio CI binaries
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-ci-${{ github.run_id }}
+          path: ${{ runner.temp }}/studio-ci/
+          retention-days: 14
 
       - name: Job summary
         if: success()
@@ -67,4 +108,8 @@ jobs:
             echo "| Configuration | Release |"
             echo "| Solution | \`RoboSharp.slnx\` |"
             echo "| Generated \`RoboSharp.slnx\` / \`docs/\` | Matches generators |"
+            echo "| Test results (TRX) | Artifact \`ci-test-results-${{ github.run_id }}\` (one \`.trx\` per test project) |"
+            echo "| Studio CI build | Artifact \`studio-ci-${{ github.run_id }}\` — \`linux-x64/RoboSharp.Studio\`, \`win-x64/RoboSharp.Studio.exe\` |"
+            echo ""
+            echo "TUnit writes TRX via Microsoft.Testing.Platform (\`--report-trx\`); open \`.trx\` in Visual Studio Test Explorer or upload to Azure Pipelines."
           } >> "$GITHUB_STEP_SUMMARY"

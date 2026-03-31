@@ -1,14 +1,5 @@
 namespace RoboSharp.Runtime;
 
-internal enum EvalKind
-{
-    Int,
-    Bool,
-    Double,
-    String,
-    Array,
-}
-
 internal readonly record struct EvalSlot(
     EvalKind Kind,
     int IntValue = 0,

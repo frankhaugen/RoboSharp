@@ -21,9 +21,9 @@ public class RoboPathServiceTests
     }
 
     [Test]
-    public void Combine_RejectsParentEscape()
+    public async Task Combine_RejectsParentEscape()
     {
-        Assert.Throws<ArgumentException>(() => _paths.Combine(Root, ".."));
+        await Assert.That(() => _paths.Combine(Root, "..")).Throws<ArgumentException>();
     }
 
     [Test]

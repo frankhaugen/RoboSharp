@@ -85,6 +85,8 @@ internal sealed class LatinPanelTexts : IStudioPanelTexts
     public string IlNoTextUnexpected =>
         "(Demissio successum nuntiavit sed textus IL deest — inopinatum. Aedifica iterum et Diagnostica vide.)";
 
+    public string IlCopyDisassembly => "Copia textum IL";
+
     public string WorldRuntimeTitle => "Orbis et interpres";
     public string WorldRuntimeSubtitle =>
         "Post Curr: summarium orbis, perfectio aut culpa, print() stdout, et stderr. Secta signata sunt ut exempla maneant clara.";

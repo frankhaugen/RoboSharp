@@ -20,4 +20,14 @@ public interface IStudioPanel
     Control CreateView();
 
     void OnSnapshotChanged(PipelineSnapshot snapshot);
+
+    /// <summary>Live interpreter tick while Run is stepping (world + IL cursor). Default: no-op.</summary>
+    void OnRunProgress(StudioRunProgress progress) { }
+
+    /// <summary>Re-apply strings from the current <see cref="RoboSharp.Locales.ITeachingLocale"/> after the user changes language.</summary>
+    void ApplyLocale(PipelineSnapshot? lastSnapshot)
+    {
+        if (lastSnapshot is not null)
+            OnSnapshotChanged(lastSnapshot);
+    }
 }

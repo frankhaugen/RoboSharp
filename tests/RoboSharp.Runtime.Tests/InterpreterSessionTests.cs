@@ -55,4 +55,33 @@ public class InterpreterSessionTests
         await Assert.That(r.Succeeded).IsFalse();
         await Assert.That(r.Fault!.Message).Contains("Step limit");
     }
+
+    [Test]
+    public async Task ProgressHighlight_Matches_Instruction_Being_Stepped()
+    {
+        const string source = """
+            print(1);
+            """;
+
+        var compiled = RoboSharpCompiler.Compile(source);
+        await Assert.That(compiled.Succeeded).IsTrue();
+        var program = compiled.Program!;
+
+        var session = new RoboInterpreterSession();
+        session.Start(program, RobotWorldFactory.CreateBorderedEmpty(4, 4), TextWriter.Null, TextWriter.Null);
+
+        var entry = program.EntryFunctionIndex;
+        await Assert.That(session.ProgressHighlightFunctionIndex).IsEqualTo(entry);
+        await Assert.That(session.ProgressHighlightInstructionIndex).IsEqualTo(0);
+
+        var r1 = session.Step();
+        await Assert.That(r1.Kind).IsEqualTo(InterpreterStepKind.Advanced);
+        await Assert.That(session.ProgressHighlightFunctionIndex).IsEqualTo(entry);
+        await Assert.That(session.ProgressHighlightInstructionIndex).IsEqualTo(0);
+
+        var r2 = session.Step();
+        await Assert.That(r2.Kind).IsEqualTo(InterpreterStepKind.Advanced);
+        await Assert.That(session.ProgressHighlightFunctionIndex).IsEqualTo(entry);
+        await Assert.That(session.ProgressHighlightInstructionIndex).IsEqualTo(1);
+    }
 }

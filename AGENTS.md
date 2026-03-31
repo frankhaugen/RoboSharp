@@ -24,6 +24,7 @@ Human-oriented documentation (build, repository layout, diagrams, and topic stub
   - the .NET BCL
   - `Microsoft.Extensions.*`
   - `TUnit` for tests
+  - `Microsoft.Testing.Extensions.TrxReport` for test projects only (TRX reports from Microsoft.Testing.Platform in CI)
   - **Avalonia** (`Avalonia`, `Avalonia.Desktop`, `Avalonia.AvaloniaEdit`, `Avalonia.Themes.*`, `Avalonia.Fonts.*`) for **`RoboSharp.Studio` only**, as the approved code-first desktop host UI (see `docs/studio/technology-stack.md` and `docs/nuget.md`)
 - Do not introduce third-party frameworks, helper libraries, ORMs, serializers, UI frameworks, test helpers, mocking libraries, analyzers, or utility packages beyond the allowed set (the Avalonia line above is the explicit Studio exception).
 
@@ -418,6 +419,8 @@ Do not collapse source into the project file by default.
 - package creep
 - “shared utilities” buckets with unclear ownership
 - hiding the teaching pipeline behind abstractions that obscure the stages
+- stale/deprecated dependencies
+- not committing when done and local clean builds and tests pass in debug and release
 
 ## Agent instructions
 
@@ -429,7 +432,7 @@ When changing this repository:
 4. Prefer DI-based composition with restrained interface use.
 5. Route persistence through IO/workspace abstractions.
 6. Keep host/UI projects thin.
-7. Reject new dependencies unless they are BCL, `Microsoft.Extensions.*`, `TUnit`, or Avalonia for `RoboSharp.Studio` only as documented.
+7. Reject new dependencies unless they are BCL, `Microsoft.Extensions.*`, `TUnit`, `Microsoft.Testing.Extensions.TrxReport` (test projects, CI TRX only), or Avalonia for `RoboSharp.Studio` only as documented.
 8. Reject XAML.
 9. Reject Blazor host patterns that are not true Server-Side Interactive Blazor.
 10. Prefer concrete, testable, modern C# over cleverness.

@@ -1,7 +1,5 @@
 namespace RoboSharp.Semantics;
 
-public sealed record BuiltinSignature(BuiltinId Id, TypeSymbol ReturnType, IReadOnlyList<TypeSymbol> ParameterTypes);
-
 public static class BuiltinCatalog
 {
     private static readonly Dictionary<string, BuiltinSignature> ByName = CreateMap();
@@ -43,9 +41,4 @@ public static class BuiltinCatalog
         signature = new BuiltinSignature(BuiltinId.Print, PrimitiveTypeSymbol.Void, [argType]);
         return argType is PrimitiveTypeSymbol or ArrayTypeSymbol;
     }
-}
-
-public sealed class FullBuiltinProfileProvider : IBuiltinProfileProvider
-{
-    public bool IsAvailable(BuiltinId id) => true;
 }

@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Text;
 using Avalonia;
 using Avalonia.Controls;
@@ -7,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Avalonia.Platform.Storage;
 using RoboSharp.Locales;
 using RoboSharp.Semantics;
@@ -23,14 +25,19 @@ public sealed class MainWindow : Window
     private static readonly UTF8Encoding Utf8NoBom = new(encoderShouldEmitUTF8Identifier: false);
 
     private readonly MainWindowViewModel _viewModel;
-    private readonly ITeachingLocale _locale;
-    private readonly FilePickerFileType _roboSourceFileType;
+    private readonly StudioLocaleHost _locale;
     private readonly IReadOnlyList<IStudioPanel> _panels;
+    private FilePickerFileType _roboSourceFileType;
+    private Grid? _chromeGrid;
+    private Grid? _workspaceGrid;
+    private Border? _sidebarBorder;
+    private Border? _inspectorBorder;
+    private PipelineSnapshot? _lastPipelineSnapshot;
     private KarelWorldGridView? _karelWorld;
     private RoboSharpSourceEditor? _sourceEditor;
     private bool _closeBypassDirtyCheck;
 
-    public MainWindow(MainWindowViewModel viewModel, ITeachingLocale locale, IEnumerable<IStudioPanel> panels)
+    public MainWindow(MainWindowViewModel viewModel, StudioLocaleHost locale, IEnumerable<IStudioPanel> panels)
     {
         _viewModel = viewModel;
         _locale = locale;
@@ -60,6 +67,7 @@ public sealed class MainWindow : Window
 
         _viewModel.PipelineUpdated += OnPipelineUpdated;
         _viewModel.RunProgressUpdated += OnRunProgress;
+        _locale.Changed += OnTeachingLocaleChanged;
         _viewModel.Build();
     }
 
@@ -69,17 +77,95 @@ public sealed class MainWindow : Window
         {
             RowDefinitions = new RowDefinitions("Auto,Auto,*"),
         };
+        _chromeGrid = grid;
 
-        grid.Children.Add(BuildMenu());
-        Grid.SetRow(grid.Children[^1], 0);
+        var menu = BuildMenu();
+        grid.Children.Add(menu);
+        Grid.SetRow(menu, 0);
 
-        grid.Children.Add(BuildToolbar());
-        Grid.SetRow(grid.Children[^1], 1);
+        var toolbar = BuildToolbar();
+        grid.Children.Add(toolbar);
+        Grid.SetRow(toolbar, 1);
 
-        grid.Children.Add(BuildMainWorkspace());
-        Grid.SetRow(grid.Children[^1], 2);
+        _workspaceGrid = BuildMainWorkspace();
+        grid.Children.Add(_workspaceGrid);
+        Grid.SetRow(_workspaceGrid, 2);
 
         return grid;
+    }
+
+    private void OnTeachingLocaleChanged(object? sender, EventArgs e)
+    {
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            Dispatcher.UIThread.Post(() => OnTeachingLocaleChanged(sender, e));
+            return;
+        }
+
+        _roboSourceFileType = new FilePickerFileType(_locale.Shell.RoboFileTypeDescription)
+        {
+            Patterns = ["*.robo"],
+        };
+
+        if (_chromeGrid is not null)
+        {
+            ReplaceChromeRow(_chromeGrid, 0, BuildMenu());
+            ReplaceChromeRow(_chromeGrid, 1, BuildToolbar());
+        }
+
+        if (_workspaceGrid is not null)
+        {
+            var sb = (Border)BuildSidebar();
+            ReplaceChildAtGridColumn(_workspaceGrid, 0, sb);
+            _sidebarBorder = sb;
+
+            var ins = (Border)BuildInspectorColumn();
+            ReplaceChildAtGridColumn(_workspaceGrid, 4, ins);
+            _inspectorBorder = ins;
+        }
+
+        _viewModel.ApplyLocaleRefresh();
+
+        if (_lastPipelineSnapshot is { } snap)
+        {
+            foreach (var p in _panels)
+                p.ApplyLocale(snap);
+            _sourceEditor?.ApplyDiagnosticSpans(snap.SourceDiagnosticSpans);
+            if (snap.WorldVisualization is { } w)
+                ApplyKarelSnapshot(w);
+        }
+        else
+            _viewModel.Build();
+    }
+
+    private static void ReplaceChromeRow(Grid grid, int row, Control replacement)
+    {
+        for (var i = grid.Children.Count - 1; i >= 0; i--)
+        {
+            if (Grid.GetRow(grid.Children[i]) == row)
+            {
+                grid.Children.RemoveAt(i);
+                break;
+            }
+        }
+
+        grid.Children.Add(replacement);
+        Grid.SetRow(replacement, row);
+    }
+
+    private static void ReplaceChildAtGridColumn(Grid grid, int column, Control replacement)
+    {
+        for (var i = grid.Children.Count - 1; i >= 0; i--)
+        {
+            if (Grid.GetColumn(grid.Children[i]) == column)
+            {
+                grid.Children.RemoveAt(i);
+                break;
+            }
+        }
+
+        grid.Children.Add(replacement);
+        Grid.SetColumn(replacement, column);
     }
 
     private Menu BuildMenu()
@@ -118,6 +204,24 @@ public sealed class MainWindow : Window
         var about = new MenuItem { Header = _locale.Shell.MenuAbout };
         about.Click += (_, _) => ShowAbout();
 
+        var langEnglish = new MenuItem { Header = _locale.Shell.LanguageEnglishMenuLabel };
+        langEnglish.Click += (_, _) => _locale.SetLocaleId("en");
+
+        var langLatin = new MenuItem { Header = _locale.Shell.LanguageLatinMenuLabel };
+        langLatin.Click += (_, _) => _locale.SetLocaleId("la");
+
+        var languageMenu = new MenuItem
+        {
+            Header = _locale.Shell.LanguageMenuHeader,
+            Items = { langEnglish, langLatin },
+        };
+
+        var settingsMenu = new MenuItem
+        {
+            Header = _locale.Shell.SettingsMenuHeader,
+            Items = { languageMenu },
+        };
+
         return new Menu
         {
             Background = StudioVisual.SurfaceBrush,
@@ -138,6 +242,7 @@ public sealed class MainWindow : Window
                         fileExit,
                     },
                 },
+                settingsMenu,
                 new MenuItem
                 {
                     Header = _locale.Shell.HelpMenuHeader,
@@ -601,7 +706,7 @@ public sealed class MainWindow : Window
         };
     }
 
-    private Control BuildMainWorkspace()
+    private Grid BuildMainWorkspace()
     {
         var grid = new Grid
         {
@@ -609,8 +714,9 @@ public sealed class MainWindow : Window
             Margin = new Thickness(12),
         };
 
-        grid.Children.Add(BuildSidebar());
-        Grid.SetColumn(grid.Children[^1], 0);
+        _sidebarBorder = BuildSidebar();
+        grid.Children.Add(_sidebarBorder);
+        Grid.SetColumn(_sidebarBorder, 0);
 
         var split1 = new GridSplitter
         {
@@ -637,13 +743,14 @@ public sealed class MainWindow : Window
         grid.Children.Add(split2);
         Grid.SetColumn(grid.Children[^1], 3);
 
-        grid.Children.Add(BuildInspectorColumn());
-        Grid.SetColumn(grid.Children[^1], 4);
+        _inspectorBorder = BuildInspectorColumn();
+        grid.Children.Add(_inspectorBorder);
+        Grid.SetColumn(_inspectorBorder, 4);
 
         return grid;
     }
 
-    private Control BuildSidebar()
+    private Border BuildSidebar()
     {
         var lessonHeading = new TextBlock
         {
@@ -775,7 +882,7 @@ public sealed class MainWindow : Window
         return _sourceEditor;
     }
 
-    private Control BuildInspectorColumn()
+    private Border BuildInspectorColumn()
     {
         var stack = new StackPanel
         {
@@ -865,6 +972,7 @@ public sealed class MainWindow : Window
 
     private void OnPipelineUpdated(PipelineSnapshot snapshot)
     {
+        _lastPipelineSnapshot = snapshot;
         foreach (var panel in _panels)
             panel.OnSnapshotChanged(snapshot);
 
@@ -874,8 +982,12 @@ public sealed class MainWindow : Window
             ApplyKarelSnapshot(w);
     }
 
-    private void OnRunProgress(StudioRunProgress progress) =>
+    private void OnRunProgress(StudioRunProgress progress)
+    {
         ApplyKarelSnapshot(progress.World);
+        foreach (var panel in _panels)
+            panel.OnRunProgress(progress);
+    }
 
     private void ApplyKarelSnapshot(RobotWorldSnapshot snapshot)
     {

@@ -85,8 +85,12 @@ dotnet test RoboSharp.slnx `
     --configuration Release `
     --no-build `
     --verbosity normal `
-    --logger "trx;LogFileName=test-results.trx" `
-    --results-directory $resultsDir
+    --results-directory $resultsDir `
+    -- `
+    --report-trx `
+    --results-directory $resultsDir `
+    --timeout 15m `
+    --disable-logo
 
 dotnet run --file .githooks/GenerateDocDiagrams.cs -- $repoRoot
 dotnet run --file .githooks/UpdateSlnx.cs -- $repoRoot
