@@ -3,6 +3,9 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Spectre.Console" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\RoboSharp.Application\RoboSharp.Application.csproj" />
     <ProjectReference Include="..\RoboSharp.IO\RoboSharp.IO.csproj" />
     <ProjectReference Include="..\RoboSharp.Toolchain\RoboSharp.Toolchain.csproj" />

@@ -2,7 +2,7 @@ using System.Text;
 using RoboSharp.IL;
 using RoboSharp.Semantics;
 
-namespace RoboSharp.Studio.Pipeline;
+namespace RoboSharp.Application.Teaching;
 
 public static class IlTeachingFormatter
 {

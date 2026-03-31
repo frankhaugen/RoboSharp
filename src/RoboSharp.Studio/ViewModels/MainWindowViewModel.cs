@@ -4,7 +4,7 @@ using System.Windows.Input;
 using Avalonia.Threading;
 using RoboSharp.Locales;
 using RoboSharp.Semantics;
-using RoboSharp.Studio.Pipeline;
+using RoboSharp.Application.Teaching;
 using RoboSharp.World;
 
 namespace RoboSharp.Studio.ViewModels;
@@ -27,7 +27,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private StudioRunSpeed _selectedRunSpeed = StudioRunSpeed.Slow;
     private string _selectedLessonId = StudioLessonIds.FirstMoves;
     private string _selectedProfileId;
-    private string _selectedWorldPresetId = RobotWorldPresets.GoalCornerId;
+    private string _selectedWorldPresetId;
     private string _liveRunStatus;
     private IReadOnlyList<RunSpeedOption> _runSpeedOptions;
 
@@ -35,8 +35,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         _pipeline = pipeline;
         _locale = locale;
-        _selectedProfileId = locale.Lessons.Get(_selectedLessonId).DefaultProfileId;
-        _sourceDocument = locale.Lessons.Get(_selectedLessonId).ExampleSource;
+        var initial = locale.Lessons.Get(_selectedLessonId);
+        _selectedProfileId = initial.DefaultProfileId;
+        _selectedWorldPresetId = initial.DefaultWorldPresetId;
+        _sourceDocument = initial.ExampleSource;
         _liveRunStatus = locale.Shell.DefaultLiveRunStatus;
         _runSpeedOptions = BuildRunSpeedOptions(locale);
         BuildCommand = new DelegateCommand(Build);
@@ -214,33 +216,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    /// <summary>Lesson builtin profile id (<see cref="LessonBuiltinProfiles.OrderedProfileIds"/>).</summary>
-    public string SelectedProfileId
-    {
-        get => _selectedProfileId;
-        set
-        {
-            if (_selectedProfileId == value)
-                return;
-            _selectedProfileId = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedProfileId)));
-            Build();
-        }
-    }
+    /// <summary>Lesson builtin profile id — follows <see cref="SelectedLessonId"/>.</summary>
+    public string SelectedProfileId => _selectedProfileId;
 
-    /// <summary>World preset id (<see cref="RobotWorldPresets.OrderedPresets"/>).</summary>
-    public string SelectedWorldPresetId
-    {
-        get => _selectedWorldPresetId;
-        set
-        {
-            if (_selectedWorldPresetId == value)
-                return;
-            _selectedWorldPresetId = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedWorldPresetId)));
-            Build();
-        }
-    }
+    /// <summary>World preset id — follows <see cref="SelectedLessonId"/>.</summary>
+    public string SelectedWorldPresetId => _selectedWorldPresetId;
 
     /// <summary>Shown under the world during Run and after for kids-friendly feedback.</summary>
     public string LiveRunStatus
@@ -268,9 +248,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             if (_selectedLessonId == value)
                 return;
             _selectedLessonId = value;
-            _selectedProfileId = _locale.Lessons.Get(value).DefaultProfileId;
+            var def = _locale.Lessons.Get(value);
+            _selectedProfileId = def.DefaultProfileId;
+            _selectedWorldPresetId = def.DefaultWorldPresetId;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedLessonId)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedProfileId)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedWorldPresetId)));
             NotifyLessonPresentationChanged();
             Build();
         }
@@ -284,12 +267,24 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string CurrentLessonSyntax => _locale.Lessons.Get(_selectedLessonId).SyntaxSection;
 
+    public string CurrentLessonGoalSectionBody => _locale.Lessons.Get(_selectedLessonId).GoalSectionBody;
+
+    public string CurrentLessonCommandsSectionBody => _locale.Lessons.Get(_selectedLessonId).CommandsSectionBody;
+
+    public string CurrentLessonWorldDisplayName => RobotWorldPresets.GetDisplayName(_selectedWorldPresetId);
+
+    public string CurrentLessonProfileDisplayName => LessonBuiltinProfiles.GetDisplayName(_selectedProfileId);
+
     void NotifyLessonPresentationChanged()
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonTitle)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonStartBlurb)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonKeywords)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonSyntax)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonGoalSectionBody)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonCommandsSectionBody)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonWorldDisplayName)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonProfileDisplayName)));
     }
 
     void LoadLessonExampleIntoEditor() =>

@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 
 using RoboSharp.Locales;
-using RoboSharp.Studio.Pipeline;
+using RoboSharp.Application.Teaching;
 using RoboSharp.Studio.Shell;
 
 namespace RoboSharp.Studio.Panels;

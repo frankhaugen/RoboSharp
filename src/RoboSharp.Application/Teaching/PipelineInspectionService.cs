@@ -7,7 +7,7 @@ using RoboSharp.Semantics;
 using RoboSharp.Toolchain;
 using RoboSharp.World;
 
-namespace RoboSharp.Studio.Pipeline;
+namespace RoboSharp.Application.Teaching;
 
 public sealed class PipelineInspectionService : IPipelineInspectionService
 {

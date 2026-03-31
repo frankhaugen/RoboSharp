@@ -15,7 +15,9 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.5" />
+    <PackageVersion Include="Spectre.Console" Version="0.49.1" />
     <!-- Test projects only (Directory.Build.props); MTP TRX for CI artifacts — not the VSTest trx logger -->
     <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="1.8.2" />
     <PackageVersion Include="TUnit" Version="0.55.23" />

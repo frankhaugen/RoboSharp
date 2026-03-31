@@ -55,6 +55,12 @@ public static class TeachingLocaleStringGuard
                 issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.ExampleSource)}.");
             if (string.IsNullOrWhiteSpace(L.DefaultProfileId))
                 issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.DefaultProfileId)}.");
+            if (string.IsNullOrWhiteSpace(L.DefaultWorldPresetId))
+                issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.DefaultWorldPresetId)}.");
+            if (string.IsNullOrWhiteSpace(L.GoalSectionBody))
+                issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.GoalSectionBody)}.");
+            if (string.IsNullOrWhiteSpace(L.CommandsSectionBody))
+                issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.CommandsSectionBody)}.");
             if (L.VisiblePanelIds is null || L.VisiblePanelIds.Count == 0)
             {
                 issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.VisiblePanelIds)}.");

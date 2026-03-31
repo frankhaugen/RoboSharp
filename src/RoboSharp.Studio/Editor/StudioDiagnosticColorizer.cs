@@ -1,7 +1,7 @@
 using Avalonia.Media;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Rendering;
-using RoboSharp.Studio.Pipeline;
+using RoboSharp.Application.Teaching;
 
 namespace RoboSharp.Studio.Editor;
 

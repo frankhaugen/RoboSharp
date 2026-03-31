@@ -1,8 +1,8 @@
 using RoboSharp.World;
 
-namespace RoboSharp.Studio.Pipeline;
+namespace RoboSharp.Application.Teaching;
 
-/// <summary>Live execution tick for world animation + status line (IL step visualization).</summary>
+/// <summary>Live execution tick for world animation + IL step visualization.</summary>
 public readonly record struct StudioRunProgress(
     RobotWorldSnapshot World,
     int InstructionsExecutedSoFar,

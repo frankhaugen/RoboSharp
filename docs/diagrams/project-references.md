@@ -7,7 +7,10 @@ All `ProjectReference` edges between projects under `src/` and `tests/`.
 ```mermaid
 flowchart TD
   RoboSharp_Application["RoboSharp.Application"] --> RoboSharp_IL["RoboSharp.IL"]
+  RoboSharp_Application["RoboSharp.Application"] --> RoboSharp_Language["RoboSharp.Language"]
+  RoboSharp_Application["RoboSharp.Application"] --> RoboSharp_Locales["RoboSharp.Locales"]
   RoboSharp_Application["RoboSharp.Application"] --> RoboSharp_Runtime["RoboSharp.Runtime"]
+  RoboSharp_Application["RoboSharp.Application"] --> RoboSharp_Semantics["RoboSharp.Semantics"]
   RoboSharp_Application["RoboSharp.Application"] --> RoboSharp_Toolchain["RoboSharp.Toolchain"]
   RoboSharp_Application["RoboSharp.Application"] --> RoboSharp_Workspaces["RoboSharp.Workspaces"]
   RoboSharp_Application["RoboSharp.Application"] --> RoboSharp_World["RoboSharp.World"]
@@ -55,6 +58,7 @@ flowchart TD
   RoboSharp_Semantics["RoboSharp.Semantics"] --> RoboSharp_Language["RoboSharp.Language"]
   RoboSharp_Semantics_Tests["RoboSharp.Semantics.Tests"] --> RoboSharp_Language["RoboSharp.Language"]
   RoboSharp_Semantics_Tests["RoboSharp.Semantics.Tests"] --> RoboSharp_Semantics["RoboSharp.Semantics"]
+  RoboSharp_Studio["RoboSharp.Studio"] --> RoboSharp_Application["RoboSharp.Application"]
   RoboSharp_Studio["RoboSharp.Studio"] --> RoboSharp_Hosting["RoboSharp.Hosting"]
   RoboSharp_Studio["RoboSharp.Studio"] --> RoboSharp_IL["RoboSharp.IL"]
   RoboSharp_Studio["RoboSharp.Studio"] --> RoboSharp_Language["RoboSharp.Language"]

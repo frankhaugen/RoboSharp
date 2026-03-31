@@ -28,7 +28,10 @@ public class ProjectDependencyGuardTests
         ["RoboSharp.Application"] = new(StringComparer.OrdinalIgnoreCase)
         {
             "RoboSharp.IL",
+            "RoboSharp.Language",
+            "RoboSharp.Locales",
             "RoboSharp.Runtime",
+            "RoboSharp.Semantics",
             "RoboSharp.Toolchain",
             "RoboSharp.Workspaces",
             "RoboSharp.World",
@@ -43,6 +46,7 @@ public class ProjectDependencyGuardTests
         },
         ["RoboSharp.Studio"] = new(StringComparer.OrdinalIgnoreCase)
         {
+            "RoboSharp.Application",
             "RoboSharp.Hosting",
             "RoboSharp.Language",
             "RoboSharp.Locales",
@@ -52,7 +56,15 @@ public class ProjectDependencyGuardTests
             "RoboSharp.Runtime",
             "RoboSharp.World",
         },
-        ["RoboSharp.Web"] = new(StringComparer.OrdinalIgnoreCase) { "RoboSharp.Hosting", "RoboSharp.World" },
+        ["RoboSharp.Web"] = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "RoboSharp.Application",
+            "RoboSharp.Hosting",
+            "RoboSharp.Language",
+            "RoboSharp.Locales",
+            "RoboSharp.Semantics",
+            "RoboSharp.World",
+        },
     };
 
     [Test]

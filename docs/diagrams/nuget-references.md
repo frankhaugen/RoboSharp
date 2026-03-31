@@ -7,6 +7,7 @@ Direct `PackageReference` items per project, with versions from `Directory.Packa
 ```mermaid
 flowchart LR
   RoboSharp_Application["RoboSharp.Application"] --> pkg_Microsoft_Extensions_DependencyInjection_Abstractions["Microsoft.Extensions.DependencyInjection.Abstractions v10.0.5"]
+  RoboSharp_Application["RoboSharp.Application"] --> pkg_Microsoft_Extensions_Logging_Abstractions["Microsoft.Extensions.Logging.Abstractions v10.0.5"]
   RoboSharp_Application_Tests["RoboSharp.Application.Tests"] --> pkg_Microsoft_Extensions_DependencyInjection["Microsoft.Extensions.DependencyInjection v10.0.5"]
   RoboSharp_Application_Tests["RoboSharp.Application.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Architecture_Tests["RoboSharp.Architecture.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
@@ -16,6 +17,7 @@ flowchart LR
   RoboSharp_IO_Tests["RoboSharp.IO.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Language_Tests["RoboSharp.Language.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Locales_Tests["RoboSharp.Locales.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
+  RoboSharp_Player["RoboSharp.Player"] --> pkg_Spectre_Console["Spectre.Console v0.49.1"]
   RoboSharp_Runtime_Tests["RoboSharp.Runtime.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Semantics_Tests["RoboSharp.Semantics.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Studio["RoboSharp.Studio"] --> pkg_Avalonia["Avalonia v11.2.8"]

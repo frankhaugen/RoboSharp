@@ -3,9 +3,9 @@ using RoboSharp.Language;
 using RoboSharp.Toolchain;
 using RoboSharp.World;
 
-namespace RoboSharp.Studio.Pipeline;
+namespace RoboSharp.Application.Teaching;
 
-/// <summary>Lexer → parser → compile phases → optional interpreter run for Studio inspection panes.</summary>
+/// <summary>Lexer → parser → compile phases → optional interpreter run for teaching inspection UIs.</summary>
 public sealed record PipelineSnapshot(
     string Source,
     IReadOnlyList<SyntaxToken> Tokens,

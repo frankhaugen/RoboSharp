@@ -10,7 +10,10 @@ public interface IStudioLessonCatalog
     StudioLessonDefinition Get(string lessonId);
 }
 
-/// <param name="DefaultProfileId">Suggested <c>LessonBuiltinProfiles</c> id applied when the user picks this lesson.</param>
+/// <param name="DefaultProfileId"><c>LessonBuiltinProfiles</c> id — fixed for this lesson (ribbon switch updates it).</param>
+/// <param name="DefaultWorldPresetId"><c>RobotWorldPresets</c> id — practice map for this lesson.</param>
+/// <param name="GoalSectionBody">Didactic copy for the practice-map section (not the map name; that comes from presets).</param>
+/// <param name="CommandsSectionBody">Didactic copy for what the compiler allows in this lesson.</param>
 /// <param name="VisiblePanelIds">Which inspector tabs to show (<see cref="StudioPanelIds"/>). Order in the UI follows each panel's <c>Order</c>.</param>
 public sealed record StudioLessonDefinition(
     string Id,
@@ -20,4 +23,7 @@ public sealed record StudioLessonDefinition(
     string SyntaxSection,
     string ExampleSource,
     string DefaultProfileId,
+    string DefaultWorldPresetId,
+    string GoalSectionBody,
+    string CommandsSectionBody,
     IReadOnlyList<string> VisiblePanelIds);

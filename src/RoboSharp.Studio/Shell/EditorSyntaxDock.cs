@@ -4,7 +4,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using RoboSharp.Language;
 using RoboSharp.Locales;
-using RoboSharp.Studio.Pipeline;
+using RoboSharp.Application.Teaching;
 
 namespace RoboSharp.Studio.Shell;
 

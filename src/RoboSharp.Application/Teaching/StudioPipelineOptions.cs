@@ -1,9 +1,9 @@
 using RoboSharp.Semantics;
 using RoboSharp.World;
 
-namespace RoboSharp.Studio.Pipeline;
+namespace RoboSharp.Application.Teaching;
 
-/// <summary>Lesson profile + world factory passed through Build/Run so Studio matches kid-friendly presets.</summary>
+/// <summary>Lesson profile + world factory for teaching pipeline build/run.</summary>
 public sealed record StudioPipelineOptions(
     IBuiltinProfileProvider BuiltinProfile,
     Func<RobotWorld> CreateRunWorld,

@@ -24,6 +24,7 @@
     <EmbeddedResource Include="Editor\RoboSharp.xshd" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RoboSharp.Application\RoboSharp.Application.csproj" />
     <ProjectReference Include="..\RoboSharp.Hosting\RoboSharp.Hosting.csproj" />
     <ProjectReference Include="..\RoboSharp.Locales\RoboSharp.Locales.csproj" />
     <ProjectReference Include="..\RoboSharp.IL\RoboSharp.IL.csproj" />

@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using AvaloniaEdit;
 using AvaloniaEdit.Editing;
-using RoboSharp.Studio.Pipeline;
+using RoboSharp.Application.Teaching;
 using RoboSharp.Studio.Shell;
 
 namespace RoboSharp.Studio.Editor;

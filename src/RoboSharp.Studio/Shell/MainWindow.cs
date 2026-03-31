@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,10 +12,9 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.Platform.Storage;
 using RoboSharp.Locales;
-using RoboSharp.Semantics;
 using RoboSharp.Studio.Editor;
 using RoboSharp.Studio.Panels;
-using RoboSharp.Studio.Pipeline;
+using RoboSharp.Application.Teaching;
 using RoboSharp.Studio.ViewModels;
 using RoboSharp.World;
 
@@ -38,11 +38,8 @@ public sealed class MainWindow : Window
     private EditorSyntaxDock? _editorSyntaxDock;
     private TabControl? _inspectorTabs;
     private bool _closeBypassDirtyCheck;
-    private ComboBox? _lessonCombo;
-    private ComboBox? _profileCombo;
-    private ComboBox? _worldCombo;
+    private readonly List<(string Id, Button Btn)> _lessonRibbonEntries = new();
     private ComboBox? _speedCombo;
-    private bool _shellComboSyncSuppress;
 
     public MainWindow(MainWindowViewModel viewModel, StudioLocaleHost locale, IEnumerable<IStudioPanel> panels)
     {
@@ -84,7 +81,7 @@ public sealed class MainWindow : Window
     {
         var grid = new Grid
         {
-            RowDefinitions = new RowDefinitions("Auto,Auto,*"),
+            RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*"),
         };
         _chromeGrid = grid;
 
@@ -92,13 +89,17 @@ public sealed class MainWindow : Window
         grid.Children.Add(menu);
         Grid.SetRow(menu, 0);
 
+        var ribbon = BuildLessonRibbon();
+        grid.Children.Add(ribbon);
+        Grid.SetRow(ribbon, 1);
+
         var toolbar = BuildToolbar();
         grid.Children.Add(toolbar);
-        Grid.SetRow(toolbar, 1);
+        Grid.SetRow(toolbar, 2);
 
         _workspaceGrid = BuildMainWorkspace();
         grid.Children.Add(_workspaceGrid);
-        Grid.SetRow(_workspaceGrid, 2);
+        Grid.SetRow(_workspaceGrid, 3);
 
         return grid;
     }
@@ -639,72 +640,91 @@ public sealed class MainWindow : Window
 
     private void OnViewModelPropertyChangedForShellCombos(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (_shellComboSyncSuppress)
-            return;
         switch (e.PropertyName)
         {
             case nameof(MainWindowViewModel.SelectedLessonId):
-                SyncLessonComboFromViewModel();
+                SyncLessonRibbonFromViewModel();
                 PopulateInspectorTabs();
                 break;
-            case nameof(MainWindowViewModel.SelectedProfileId):
-                SyncProfileComboFromViewModel();
-                break;
-            case nameof(MainWindowViewModel.SelectedWorldPresetId):
-                SyncWorldComboFromViewModel();
-                break;
         }
     }
 
-    private void SyncLessonComboFromViewModel()
+    private void SyncLessonRibbonFromViewModel()
     {
-        if (_lessonCombo is null)
+        if (_lessonRibbonEntries.Count == 0)
             return;
-        _shellComboSyncSuppress = true;
-        try
+        var accent = StudioVisual.AccentBrush;
+        var rest = StudioVisual.SurfaceElevatedBrush;
+        var onFg = new SolidColorBrush(Color.Parse("#0B0F14"));
+        foreach (var (lessonId, btn) in _lessonRibbonEntries)
         {
-            var pick = _lessonCombo.Items.Cast<LessonPick>().FirstOrDefault(p => p.Id == _viewModel.SelectedLessonId);
-            if (pick is not null)
-                _lessonCombo.SelectedItem = pick;
-        }
-        finally
-        {
-            _shellComboSyncSuppress = false;
+            var on = string.Equals(lessonId, _viewModel.SelectedLessonId, StringComparison.OrdinalIgnoreCase);
+            btn.Background = on ? accent : rest;
+            btn.Foreground = on ? onFg : StudioVisual.TextPrimaryBrush;
+            btn.FontWeight = on ? FontWeight.SemiBold : FontWeight.Normal;
         }
     }
 
-    private void SyncProfileComboFromViewModel()
+    private Control BuildLessonRibbon()
     {
-        if (_profileCombo is null)
-            return;
-        _shellComboSyncSuppress = true;
-        try
-        {
-            var pick = _profileCombo.Items.Cast<ProfilePick>().FirstOrDefault(p => p.Id == _viewModel.SelectedProfileId);
-            if (pick is not null)
-                _profileCombo.SelectedItem = pick;
-        }
-        finally
-        {
-            _shellComboSyncSuppress = false;
-        }
-    }
+        _lessonRibbonEntries.Clear();
 
-    private void SyncWorldComboFromViewModel()
-    {
-        if (_worldCombo is null)
-            return;
-        _shellComboSyncSuppress = true;
-        try
+        var hint = new TextBlock
         {
-            var pick = _worldCombo.Items.Cast<WorldPick>().FirstOrDefault(p => p.Id == _viewModel.SelectedWorldPresetId);
-            if (pick is not null)
-                _worldCombo.SelectedItem = pick;
-        }
-        finally
+            Text = _locale.Sidebar.LessonRibbonSubtitle,
+            FontSize = 11,
+            Foreground = StudioVisual.TextMutedBrush,
+            TextWrapping = TextWrapping.Wrap,
+            LineHeight = 16,
+            Margin = new Thickness(0, 0, 0, 8),
+        };
+
+        var strip = new StackPanel
         {
-            _shellComboSyncSuppress = false;
+            Orientation = Orientation.Horizontal,
+            Spacing = 8,
+        };
+
+        foreach (var L in _locale.Lessons.OrderedLessons)
+        {
+            var id = L.Id;
+            var btn = new Button
+            {
+                Content = L.Title,
+                Padding = new Thickness(14, 8),
+                CornerRadius = StudioVisual.ButtonRadius,
+                BorderBrush = StudioVisual.BorderSubtleBrush,
+                BorderThickness = new Thickness(1),
+                Cursor = new Cursor(StandardCursorType.Hand),
+            };
+            btn.Click += (_, _) => _viewModel.SelectedLessonId = id;
+            _lessonRibbonEntries.Add((id, btn));
+            strip.Children.Add(btn);
         }
+
+        var scroll = new ScrollViewer
+        {
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+            Content = strip,
+        };
+
+        var stack = new StackPanel
+        {
+            Spacing = 0,
+            Children = { hint, scroll },
+        };
+
+        SyncLessonRibbonFromViewModel();
+
+        return new Border
+        {
+            Background = StudioVisual.SurfaceElevatedBrush,
+            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderThickness = new Thickness(0, 0, 0, 1),
+            Padding = new Thickness(16, 10, 16, 8),
+            Child = stack,
+        };
     }
 
     private Control BuildToolbar()
@@ -815,7 +835,7 @@ public sealed class MainWindow : Window
     {
         var grid = new Grid
         {
-            ColumnDefinitions = new ColumnDefinitions("300,6,*,6,520"),
+            ColumnDefinitions = new ColumnDefinitions("328,6,*,6,520"),
             Margin = new Thickness(12),
         };
 
@@ -866,30 +886,6 @@ public sealed class MainWindow : Window
             Margin = new Thickness(0, 0, 0, 8),
         };
 
-        var lessonCaption = new TextBlock
-        {
-            Text = _locale.Sidebar.LessonPickerCaption,
-            FontSize = 11,
-            Foreground = StudioVisual.TextMutedBrush,
-            Margin = new Thickness(0, 0, 0, 4),
-        };
-
-        var lessonBox = new ComboBox
-        {
-            MinWidth = 240,
-            Margin = new Thickness(0, 0, 0, 8),
-        };
-        foreach (var L in _locale.Lessons.OrderedLessons)
-            lessonBox.Items.Add(new LessonPick(L.Id, L.Title));
-        lessonBox.SelectionChanged += (_, _) =>
-        {
-            if (_shellComboSyncSuppress)
-                return;
-            if (lessonBox.SelectedItem is LessonPick pick)
-                _viewModel.SelectedLessonId = pick.Id;
-        };
-        _lessonCombo = lessonBox;
-
         var startBlurb = new TextBlock
         {
             TextWrapping = TextWrapping.Wrap,
@@ -903,7 +899,7 @@ public sealed class MainWindow : Window
         var loadExample = new Button
         {
             Content = _locale.Sidebar.LoadLessonExampleButton,
-            Margin = new Thickness(0, 0, 0, 12),
+            Margin = new Thickness(0, 0, 0, 16),
             Padding = new Thickness(12, 8),
             CornerRadius = StudioVisual.ButtonRadius,
             HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -915,60 +911,110 @@ public sealed class MainWindow : Window
         };
         loadExample.Bind(Button.CommandProperty, new Binding(nameof(MainWindowViewModel.LoadLessonExampleCommand)));
 
-        var goalCaption = new TextBlock
+        var goalSectionHeading = new TextBlock
         {
-            Text = _locale.Sidebar.GoalCaption,
+            Text = _locale.Sidebar.LessonSectionGoalHeading,
+            FontSize = 13,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.AccentBrush,
+            Margin = new Thickness(0, 0, 0, 6),
+        };
+
+        var goalSectionBody = new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            LineHeight = 18,
             FontSize = 11,
             Foreground = StudioVisual.TextMutedBrush,
-            Margin = new Thickness(0, 0, 0, 4),
+            Margin = new Thickness(0, 0, 0, 8),
+        };
+        goalSectionBody.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.CurrentLessonGoalSectionBody)));
+
+        var worldLabel = new TextBlock
+        {
+            Text = _locale.Sidebar.LessonWorldNameLabel,
+            FontSize = 10,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.TextMutedBrush,
+            Margin = new Thickness(0, 0, 0, 2),
         };
 
-        var worldBox = new ComboBox
+        var worldName = new TextBlock
         {
-            MinWidth = 240,
-            Margin = new Thickness(0, 0, 0, 10),
+            TextWrapping = TextWrapping.Wrap,
+            LineHeight = 20,
+            FontSize = 13,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.TextPrimaryBrush,
+            Margin = new Thickness(0, 0, 0, 8),
         };
-        foreach (var (id, title) in RobotWorldPresets.OrderedPresets)
-            worldBox.Items.Add(new WorldPick(id, title));
-        worldBox.SelectionChanged += (_, _) =>
-        {
-            if (_shellComboSyncSuppress)
-                return;
-            if (worldBox.SelectedItem is WorldPick pick)
-                _viewModel.SelectedWorldPresetId = pick.Id;
-        };
-        _worldCombo = worldBox;
+        worldName.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.CurrentLessonWorldDisplayName)));
 
-        var profileCaption = new TextBlock
+        var worldPreviewTitle = new TextBlock
         {
-            Text = _locale.Sidebar.CommandsCaption,
+            Text = _locale.Sidebar.WorldPreviewHeading,
+            FontSize = 12,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.AccentBrush,
+            Margin = new Thickness(0, 0, 0, 6),
+        };
+
+        _worldGridPreview = new RobotWorldGridView();
+
+        var commandsSectionHeading = new TextBlock
+        {
+            Text = _locale.Sidebar.LessonSectionCommandsHeading,
+            FontSize = 13,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.AccentBrush,
+            Margin = new Thickness(0, 16, 0, 6),
+        };
+
+        var commandsSectionBody = new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            LineHeight = 18,
             FontSize = 11,
             Foreground = StudioVisual.TextMutedBrush,
-            Margin = new Thickness(0, 0, 0, 4),
+            Margin = new Thickness(0, 0, 0, 8),
+        };
+        commandsSectionBody.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.CurrentLessonCommandsSectionBody)));
+
+        var profileLabel = new TextBlock
+        {
+            Text = _locale.Sidebar.LessonProfileNameLabel,
+            FontSize = 10,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.TextMutedBrush,
+            Margin = new Thickness(0, 0, 0, 2),
         };
 
-        var profileBox = new ComboBox
+        var profileName = new TextBlock
         {
-            MinWidth = 240,
-            Margin = new Thickness(0, 0, 0, 10),
+            TextWrapping = TextWrapping.Wrap,
+            LineHeight = 20,
+            FontSize = 13,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.TextPrimaryBrush,
+            Margin = new Thickness(0, 0, 0, 12),
         };
-        foreach (var id in LessonBuiltinProfiles.OrderedProfileIds)
-            profileBox.Items.Add(new ProfilePick(id, LessonBuiltinProfiles.GetDisplayName(id)));
-        profileBox.SelectionChanged += (_, _) =>
+        profileName.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.CurrentLessonProfileDisplayName)));
+
+        var referenceHeading = new TextBlock
         {
-            if (_shellComboSyncSuppress)
-                return;
-            if (profileBox.SelectedItem is ProfilePick pick)
-                _viewModel.SelectedProfileId = pick.Id;
+            Text = _locale.Sidebar.LessonSectionReferenceHeading,
+            FontSize = 13,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.AccentBrush,
+            Margin = new Thickness(0, 0, 0, 6),
         };
-        _profileCombo = profileBox;
 
         var kwHeading = new TextBlock
         {
             Text = _locale.Sidebar.KeywordsHeading,
             FontSize = 12,
             FontWeight = FontWeight.SemiBold,
-            Foreground = StudioVisual.AccentBrush,
+            Foreground = StudioVisual.TextPrimaryBrush,
             Margin = new Thickness(0, 0, 0, 4),
         };
 
@@ -987,7 +1033,7 @@ public sealed class MainWindow : Window
             Text = _locale.Sidebar.SyntaxHeading,
             FontSize = 12,
             FontWeight = FontWeight.SemiBold,
-            Foreground = StudioVisual.AccentBrush,
+            Foreground = StudioVisual.TextPrimaryBrush,
             Margin = new Thickness(0, 0, 0, 4),
         };
 
@@ -1014,25 +1060,14 @@ public sealed class MainWindow : Window
             Mode = BindingMode.OneWay,
         });
 
-        var worldPreviewTitle = new TextBlock
-        {
-            Text = _locale.Sidebar.WorldPreviewHeading,
-            FontSize = 14,
-            FontWeight = FontWeight.SemiBold,
-            Foreground = StudioVisual.AccentBrush,
-            Margin = new Thickness(0, 0, 0, 8),
-        };
-
-        _worldGridPreview = new RobotWorldGridView();
-
         var hint = new TextBlock
         {
             Text = _locale.Sidebar.WorldPreviewHint,
             TextWrapping = TextWrapping.Wrap,
             Foreground = StudioVisual.TextMutedBrush,
             LineHeight = 20,
-            FontSize = 12,
-            Margin = new Thickness(0, 16, 0, 0),
+            FontSize = 11,
+            Margin = new Thickness(0, 8, 0, 0),
         };
 
         var stack = new StackPanel
@@ -1041,21 +1076,24 @@ public sealed class MainWindow : Window
             Children =
             {
                 startHeading,
-                lessonCaption,
-                lessonBox,
                 startBlurb,
                 loadExample,
-                goalCaption,
-                worldBox,
-                profileCaption,
-                profileBox,
+                goalSectionHeading,
+                goalSectionBody,
+                worldLabel,
+                worldName,
+                worldPreviewTitle,
+                _worldGridPreview,
+                commandsSectionHeading,
+                commandsSectionBody,
+                profileLabel,
+                profileName,
+                referenceHeading,
                 kwHeading,
                 kwBody,
                 synHeading,
                 synBody,
                 runStatus,
-                worldPreviewTitle,
-                _worldGridPreview,
                 hint,
             },
         };
@@ -1067,8 +1105,6 @@ public sealed class MainWindow : Window
             VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
         };
 
-        SyncShellCombosFromViewModel();
-
         return new Border
         {
             Background = StudioVisual.SurfaceBrush,
@@ -1079,38 +1115,6 @@ public sealed class MainWindow : Window
             BoxShadow = StudioVisual.SubtleCardShadow,
             Child = scroll,
         };
-    }
-
-    private void SyncShellCombosFromViewModel()
-    {
-        _shellComboSyncSuppress = true;
-        try
-        {
-            if (_lessonCombo is not null)
-            {
-                var lp = _lessonCombo.Items.Cast<LessonPick>().FirstOrDefault(p => p.Id == _viewModel.SelectedLessonId);
-                if (lp is not null)
-                    _lessonCombo.SelectedItem = lp;
-            }
-
-            if (_profileCombo is not null)
-            {
-                var pp = _profileCombo.Items.Cast<ProfilePick>().FirstOrDefault(p => p.Id == _viewModel.SelectedProfileId);
-                if (pp is not null)
-                    _profileCombo.SelectedItem = pp;
-            }
-
-            if (_worldCombo is not null)
-            {
-                var wp = _worldCombo.Items.Cast<WorldPick>().FirstOrDefault(p => p.Id == _viewModel.SelectedWorldPresetId);
-                if (wp is not null)
-                    _worldCombo.SelectedItem = wp;
-            }
-        }
-        finally
-        {
-            _shellComboSyncSuppress = false;
-        }
     }
 
     private Control BuildEditorPane()
@@ -1293,18 +1297,4 @@ public sealed class MainWindow : Window
         _worldGridPreview.Update(snapshot);
     }
 
-    private sealed record LessonPick(string Id, string Title)
-    {
-        public override string ToString() => Title;
-    }
-
-    private sealed record ProfilePick(string Id, string Title)
-    {
-        public override string ToString() => Title;
-    }
-
-    private sealed record WorldPick(string Id, string Title)
-    {
-        public override string ToString() => Title;
-    }
 }

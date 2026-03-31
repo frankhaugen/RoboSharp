@@ -1,4 +1,4 @@
-using RoboSharp.Studio.Pipeline;
+using RoboSharp.Application.Teaching;
 
 namespace RoboSharp.Studio.ViewModels;
 

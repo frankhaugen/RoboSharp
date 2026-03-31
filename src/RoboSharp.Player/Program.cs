@@ -22,7 +22,7 @@ internal static class Program
             return (int)RoboSharpExitCode.InvalidArguments;
         }
 
-        if (!TryParseArgs(args, out var fullPath, out var maxInstructions, out var parseError))
+        if (!TryParseArgs(args, out var fullPath, out var maxInstructions, out var plainMode, out var parseError))
         {
             await Console.Error.WriteLineAsync(parseError).ConfigureAwait(false);
             return (int)RoboSharpExitCode.InvalidArguments;
@@ -51,17 +51,26 @@ internal static class Program
             return (int)RoboSharpExitCode.InvalidExecutableOrProject;
         }
 
-        await using var stdout = new StreamWriter(Console.OpenStandardOutput(), Encoding.UTF8) { AutoFlush = true };
-        await using var stderr = new StreamWriter(Console.OpenStandardError(), Encoding.UTF8) { AutoFlush = true };
-
         var world = RobotWorldFactory.CreateBorderedEmpty(16, 16);
         var execution = new RoboSharpExecutionService(new WorkspaceBuildService());
         RunExecutionOptions? options = maxInstructions is { } n
             ? new RunExecutionOptions { MaxInstructions = n }
             : null;
-        var result = await execution.RunExecutableJsonAsync(json, world, stdout, stderr, options).ConfigureAwait(false);
 
-        return (int)result.ExitCode;
+        if (plainMode)
+        {
+            await using var stdout = new StreamWriter(Console.OpenStandardOutput(), Encoding.UTF8) { AutoFlush = true };
+            await using var stderr = new StreamWriter(Console.OpenStandardError(), Encoding.UTF8) { AutoFlush = true };
+            var result = await execution.RunExecutableJsonAsync(json, world, stdout, stderr, options).ConfigureAwait(false);
+            return (int)result.ExitCode;
+        }
+
+        using var swOut = new StringWriter();
+        using var swErr = new StringWriter();
+        var runResult = await execution.RunExecutableJsonAsync(json, world, swOut, swErr, options).ConfigureAwait(false);
+        var ascii = RobotWorldSnapshotAscii.Format(world.CreateSnapshot());
+        PlayerTui.ShowResult(fullPath, runResult, swOut.ToString(), swErr.ToString(), ascii, maxInstructions);
+        return (int)runResult.ExitCode;
     }
 
     private static async Task PrintHelpAsync()
@@ -74,9 +83,12 @@ internal static class Program
               RoboSharp.Player [options] <path-to-file.roboexe>
 
             Options:
+              --plain           Stream program stdout/stderr to the console (for piping / CI). Skips the TUI.
               --max-steps <n>   Run at most n IL instructions (then exit with runtime fault if still running).
-              --headless        Reserved for hosts without a console (no-op in this build).
+              --headless        Same as --plain (alias for scripts).
               -h, --help        Show this help.
+
+            Default (no --plain): Spectre.Console TUI with world grid, captured stdout/stderr, and exit status.
 
             Example (from repository root):
               dotnet run --project src/RoboSharp.Player/RoboSharp.Player.csproj -- samples/hello.roboexe
@@ -85,10 +97,11 @@ internal static class Program
             """).ConfigureAwait(false);
     }
 
-    private static bool TryParseArgs(string[] args, out string fullPath, out int? maxInstructions, out string error)
+    private static bool TryParseArgs(string[] args, out string fullPath, out int? maxInstructions, out bool plainMode, out string error)
     {
         fullPath = "";
         maxInstructions = null;
+        plainMode = false;
         error = "";
 
         var positionals = new List<string>();
@@ -98,8 +111,11 @@ internal static class Program
             if (IsHelpSwitch(a))
                 continue;
 
-            if (a == "--headless")
+            if (a is "--headless" or "--plain")
+            {
+                plainMode = true;
                 continue;
+            }
 
             if (a == "--max-steps")
             {

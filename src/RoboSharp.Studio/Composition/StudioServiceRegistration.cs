@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using RoboSharp.Application.Teaching;
 using RoboSharp.Hosting;
 using RoboSharp.Language;
 using RoboSharp.Locales;
 using RoboSharp.Studio.Panels;
-using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.Shell;
 using RoboSharp.Studio.ViewModels;
 

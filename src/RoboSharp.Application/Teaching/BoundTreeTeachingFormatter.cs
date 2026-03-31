@@ -1,9 +1,9 @@
 using System.Text;
 using RoboSharp.Semantics;
 
-namespace RoboSharp.Studio.Pipeline;
+namespace RoboSharp.Application.Teaching;
 
-/// <summary>Indented bound tree text for the Studio bound-tree panel (teaching, not a full pretty-printer).</summary>
+/// <summary>Indented bound tree text for teaching panels (not a full pretty-printer).</summary>
 public static class BoundTreeTeachingFormatter
 {
     public static string Format(BoundCompilationUnit unit)

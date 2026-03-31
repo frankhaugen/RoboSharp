@@ -1,4 +1,4 @@
-﻿namespace RoboSharp.Studio.Pipeline;
+namespace RoboSharp.Application.Teaching;
 
 public enum IlListingLineKind
 {
