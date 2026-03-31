@@ -93,7 +93,10 @@ public class ProjectDependencyGuardTests
 
     private static string? ProjectNameFromInclude(string include)
     {
-        var file = Path.GetFileName(include.Trim());
+        // Csproj paths use Windows-style separators; normalize so Path.GetFileName works on Linux
+        // (there '\' is not a directory separator, and the guard would compare the wrong string).
+        var normalized = include.Trim().Replace('\\', '/');
+        var file = Path.GetFileName(normalized);
         return file.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase)
             ? Path.GetFileNameWithoutExtension(file)
             : null;
