@@ -38,7 +38,7 @@ The Studio app is a code-first **Avalonia** shell with pipeline inspection tabs;
 
 ## Run RoboSharp Player (compiled `.roboexe` host)
 
-The **Player** is a thin console host that loads a v1 **JSON** `.roboexe`, runs it on a default Karel world, and prints **stdout/stderr** with a process exit code (see [`docs/player/README.md`](player/README.md) and [`toolchain/v1-toolchain-spec.md`](toolchain/v1-toolchain-spec.md)).
+The **Player** is a thin console host that loads a v1 **JSON** `.roboexe`, runs it on a default grid world, and prints **stdout/stderr** with a process exit code (see [`docs/player/README.md`](player/README.md) and [`toolchain/v1-toolchain-spec.md`](toolchain/v1-toolchain-spec.md)).
 
 From the repository root, using the checked-in sample:
 

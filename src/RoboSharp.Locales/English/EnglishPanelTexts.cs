@@ -102,7 +102,7 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
     {
         var doc =
             "# World & interpreter\r\n" +
-            "Build compiles only. Run compiles again, then executes IL on the Karel world step by step.\r\n" +
+            "Build compiles only. Run compiles again, then executes IL on the grid step by step.\r\n" +
             EnglishTeachingExplainer.StdoutVsDiagnostics +
             "\r\n\r\n";
 

@@ -55,7 +55,7 @@ dotnet test RoboSharp.slnx
 
 ### RoboSharp Studio (desktop)
 
-Code-first **Avalonia** shell: editor, Karel-style world, **Build** (compile-only) and **Run** (compile then step), pipeline panes (tokens, tree, diagnostics, bound tree, IL, world/runtime).
+Code-first **Avalonia** shell: editor, robot grid world, **Build** (compile-only) and **Run** (compile then step), pipeline panes (tokens, tree, diagnostics, bound tree, IL, world/runtime).
 
 ```powershell
 dotnet run --project src/RoboSharp.Studio/RoboSharp.Studio.csproj

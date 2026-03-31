@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/docs/">
     <File Path="docs/README.md" />
+    <File Path="docs/acknowledgements.md" />
     <File Path="docs/architecture.md" />
     <File Path="docs/build.md" />
     <File Path="docs/docs-for-spreading.md" />

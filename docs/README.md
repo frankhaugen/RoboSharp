@@ -35,6 +35,7 @@ The **authoritative** rules for architecture, dependencies, and agent behavior l
 | [RoboSharp.Player](player/README.md) | Compiled-artifact host; lesson run mode (`docs/player/`) |
 | [RoboSharp Studio](studio/README.md) | IDE host specifications (topic index; former `general-specs.md`) |
 | [Implementation gaps](implementation-gaps.md) | What is specified vs implemented in `src/` (missing pipeline, hosts, lessons) |
+| [Acknowledgements](acknowledgements.md) | Inspiration and teaching lineage (e.g. grid-robot pedagogy) |
 | [Missing specs](missing-specs.md) | Topics that still lack a full written spec (artifacts, debugger, lessons runtime, etc.) |
 | [Documentation stubs — fill order](documentation-todo.md) | Checklist and suggested sequence for authoring the skeleton below |
 | [Agent workflows](agents/README.md) | Repeatable agent tasks (e.g. syncing the documentation checklist with `tools/doc-checklist.ps1`) |

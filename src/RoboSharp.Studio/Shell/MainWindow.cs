@@ -33,7 +33,7 @@ public sealed class MainWindow : Window
     private Border? _sidebarBorder;
     private Border? _inspectorBorder;
     private PipelineSnapshot? _lastPipelineSnapshot;
-    private KarelWorldGridView? _karelWorld;
+    private RobotWorldGridView? _worldGridPreview;
     private RoboSharpSourceEditor? _sourceEditor;
     private bool _closeBypassDirtyCheck;
 
@@ -132,7 +132,7 @@ public sealed class MainWindow : Window
                 p.ApplyLocale(snap);
             _sourceEditor?.ApplyDiagnosticSpans(snap.SourceDiagnosticSpans);
             if (snap.WorldVisualization is { } w)
-                ApplyKarelSnapshot(w);
+                ApplyWorldGridPreviewSnapshot(w);
         }
         else
             _viewModel.Build();
@@ -818,20 +818,20 @@ public sealed class MainWindow : Window
             Mode = BindingMode.OneWay,
         });
 
-        var karelTitle = new TextBlock
+        var worldPreviewTitle = new TextBlock
         {
-            Text = _locale.Sidebar.KarelWorldHeading,
+            Text = _locale.Sidebar.WorldPreviewHeading,
             FontSize = 14,
             FontWeight = FontWeight.SemiBold,
             Foreground = StudioVisual.AccentBrush,
             Margin = new Thickness(0, 0, 0, 8),
         };
 
-        _karelWorld = new KarelWorldGridView();
+        _worldGridPreview = new RobotWorldGridView();
 
         var hint = new TextBlock
         {
-            Text = _locale.Sidebar.KarelWorldHint,
+            Text = _locale.Sidebar.WorldPreviewHint,
             TextWrapping = TextWrapping.Wrap,
             Foreground = StudioVisual.TextMutedBrush,
             LineHeight = 20,
@@ -845,7 +845,7 @@ public sealed class MainWindow : Window
             Children =
             {
                 lessonHeading, profileCaption, profileBox, worldCaption, worldBox, runStatus,
-                karelTitle, _karelWorld, hint,
+                worldPreviewTitle, _worldGridPreview, hint,
             },
         };
 
@@ -884,20 +884,21 @@ public sealed class MainWindow : Window
 
     private Border BuildInspectorColumn()
     {
-        var stack = new StackPanel
+        var tabs = new TabControl
         {
-            Spacing = 10,
+            TabStripPlacement = Dock.Left,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
         };
 
         foreach (var panel in _panels)
-            stack.Children.Add(BuildPanelCard(panel));
-
-        var scroll = new ScrollViewer
         {
-            Content = stack,
-            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
-            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-        };
+            tabs.Items.Add(new TabItem
+            {
+                Header = panel.DisplayName,
+                Content = BuildInspectorTabContent(panel),
+            });
+        }
 
         return new Border
         {
@@ -907,56 +908,44 @@ public sealed class MainWindow : Window
             BorderThickness = new Thickness(1),
             Padding = new Thickness(8),
             BoxShadow = StudioVisual.SubtleCardShadow,
-            Child = scroll,
+            Child = tabs,
         };
     }
 
-    private Control BuildPanelCard(IStudioPanel panel)
+    private static Control BuildInspectorTabContent(IStudioPanel panel)
     {
-        var title = new TextBlock
+        var body = panel.CreateView();
+        var bodyScroll = new ScrollViewer
         {
-            Text = panel.DisplayName,
-            FontSize = 13,
-            FontWeight = FontWeight.SemiBold,
-            Foreground = StudioVisual.AccentBrush,
+            Content = body,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
         };
 
-        var header = new StackPanel
-        {
-            Spacing = 0,
-            Margin = new Thickness(0, 0, 0, 8),
-        };
-        header.Children.Add(title);
+        var inner = new Grid();
         if (panel.InspectorSubtitle is { Length: > 0 } sub)
         {
-            header.Children.Add(new TextBlock
+            inner.RowDefinitions = new RowDefinitions("Auto,*");
+            var subtitle = new TextBlock
             {
                 Text = sub,
                 FontSize = 11,
                 Foreground = StudioVisual.TextMutedBrush,
                 TextWrapping = TextWrapping.Wrap,
                 LineHeight = 16,
-                Margin = new Thickness(0, 4, 0, 0),
-            });
+                Margin = new Thickness(0, 0, 0, 8),
+            };
+            inner.Children.Add(subtitle);
+            Grid.SetRow(subtitle, 0);
+            inner.Children.Add(bodyScroll);
+            Grid.SetRow(bodyScroll, 1);
         }
-
-        var body = panel.CreateView();
-        var bodyScroll = new ScrollViewer
+        else
         {
-            Content = body,
-            MaxHeight = 280,
-            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
-        };
-
-        var inner = new Grid
-        {
-            RowDefinitions = new RowDefinitions("Auto,*"),
-        };
-        inner.Children.Add(header);
-        Grid.SetRow(header, 0);
-        inner.Children.Add(bodyScroll);
-        Grid.SetRow(bodyScroll, 1);
+            inner.RowDefinitions = new RowDefinitions("*");
+            inner.Children.Add(bodyScroll);
+            Grid.SetRow(bodyScroll, 0);
+        }
 
         return new Border
         {
@@ -979,21 +968,21 @@ public sealed class MainWindow : Window
         _sourceEditor?.ApplyDiagnosticSpans(snapshot.SourceDiagnosticSpans);
 
         if (snapshot.WorldVisualization is { } w)
-            ApplyKarelSnapshot(w);
+            ApplyWorldGridPreviewSnapshot(w);
     }
 
     private void OnRunProgress(StudioRunProgress progress)
     {
-        ApplyKarelSnapshot(progress.World);
+        ApplyWorldGridPreviewSnapshot(progress.World);
         foreach (var panel in _panels)
             panel.OnRunProgress(progress);
     }
 
-    private void ApplyKarelSnapshot(RobotWorldSnapshot snapshot)
+    private void ApplyWorldGridPreviewSnapshot(RobotWorldSnapshot snapshot)
     {
-        if (_karelWorld is null)
+        if (_worldGridPreview is null)
             return;
-        _karelWorld.Update(snapshot);
+        _worldGridPreview.Update(snapshot);
     }
 
     private sealed record ProfilePick(string Id, string Title)

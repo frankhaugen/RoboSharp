@@ -102,7 +102,7 @@ internal sealed class LatinPanelTexts : IStudioPanelTexts
     {
         var doc =
             "# Orbis et interpres\r\n" +
-            "Aedificatio tantum compila. Curr iterum compila, dein IL in orbe Kareliano gradatim agit.\r\n" +
+            "Aedificatio tantum compila. Curr iterum compila, dein IL in reticulo gradatim agit.\r\n" +
             LatinTeachingExplainer.StdoutVsDiagnostics +
             "\r\n\r\n";
 

@@ -35,14 +35,14 @@ internal sealed class EnglishShellTexts : IStudioShellTexts
     public string AboutTitle => "About";
     public string AboutAppName => "RoboSharp Studio";
     public string AboutBody =>
-        "Teaching IDE for RoboSharp: lexer → parser → binder → fake IL → interpreter on a Karel grid. " +
+        "Teaching IDE for RoboSharp: lexer → parser → binder → fake IL → interpreter on a robot grid. " +
         "Every stage is visible in the pipeline panels. See docs/studio/ in the repository for the full specification.";
     public string ToolbarBuild => "Build";
     public string ToolbarRun => "▶  Run";
     public string ToolbarStepSpeed => "Step speed";
     public string ToolbarAppTitle => "RoboSharp Studio";
     public string ToolbarSubtitle =>
-        "Karel map (left) · Build = compile and refresh teaching panels · Run = compile again, then step the interpreter (pick a speed)";
+        "Lesson map (left) · Build = compile and refresh teaching panels · Run = compile again, then step the interpreter (pick a speed)";
     public string RunSpeedRealtime =>
         "Realtime — run to the end without pausing between IL instructions";
     public string RunSpeedSlow =>

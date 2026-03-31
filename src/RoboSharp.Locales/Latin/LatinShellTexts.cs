@@ -35,14 +35,14 @@ internal sealed class LatinShellTexts : IStudioShellTexts
     public string AboutTitle => "De hoc";
     public string AboutAppName => "RoboSharp Studium";
     public string AboutBody =>
-        "IDE docendi pro RoboSharp: lexicum → syntacticus → nexus → IL ficta → interpres in reti Kareliano. " +
+        "IDE docendi pro RoboSharp: lexicum → syntacticus → nexus → IL ficta → interpres in reticulo robotis. " +
         "Omnis gradus in tabulis patentibus cernitur. Vide docs/studio/ in repositorio.";
     public string ToolbarBuild => "Aedifica";
     public string ToolbarRun => "▶  Curr";
     public string ToolbarStepSpeed => "Celeritas graduum";
     public string ToolbarAppTitle => "RoboSharp Studium";
     public string ToolbarSubtitle =>
-        "Orbis Karelianus (sinistra) · Aedifica = compila et renova tabulas · Curr = iterum compila, dein interpres gradatim (lege celeritatem)";
+        "Charta lectionis (sinistra) · Aedifica = compila et renova tabulas · Curr = iterum compila, dein interpres gradatim (lege celeritatem)";
     public string RunSpeedRealtime =>
         "Statim — ad finem sine mora inter singulas instructiones IL";
     public string RunSpeedSlow =>
@@ -50,7 +50,7 @@ internal sealed class LatinShellTexts : IStudioShellTexts
     public string RunSpeedGlacial =>
         "Glacialis — longior mora; optime cum classem demonstras";
     public string DefaultLiveRunStatus =>
-        "Elige profilium lectionis et orbis cartam infra, dein Aedifica (compila) vel Curr (compila + exsequere in reti).";
+        "Elige profilium lectionis et orbis cartam infra, dein Aedifica (compila) vel Curr (compila + exsequere in reticulo).";
     public string LiveRunInProgress => "Currit… compilat et interpretem gradatim agit.";
     public string LiveRunFinished => "Cursus finitus.";
     public string LiveRunFaultFallback => "Cursus substitit.";

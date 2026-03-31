@@ -6,8 +6,8 @@ using RoboSharp.World;
 
 namespace RoboSharp.Studio.Shell;
 
-/// <summary>Tile-based Karel world for the sidebar — clearer than raw ASCII in a <see cref="TextBlock"/>.</summary>
-public sealed class KarelWorldGridView : Border
+/// <summary>Tile-based world preview for the sidebar — clearer than raw ASCII in a <see cref="TextBlock"/>.</summary>
+public sealed class RobotWorldGridView : Border
 {
     /// <summary>
     /// Logical cell size in DIPs for the grid inside the <see cref="Viewbox"/>.
@@ -22,9 +22,9 @@ public sealed class KarelWorldGridView : Border
     private int _width;
     private int _height;
 
-    public KarelWorldGridView()
+    public RobotWorldGridView()
     {
-        Background = StudioVisual.KarelWorldChromeBrush;
+        Background = StudioVisual.WorldGridChromeBrush;
         BorderBrush = StudioVisual.BorderSubtleBrush;
         BorderThickness = new Thickness(1);
         CornerRadius = new CornerRadius(8);
@@ -73,22 +73,22 @@ public sealed class KarelWorldGridView : Border
 
                 if (actor is not null)
                 {
-                    cell.Background = StudioVisual.KarelRobotCellBrush;
+                    cell.Background = StudioVisual.WorldGridActorCellBrush;
                     cell.BorderBrush = StudioVisual.AccentBrush;
                     cell.BorderThickness = new Thickness(1.25);
                     glyph.Text = DirectionGlyph(actor.Direction);
-                    glyph.Foreground = StudioVisual.KarelRobotGlyphBrush;
+                    glyph.Foreground = StudioVisual.WorldGridActorGlyphBrush;
                 }
                 else
                 {
                     cell.BorderThickness = new Thickness(0.5);
-                    cell.BorderBrush = StudioVisual.KarelCellEdgeBrush;
+                    cell.BorderBrush = StudioVisual.WorldGridCellEdgeBrush;
                     glyph.Text = string.Empty;
                     cell.Background = terrain[x, y] switch
                     {
-                        TerrainCellKind.Wall => StudioVisual.KarelWallBrush,
-                        TerrainCellKind.Goal => StudioVisual.KarelGoalBrush,
-                        _ => StudioVisual.KarelFloorBrush,
+                        TerrainCellKind.Wall => StudioVisual.WorldGridWallBrush,
+                        TerrainCellKind.Goal => StudioVisual.WorldGridGoalBrush,
+                        _ => StudioVisual.WorldGridFloorBrush,
                     };
                 }
             }

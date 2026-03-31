@@ -23,6 +23,7 @@ Re-scan after large doc or code changes: line counts and `src/` contents drift.
 | -------- | ------------ | ----------- |
 | [README.md](README.md) | Yes | N/A |
 | [implementation-gaps.md](implementation-gaps.md) | Yes | N/A |
+| [acknowledgements.md](acknowledgements.md) | Yes | N/A |
 | [missing-specs.md](missing-specs.md) | Yes | N/A |
 | [docs-for-spreading.md](docs-for-spreading.md) | Yes | N/A |
 | [build.md](build.md) | Yes | N/A |

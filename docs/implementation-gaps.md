@@ -42,7 +42,7 @@ Gaps: `.robosharp` project load, workspace integration, binary `.roboexe`, full 
 
 | Project | Code in `src/` today | Gap vs docs |
 | ------- | -------------------- | ----------- |
-| `RoboSharp.Studio` | **Partial** | Avalonia shell, full pipeline inspection, **Run** with stepping, Karel grid, **lesson profile + world preset** dropdowns, goal/score text, syntax-color preview panel. Missing: real workspace/project model, full [debugger](debugger/debugger-architecture.md), JSON lesson packs, in-editor IntelliSense (needs richer editor). |
+| `RoboSharp.Studio` | **Partial** | Avalonia shell, full pipeline inspection, **Run** with stepping, robot grid, **lesson profile + world preset** dropdowns, goal/score text, syntax-color preview panel. Missing: real workspace/project model, full [debugger](debugger/debugger-architecture.md), JSON lesson packs, in-editor IntelliSense (needs richer editor). |
 | `RoboSharp.Player` | **Partial** | Runs a v1 JSON `.roboexe` from disk with exit codes per [toolchain/v1-toolchain-spec.md](toolchain/v1-toolchain-spec.md) §11; supports `--max-steps` (maps to `RunExecutionOptions`). `--debug` / lesson mode / `--world` still open. |
 | `RoboSharp.Web` | **Partial** | `AddRoboSharpHosting()` + home-page pipeline smoke; full teaching UI still open. |
 

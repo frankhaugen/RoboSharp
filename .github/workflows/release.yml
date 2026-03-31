@@ -69,7 +69,7 @@ jobs:
           {
             printf '%s\n' "## ${TITLE}" ""
             printf '%s\n' "Packaged **${RELEASED_AT}** from tag \`${TAG}\`." ""
-            printf '%s\n' "**RoboSharp** is a teaching compiler and runtime: **source → lexer → parser → binder → fake IL → interpreter** on a Karel grid. Every stage stays visible in tooling." ""
+            printf '%s\n' "**RoboSharp** is a teaching compiler and runtime: **source → lexer → parser → binder → fake IL → interpreter** on a robot grid. Every stage stays visible in tooling." ""
             printf '%s\n' "### What is in the archives" ""
             printf '%s\n' "| Archive | Description |"
             printf '%s\n' "| --- | --- |"

@@ -15,7 +15,7 @@ You may also declare ordinary functions and call them from top-level code.
 
 The identifiers **`TopLevel`** and **`main`** are **reserved**: do not declare user functions with those names. (`main` is not a RoboSharp entry point.)
 
-Example (preferred, matches Karel-style scripts):
+Example (preferred, typical small robot programs):
 
 ```text
 move();

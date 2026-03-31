@@ -26,15 +26,15 @@ public static class StudioVisual
 
     public static Color BorderSubtle { get; } = Color.Parse("#2A3544");
 
-    public static Color KarelWall { get; } = Color.Parse("#06090D");
+    public static Color WorldGridWall { get; } = Color.Parse("#06090D");
 
-    public static Color KarelFloor { get; } = Color.Parse("#1A2638");
+    public static Color WorldGridFloor { get; } = Color.Parse("#1A2638");
 
-    public static Color KarelGoal { get; } = Color.Parse("#153D36");
+    public static Color WorldGridGoal { get; } = Color.Parse("#153D36");
 
-    public static Color KarelWorldChrome { get; } = Color.Parse("#0E141C");
+    public static Color WorldGridChrome { get; } = Color.Parse("#0E141C");
 
-    public static Color KarelRobotGlyph { get; } = Color.Parse("#051016");
+    public static Color WorldGridActorGlyph { get; } = Color.Parse("#051016");
 
     public static SolidColorBrush BackgroundDeepBrush { get; } = new(BackgroundDeep);
 
@@ -50,20 +50,20 @@ public static class StudioVisual
 
     public static SolidColorBrush BorderSubtleBrush { get; } = new(BorderSubtle);
 
-    public static SolidColorBrush KarelWallBrush { get; } = new(KarelWall);
+    public static SolidColorBrush WorldGridWallBrush { get; } = new(WorldGridWall);
 
-    public static SolidColorBrush KarelFloorBrush { get; } = new(KarelFloor);
+    public static SolidColorBrush WorldGridFloorBrush { get; } = new(WorldGridFloor);
 
-    public static SolidColorBrush KarelGoalBrush { get; } = new(KarelGoal);
+    public static SolidColorBrush WorldGridGoalBrush { get; } = new(WorldGridGoal);
 
-    public static SolidColorBrush KarelWorldChromeBrush { get; } = new(KarelWorldChrome);
+    public static SolidColorBrush WorldGridChromeBrush { get; } = new(WorldGridChrome);
 
-    /// <summary>Robot tile fill — accent-tinted so the actor reads at a glance.</summary>
-    public static SolidColorBrush KarelRobotCellBrush { get; } = new SolidColorBrush(Accent) { Opacity = 0.38 };
+    /// <summary>Actor tile fill — accent-tinted so the robot reads at a glance.</summary>
+    public static SolidColorBrush WorldGridActorCellBrush { get; } = new SolidColorBrush(Accent) { Opacity = 0.38 };
 
-    public static SolidColorBrush KarelRobotGlyphBrush { get; } = new(KarelRobotGlyph);
+    public static SolidColorBrush WorldGridActorGlyphBrush { get; } = new(WorldGridActorGlyph);
 
-    public static SolidColorBrush KarelCellEdgeBrush { get; } = new(Color.Parse("#141C28"));
+    public static SolidColorBrush WorldGridCellEdgeBrush { get; } = new(Color.Parse("#141C28"));
 
     /// <summary>Soft elevation under chrome panels (world, inspector cards).</summary>
     public static BoxShadows SoftPanelShadow { get; } = new(
