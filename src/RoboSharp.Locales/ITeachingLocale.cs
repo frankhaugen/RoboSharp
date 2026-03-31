@@ -11,6 +11,7 @@ public interface ITeachingLocale
 
     IStudioShellTexts Shell { get; }
     IStudioSidebarTexts Sidebar { get; }
+    IStudioLessonCatalog Lessons { get; }
     IStudioPanelTexts Panels { get; }
     IPipelineTeachingTexts Pipeline { get; }
 }

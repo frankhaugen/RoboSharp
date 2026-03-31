@@ -36,6 +36,11 @@ public sealed class MainWindow : Window
     private RobotWorldGridView? _worldGridPreview;
     private RoboSharpSourceEditor? _sourceEditor;
     private bool _closeBypassDirtyCheck;
+    private ComboBox? _lessonCombo;
+    private ComboBox? _profileCombo;
+    private ComboBox? _worldCombo;
+    private ComboBox? _speedCombo;
+    private bool _shellComboSyncSuppress;
 
     public MainWindow(MainWindowViewModel viewModel, StudioLocaleHost locale, IEnumerable<IStudioPanel> panels)
     {
@@ -60,6 +65,8 @@ public sealed class MainWindow : Window
             new Binding(nameof(MainWindowViewModel.WindowTitle)) { Mode = BindingMode.OneWay });
 
         Content = BuildRoot();
+
+        _viewModel.PropertyChanged += OnViewModelPropertyChangedForShellCombos;
 
         AddHandler(KeyDownEvent, OnWindowPreviewKeyDown, RoutingStrategies.Tunnel);
 
@@ -625,6 +632,75 @@ public sealed class MainWindow : Window
         w.ShowDialog(this);
     }
 
+    private void OnViewModelPropertyChangedForShellCombos(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (_shellComboSyncSuppress)
+            return;
+        switch (e.PropertyName)
+        {
+            case nameof(MainWindowViewModel.SelectedLessonId):
+                SyncLessonComboFromViewModel();
+                break;
+            case nameof(MainWindowViewModel.SelectedProfileId):
+                SyncProfileComboFromViewModel();
+                break;
+            case nameof(MainWindowViewModel.SelectedWorldPresetId):
+                SyncWorldComboFromViewModel();
+                break;
+        }
+    }
+
+    private void SyncLessonComboFromViewModel()
+    {
+        if (_lessonCombo is null)
+            return;
+        _shellComboSyncSuppress = true;
+        try
+        {
+            var pick = _lessonCombo.Items.Cast<LessonPick>().FirstOrDefault(p => p.Id == _viewModel.SelectedLessonId);
+            if (pick is not null)
+                _lessonCombo.SelectedItem = pick;
+        }
+        finally
+        {
+            _shellComboSyncSuppress = false;
+        }
+    }
+
+    private void SyncProfileComboFromViewModel()
+    {
+        if (_profileCombo is null)
+            return;
+        _shellComboSyncSuppress = true;
+        try
+        {
+            var pick = _profileCombo.Items.Cast<ProfilePick>().FirstOrDefault(p => p.Id == _viewModel.SelectedProfileId);
+            if (pick is not null)
+                _profileCombo.SelectedItem = pick;
+        }
+        finally
+        {
+            _shellComboSyncSuppress = false;
+        }
+    }
+
+    private void SyncWorldComboFromViewModel()
+    {
+        if (_worldCombo is null)
+            return;
+        _shellComboSyncSuppress = true;
+        try
+        {
+            var pick = _worldCombo.Items.Cast<WorldPick>().FirstOrDefault(p => p.Id == _viewModel.SelectedWorldPresetId);
+            if (pick is not null)
+                _worldCombo.SelectedItem = pick;
+        }
+        finally
+        {
+            _shellComboSyncSuppress = false;
+        }
+    }
+
     private Control BuildToolbar()
     {
         var build = new Button
@@ -663,7 +739,8 @@ public sealed class MainWindow : Window
 
         var speedBox = new ComboBox
         {
-            MinWidth = 120,
+            MinWidth = 96,
+            MaxWidth = 220,
             ItemsSource = _viewModel.RunSpeedOptions,
             VerticalAlignment = VerticalAlignment.Center,
         };
@@ -671,6 +748,12 @@ public sealed class MainWindow : Window
         {
             Mode = BindingMode.TwoWay,
         });
+        _speedCombo = speedBox;
+        speedBox.SelectionChanged += (_, _) =>
+        {
+            if (speedBox.SelectedItem is RunSpeedOption o)
+                ToolTip.SetTip(speedBox, o.FullCaption);
+        };
 
         var title = new TextBlock
         {
@@ -685,10 +768,31 @@ public sealed class MainWindow : Window
         var subtitle = new TextBlock
         {
             Text = _locale.Shell.ToolbarSubtitle,
-            VerticalAlignment = VerticalAlignment.Center,
+            TextWrapping = TextWrapping.Wrap,
             Foreground = StudioVisual.TextMutedBrush,
             FontSize = 13,
+            LineHeight = 18,
+            Margin = new Thickness(0, 6, 0, 0),
         };
+
+        var topRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 16,
+            Children = { title, build, run, speedLabel, speedBox },
+        };
+
+        var grid = new Grid
+        {
+            RowDefinitions = new RowDefinitions("Auto,Auto"),
+        };
+        grid.Children.Add(topRow);
+        Grid.SetRow(topRow, 0);
+        grid.Children.Add(subtitle);
+        Grid.SetRow(subtitle, 1);
+
+        if (speedBox.SelectedItem is RunSpeedOption initial)
+            ToolTip.SetTip(speedBox, initial.FullCaption);
 
         return new Border
         {
@@ -697,12 +801,7 @@ public sealed class MainWindow : Window
             BorderBrush = StudioVisual.BorderSubtleBrush,
             Padding = new Thickness(16, 10),
             BoxShadow = StudioVisual.ToolbarShadow,
-            Child = new StackPanel
-            {
-                Orientation = Orientation.Horizontal,
-                Spacing = 16,
-                Children = { title, build, run, speedLabel, speedBox, subtitle },
-            },
+            Child = grid,
         };
     }
 
@@ -710,7 +809,7 @@ public sealed class MainWindow : Window
     {
         var grid = new Grid
         {
-            ColumnDefinitions = new ColumnDefinitions("280,6,*,6,460"),
+            ColumnDefinitions = new ColumnDefinitions("300,6,*,6,520"),
             Margin = new Thickness(12),
         };
 
@@ -752,40 +851,67 @@ public sealed class MainWindow : Window
 
     private Border BuildSidebar()
     {
-        var lessonHeading = new TextBlock
+        var startHeading = new TextBlock
         {
-            Text = _locale.Sidebar.LessonAndMapHeading,
+            Text = _locale.Sidebar.StartHereHeading,
             FontSize = 14,
             FontWeight = FontWeight.SemiBold,
             Foreground = StudioVisual.AccentBrush,
             Margin = new Thickness(0, 0, 0, 8),
         };
 
-        var profileCaption = new TextBlock
+        var lessonCaption = new TextBlock
         {
-            Text = _locale.Sidebar.ProfileCaption,
+            Text = _locale.Sidebar.LessonPickerCaption,
             FontSize = 11,
             Foreground = StudioVisual.TextMutedBrush,
             Margin = new Thickness(0, 0, 0, 4),
         };
 
-        var profileBox = new ComboBox
+        var lessonBox = new ComboBox
         {
-            MinWidth = 220,
-            Margin = new Thickness(0, 0, 0, 10),
+            MinWidth = 240,
+            Margin = new Thickness(0, 0, 0, 8),
         };
-        foreach (var id in LessonBuiltinProfiles.OrderedProfileIds)
-            profileBox.Items.Add(new ProfilePick(id, LessonBuiltinProfiles.GetDisplayName(id)));
-        profileBox.SelectedItem = profileBox.Items.Cast<ProfilePick>().First(p => p.Id == _viewModel.SelectedProfileId);
-        profileBox.SelectionChanged += (_, _) =>
+        foreach (var L in _locale.Lessons.OrderedLessons)
+            lessonBox.Items.Add(new LessonPick(L.Id, L.Title));
+        lessonBox.SelectionChanged += (_, _) =>
         {
-            if (profileBox.SelectedItem is ProfilePick pick)
-                _viewModel.SelectedProfileId = pick.Id;
+            if (_shellComboSyncSuppress)
+                return;
+            if (lessonBox.SelectedItem is LessonPick pick)
+                _viewModel.SelectedLessonId = pick.Id;
         };
+        _lessonCombo = lessonBox;
 
-        var worldCaption = new TextBlock
+        var startBlurb = new TextBlock
         {
-            Text = _locale.Sidebar.WorldCaption,
+            TextWrapping = TextWrapping.Wrap,
+            LineHeight = 18,
+            FontSize = 12,
+            Foreground = StudioVisual.TextPrimaryBrush,
+            Margin = new Thickness(0, 0, 0, 8),
+        };
+        startBlurb.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.CurrentLessonStartBlurb)));
+
+        var loadExample = new Button
+        {
+            Content = _locale.Sidebar.LoadLessonExampleButton,
+            Margin = new Thickness(0, 0, 0, 12),
+            Padding = new Thickness(12, 8),
+            CornerRadius = StudioVisual.ButtonRadius,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Background = StudioVisual.SurfaceElevatedBrush,
+            Foreground = StudioVisual.TextPrimaryBrush,
+            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderThickness = new Thickness(1),
+            Cursor = new Cursor(StandardCursorType.Hand),
+        };
+        loadExample.Bind(Button.CommandProperty, new Binding(nameof(MainWindowViewModel.LoadLessonExampleCommand)));
+
+        var goalCaption = new TextBlock
+        {
+            Text = _locale.Sidebar.GoalCaption,
             FontSize = 11,
             Foreground = StudioVisual.TextMutedBrush,
             Margin = new Thickness(0, 0, 0, 4),
@@ -793,17 +919,81 @@ public sealed class MainWindow : Window
 
         var worldBox = new ComboBox
         {
-            MinWidth = 220,
+            MinWidth = 240,
             Margin = new Thickness(0, 0, 0, 10),
         };
         foreach (var (id, title) in RobotWorldPresets.OrderedPresets)
             worldBox.Items.Add(new WorldPick(id, title));
-        worldBox.SelectedItem = worldBox.Items.Cast<WorldPick>().First(p => p.Id == _viewModel.SelectedWorldPresetId);
         worldBox.SelectionChanged += (_, _) =>
         {
+            if (_shellComboSyncSuppress)
+                return;
             if (worldBox.SelectedItem is WorldPick pick)
                 _viewModel.SelectedWorldPresetId = pick.Id;
         };
+        _worldCombo = worldBox;
+
+        var profileCaption = new TextBlock
+        {
+            Text = _locale.Sidebar.CommandsCaption,
+            FontSize = 11,
+            Foreground = StudioVisual.TextMutedBrush,
+            Margin = new Thickness(0, 0, 0, 4),
+        };
+
+        var profileBox = new ComboBox
+        {
+            MinWidth = 240,
+            Margin = new Thickness(0, 0, 0, 10),
+        };
+        foreach (var id in LessonBuiltinProfiles.OrderedProfileIds)
+            profileBox.Items.Add(new ProfilePick(id, LessonBuiltinProfiles.GetDisplayName(id)));
+        profileBox.SelectionChanged += (_, _) =>
+        {
+            if (_shellComboSyncSuppress)
+                return;
+            if (profileBox.SelectedItem is ProfilePick pick)
+                _viewModel.SelectedProfileId = pick.Id;
+        };
+        _profileCombo = profileBox;
+
+        var kwHeading = new TextBlock
+        {
+            Text = _locale.Sidebar.KeywordsHeading,
+            FontSize = 12,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.AccentBrush,
+            Margin = new Thickness(0, 0, 0, 4),
+        };
+
+        var kwBody = new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            LineHeight = 18,
+            FontSize = 11,
+            Foreground = StudioVisual.TextMutedBrush,
+            Margin = new Thickness(0, 0, 0, 10),
+        };
+        kwBody.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.CurrentLessonKeywords)));
+
+        var synHeading = new TextBlock
+        {
+            Text = _locale.Sidebar.SyntaxHeading,
+            FontSize = 12,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.AccentBrush,
+            Margin = new Thickness(0, 0, 0, 4),
+        };
+
+        var synBody = new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            LineHeight = 18,
+            FontSize = 11,
+            Foreground = StudioVisual.TextMutedBrush,
+            Margin = new Thickness(0, 0, 0, 12),
+        };
+        synBody.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.CurrentLessonSyntax)));
 
         var runStatus = new TextBlock
         {
@@ -844,10 +1034,34 @@ public sealed class MainWindow : Window
             Spacing = 0,
             Children =
             {
-                lessonHeading, profileCaption, profileBox, worldCaption, worldBox, runStatus,
-                worldPreviewTitle, _worldGridPreview, hint,
+                startHeading,
+                lessonCaption,
+                lessonBox,
+                startBlurb,
+                loadExample,
+                goalCaption,
+                worldBox,
+                profileCaption,
+                profileBox,
+                kwHeading,
+                kwBody,
+                synHeading,
+                synBody,
+                runStatus,
+                worldPreviewTitle,
+                _worldGridPreview,
+                hint,
             },
         };
+
+        var scroll = new ScrollViewer
+        {
+            Content = stack,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+        };
+
+        SyncShellCombosFromViewModel();
 
         return new Border
         {
@@ -857,8 +1071,40 @@ public sealed class MainWindow : Window
             BorderThickness = new Thickness(1),
             Padding = new Thickness(16),
             BoxShadow = StudioVisual.SubtleCardShadow,
-            Child = stack,
+            Child = scroll,
         };
+    }
+
+    private void SyncShellCombosFromViewModel()
+    {
+        _shellComboSyncSuppress = true;
+        try
+        {
+            if (_lessonCombo is not null)
+            {
+                var lp = _lessonCombo.Items.Cast<LessonPick>().FirstOrDefault(p => p.Id == _viewModel.SelectedLessonId);
+                if (lp is not null)
+                    _lessonCombo.SelectedItem = lp;
+            }
+
+            if (_profileCombo is not null)
+            {
+                var pp = _profileCombo.Items.Cast<ProfilePick>().FirstOrDefault(p => p.Id == _viewModel.SelectedProfileId);
+                if (pp is not null)
+                    _profileCombo.SelectedItem = pp;
+            }
+
+            if (_worldCombo is not null)
+            {
+                var wp = _worldCombo.Items.Cast<WorldPick>().FirstOrDefault(p => p.Id == _viewModel.SelectedWorldPresetId);
+                if (wp is not null)
+                    _worldCombo.SelectedItem = wp;
+            }
+        }
+        finally
+        {
+            _shellComboSyncSuppress = false;
+        }
     }
 
     private Control BuildEditorPane()
@@ -886,7 +1132,7 @@ public sealed class MainWindow : Window
     {
         var tabs = new TabControl
         {
-            TabStripPlacement = Dock.Left,
+            TabStripPlacement = Dock.Top,
             VerticalAlignment = VerticalAlignment.Stretch,
             HorizontalAlignment = HorizontalAlignment.Stretch,
         };
@@ -953,7 +1199,7 @@ public sealed class MainWindow : Window
             CornerRadius = StudioVisual.PanelRadius,
             BorderBrush = StudioVisual.BorderSubtleBrush,
             BorderThickness = new Thickness(1),
-            Padding = new Thickness(12),
+            Padding = new Thickness(8),
             BoxShadow = StudioVisual.SubtleCardShadow,
             Child = inner,
         };
@@ -983,6 +1229,11 @@ public sealed class MainWindow : Window
         if (_worldGridPreview is null)
             return;
         _worldGridPreview.Update(snapshot);
+    }
+
+    private sealed record LessonPick(string Id, string Title)
+    {
+        public override string ToString() => Title;
     }
 
     private sealed record ProfilePick(string Id, string Title)

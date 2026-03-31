@@ -42,15 +42,18 @@ internal sealed class LatinShellTexts : IStudioShellTexts
     public string ToolbarStepSpeed => "Celeritas graduum";
     public string ToolbarAppTitle => "RoboSharp Studium";
     public string ToolbarSubtitle =>
-        "Charta lectionis (sinistra) · Aedifica = compila et renova tabulas · Curr = iterum compila, dein interpres gradatim (lege celeritatem)";
+        "Lectionem et metam sinistra elige. Aedifica = compila et renova tabulas. Curr = compila dein robotem in meta gradatim age.";
     public string RunSpeedRealtime =>
         "Statim — ad finem sine mora inter singulas instructiones IL";
     public string RunSpeedSlow =>
         "Lente — brevis mora singulis gradibus IL ut robotem sequaris";
     public string RunSpeedGlacial =>
         "Glacialis — longior mora; optime cum classem demonstras";
+    public string RunSpeedRealtimeShort => "Statim";
+    public string RunSpeedSlowShort => "Lente";
+    public string RunSpeedGlacialShort => "Glacialis";
     public string DefaultLiveRunStatus =>
-        "Elige profilium lectionis et orbis cartam infra, dein Aedifica (compila) vel Curr (compila + exsequere in reticulo).";
+        "Lectionem et metam sinistra elige, dein Aedifica vel Curr.";
     public string LiveRunInProgress => "Currit… compilat et interpretem gradatim agit.";
     public string LiveRunFinished => "Cursus finitus.";
     public string LiveRunFaultFallback => "Cursus substitit.";

@@ -14,37 +14,19 @@ namespace RoboSharp.Studio.ViewModels;
 /// </summary>
 public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
-    /// <summary>Starter buffer for first launch (untitled, not dirty until edited).</summary>
-    public const string DefaultStarterSource = """
-        // RoboSharp Studio — top-level call + procedure (return type optional on procedures).
-        MoveMany(5);
-
-        MoveMany(integer stepsCount)
-        {
-            print("Moving multiple steps!");
-
-            integer index = 0;
-            while (index < stepsCount)
-            {
-                move();
-                index = index + 1;
-            }
-        }
-
-        """;
-
     private readonly IPipelineInspectionService _pipeline;
     private readonly ITeachingLocale _locale;
     private CancellationTokenSource? _runCancellation;
 
-    private string _sourceDocument = DefaultStarterSource;
+    private string _sourceDocument;
     private string? _documentPath;
     private bool _isDirty;
     private bool _loadingContent;
 
     private PipelineSnapshot? _currentSnapshot;
     private StudioRunSpeed _selectedRunSpeed = StudioRunSpeed.Slow;
-    private string _selectedProfileId = LessonBuiltinProfiles.MovementAndPrintId;
+    private string _selectedLessonId = StudioLessonIds.FirstMoves;
+    private string _selectedProfileId;
     private string _selectedWorldPresetId = RobotWorldPresets.GoalCornerId;
     private string _liveRunStatus;
     private IReadOnlyList<RunSpeedOption> _runSpeedOptions;
@@ -53,10 +35,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         _pipeline = pipeline;
         _locale = locale;
+        _selectedProfileId = locale.Lessons.Get(_selectedLessonId).DefaultProfileId;
+        _sourceDocument = locale.Lessons.Get(_selectedLessonId).ExampleSource;
         _liveRunStatus = locale.Shell.DefaultLiveRunStatus;
         _runSpeedOptions = BuildRunSpeedOptions(locale);
         BuildCommand = new DelegateCommand(Build);
         RunCommand = new AsyncDelegateCommand(RunAsync);
+        LoadLessonExampleCommand = new DelegateCommand(LoadLessonExampleIntoEditor);
     }
 
     public IReadOnlyList<RunSpeedOption> RunSpeedOptions => _runSpeedOptions;
@@ -70,13 +55,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LiveRunStatus)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WindowTitle)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedRunSpeedOption)));
+        NotifyLessonPresentationChanged();
     }
 
     static IReadOnlyList<RunSpeedOption> BuildRunSpeedOptions(ITeachingLocale locale) =>
     [
-        new(StudioRunSpeed.Realtime, locale.Shell.RunSpeedRealtime),
-        new(StudioRunSpeed.Slow, locale.Shell.RunSpeedSlow),
-        new(StudioRunSpeed.Glacial, locale.Shell.RunSpeedGlacial),
+        new(StudioRunSpeed.Realtime, locale.Shell.RunSpeedRealtimeShort, locale.Shell.RunSpeedRealtime),
+        new(StudioRunSpeed.Slow, locale.Shell.RunSpeedSlowShort, locale.Shell.RunSpeedSlow),
+        new(StudioRunSpeed.Glacial, locale.Shell.RunSpeedGlacialShort, locale.Shell.RunSpeedGlacial),
     ];
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -271,6 +257,43 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public ICommand BuildCommand { get; }
     public ICommand RunCommand { get; }
+    public ICommand LoadLessonExampleCommand { get; }
+
+    /// <summary>Teaching track id (<see cref="IStudioLessonCatalog.OrderedLessons"/>).</summary>
+    public string SelectedLessonId
+    {
+        get => _selectedLessonId;
+        set
+        {
+            if (_selectedLessonId == value)
+                return;
+            _selectedLessonId = value;
+            _selectedProfileId = _locale.Lessons.Get(value).DefaultProfileId;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedLessonId)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedProfileId)));
+            NotifyLessonPresentationChanged();
+            Build();
+        }
+    }
+
+    public string CurrentLessonTitle => _locale.Lessons.Get(_selectedLessonId).Title;
+
+    public string CurrentLessonStartBlurb => _locale.Lessons.Get(_selectedLessonId).StartHereBlurb;
+
+    public string CurrentLessonKeywords => _locale.Lessons.Get(_selectedLessonId).KeywordsSection;
+
+    public string CurrentLessonSyntax => _locale.Lessons.Get(_selectedLessonId).SyntaxSection;
+
+    void NotifyLessonPresentationChanged()
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonTitle)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonStartBlurb)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonKeywords)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonSyntax)));
+    }
+
+    void LoadLessonExampleIntoEditor() =>
+        LoadDocument(path: null, text: _locale.Lessons.Get(_selectedLessonId).ExampleSource);
 
     public StudioPipelineOptions CreatePipelineOptions() =>
         new(

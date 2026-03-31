@@ -1,4 +1,4 @@
-﻿namespace RoboSharp.Locales;
+namespace RoboSharp.Locales;
 
 public interface IStudioShellTexts
 {
@@ -37,6 +37,9 @@ public interface IStudioShellTexts
     string RunSpeedRealtime { get; }
     string RunSpeedSlow { get; }
     string RunSpeedGlacial { get; }
+    string RunSpeedRealtimeShort { get; }
+    string RunSpeedSlowShort { get; }
+    string RunSpeedGlacialShort { get; }
     string DefaultLiveRunStatus { get; }
     string LiveRunInProgress { get; }
     string LiveRunFinished { get; }

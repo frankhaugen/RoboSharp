@@ -19,6 +19,7 @@ public static class TeachingLocaleStringGuard
         VerifyPart(locale.Sidebar, typeof(IStudioSidebarTexts), nameof(ITeachingLocale.Sidebar), issues);
         VerifyPart(locale.Panels, typeof(IStudioPanelTexts), nameof(ITeachingLocale.Panels), issues);
         VerifyPart(locale.Pipeline, typeof(IPipelineTeachingTexts), nameof(ITeachingLocale.Pipeline), issues);
+        VerifyLessons(locale.Lessons, nameof(ITeachingLocale.Lessons), issues);
         return issues;
     }
 
@@ -28,6 +29,33 @@ public static class TeachingLocaleStringGuard
         var issues = CollectIssues(locale);
         if (issues.Count > 0)
             throw new InvalidOperationException(string.Join(Environment.NewLine, issues));
+    }
+
+    static void VerifyLessons(IStudioLessonCatalog catalog, string path, List<string> issues)
+    {
+        if (catalog.OrderedLessons.Count == 0)
+        {
+            issues.Add($"{path}.{nameof(IStudioLessonCatalog.OrderedLessons)} is empty.");
+            return;
+        }
+
+        foreach (var L in catalog.OrderedLessons)
+        {
+            if (string.IsNullOrWhiteSpace(L.Id))
+                issues.Add($"{path}: lesson with empty {nameof(StudioLessonDefinition.Id)}.");
+            if (string.IsNullOrWhiteSpace(L.Title))
+                issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.Title)}.");
+            if (string.IsNullOrWhiteSpace(L.StartHereBlurb))
+                issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.StartHereBlurb)}.");
+            if (string.IsNullOrWhiteSpace(L.KeywordsSection))
+                issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.KeywordsSection)}.");
+            if (string.IsNullOrWhiteSpace(L.SyntaxSection))
+                issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.SyntaxSection)}.");
+            if (string.IsNullOrWhiteSpace(L.ExampleSource))
+                issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.ExampleSource)}.");
+            if (string.IsNullOrWhiteSpace(L.DefaultProfileId))
+                issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.DefaultProfileId)}.");
+        }
     }
 
     static void VerifyPart(object target, Type iface, string path, List<string> issues)

@@ -2,8 +2,8 @@ using RoboSharp.Studio.Pipeline;
 
 namespace RoboSharp.Studio.ViewModels;
 
-/// <summary>ComboBox item: human-readable run speed caption + underlying enum for the interpreter loop.</summary>
-public sealed record RunSpeedOption(StudioRunSpeed Speed, string Caption)
+/// <summary>ComboBox item: short label in the toolbar, full sentence as tooltip / teaching copy.</summary>
+public sealed record RunSpeedOption(StudioRunSpeed Speed, string ShortCaption, string FullCaption)
 {
-    public override string ToString() => Caption;
+    public override string ToString() => ShortCaption;
 }

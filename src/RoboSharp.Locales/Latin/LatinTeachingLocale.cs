@@ -10,6 +10,7 @@ public sealed class LatinTeachingLocale : ITeachingLocale
     {
         Shell = new LatinShellTexts();
         Sidebar = new LatinSidebarTexts();
+        Lessons = new LatinStudioLessonCatalog();
         Panels = new LatinPanelTexts();
         Pipeline = new LatinPipelineTexts();
     }
@@ -19,6 +20,7 @@ public sealed class LatinTeachingLocale : ITeachingLocale
 
     public IStudioShellTexts Shell { get; }
     public IStudioSidebarTexts Sidebar { get; }
+    public IStudioLessonCatalog Lessons { get; }
     public IStudioPanelTexts Panels { get; }
     public IPipelineTeachingTexts Pipeline { get; }
 }

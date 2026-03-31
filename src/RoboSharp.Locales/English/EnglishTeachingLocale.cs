@@ -7,6 +7,7 @@ public sealed class EnglishTeachingLocale : ITeachingLocale
     {
         Shell = new EnglishShellTexts();
         Sidebar = new EnglishSidebarTexts();
+        Lessons = new EnglishStudioLessonCatalog();
         Panels = new EnglishPanelTexts();
         Pipeline = new EnglishPipelineTexts();
     }
@@ -15,6 +16,7 @@ public sealed class EnglishTeachingLocale : ITeachingLocale
 
     public IStudioShellTexts Shell { get; }
     public IStudioSidebarTexts Sidebar { get; }
+    public IStudioLessonCatalog Lessons { get; }
     public IStudioPanelTexts Panels { get; }
     public IPipelineTeachingTexts Pipeline { get; }
 }

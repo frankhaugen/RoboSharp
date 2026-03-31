@@ -2,9 +2,13 @@ namespace RoboSharp.Locales;
 
 public interface IStudioSidebarTexts
 {
-    string LessonAndMapHeading { get; }
-    string ProfileCaption { get; }
-    string WorldCaption { get; }
+    string StartHereHeading { get; }
+    string LessonPickerCaption { get; }
+    string GoalCaption { get; }
+    string CommandsCaption { get; }
+    string KeywordsHeading { get; }
+    string SyntaxHeading { get; }
+    string LoadLessonExampleButton { get; }
     string WorldPreviewHeading { get; }
     string WorldPreviewHint { get; }
 }

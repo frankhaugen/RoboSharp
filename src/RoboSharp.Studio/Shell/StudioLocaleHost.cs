@@ -30,6 +30,8 @@ public sealed class StudioLocaleHost : ITeachingLocale
 
     public IStudioSidebarTexts Sidebar => _inner.Sidebar;
 
+    public IStudioLessonCatalog Lessons => _inner.Lessons;
+
     public IStudioPanelTexts Panels => _inner.Panels;
 
     public IPipelineTeachingTexts Pipeline => _inner.Pipeline;

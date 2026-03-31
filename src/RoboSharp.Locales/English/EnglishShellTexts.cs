@@ -42,15 +42,18 @@ internal sealed class EnglishShellTexts : IStudioShellTexts
     public string ToolbarStepSpeed => "Step speed";
     public string ToolbarAppTitle => "RoboSharp Studio";
     public string ToolbarSubtitle =>
-        "Lesson map (left) · Build = compile and refresh teaching panels · Run = compile again, then step the interpreter (pick a speed)";
+        "Pick a lesson and goal on the left. Build = compile and refresh panels. Run = compile then step the robot on your goal map.";
     public string RunSpeedRealtime =>
         "Realtime — run to the end without pausing between IL instructions";
     public string RunSpeedSlow =>
         "Slow — short pause each IL step so you can follow the robot";
     public string RunSpeedGlacial =>
         "Glacial — longer pause; best when demonstrating in front of a class";
+    public string RunSpeedRealtimeShort => "Realtime";
+    public string RunSpeedSlowShort => "Slow";
+    public string RunSpeedGlacialShort => "Glacial";
     public string DefaultLiveRunStatus =>
-        "Pick a lesson profile and world map below, then Build (compile) or Run (compile + execute on the grid).";
+        "Choose your lesson track and goal map on the left, then Build or Run.";
     public string LiveRunInProgress => "Running… compiling and stepping the interpreter.";
     public string LiveRunFinished => "Finished run.";
     public string LiveRunFaultFallback => "Run stopped.";
