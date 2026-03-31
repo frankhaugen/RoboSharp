@@ -58,3 +58,11 @@ Recommended:
 - Toggle Locals
 - Toggle Heap
 - Toggle Metrics
+
+## RoboSharp Studio (current host)
+
+The Avalonia shell implements a minimal menu bar today:
+
+- **File** — New, Open, Save, Save As, Exit (see `MainWindow.BuildMenu()`).
+- **Settings → Language** — **English (en)** or **Latin — demo (la)**; **runtime switch** (no restart); persists to `user-settings.json` (see [settings.md](settings.md)).
+- **Help** — About.

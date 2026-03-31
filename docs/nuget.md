@@ -22,6 +22,7 @@ Per [`AGENTS.md`](../AGENTS.md), only these NuGet families are in scope unless p
 - .NET BCL (framework references)
 - `Microsoft.Extensions.*`
 - `TUnit` (tests)
+- `Microsoft.Testing.Extensions.TrxReport` (tests only — TRX output for CI from Microsoft.Testing.Platform; see `Directory.Build.props`)
 - **Avalonia** (`Avalonia`, `Avalonia.Desktop`, `Avalonia.AvaloniaEdit`, `Avalonia.Themes.*`, `Avalonia.Fonts.*`) for [`RoboSharp.Studio`](../src/RoboSharp.Studio/) only, as the approved cross-platform desktop host UI (see [`docs/studio/technology-stack.md`](studio/technology-stack.md))
 
 `Directory.Packages.props` includes a label reminding maintainers of that surface.

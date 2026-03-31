@@ -109,7 +109,9 @@ The repo enables the .NET SDK **artifacts output** layout (`UseArtifactsOutput` 
 
 Intermediate files still use each project’s `obj` folder under the project directory (SDK default). The root [`artifacts/`](../artifacts/) directory is listed in [`.gitignore`](../.gitignore).
 
-## Local CI/CD parity
+## Local CI parity and releases
+
+**CI** finishing (including on `main`) does **not** start a deployment or GitHub Release. **CD** (archives + GitHub Release) runs only when you push a calendar **version tag** — see [`.github/workflows/release.yml`](../.github/workflows/release.yml) and [publishing.md](publishing.md).
 
 The GitHub Actions **CI** job (`.github/workflows/ci.yml`) delegates build, test, and generated-file checks to [`tools/ci-verify.sh`](../tools/ci-verify.sh) via [`.github/actions/robo-build-verify`](../.github/actions/robo-build-verify/action.yml). Run the same sequence locally from the repo root:
 
@@ -117,7 +119,18 @@ The GitHub Actions **CI** job (`.github/workflows/ci.yml`) delegates build, test
 - **Bash (Git Bash, WSL, Linux, macOS):** `bash tools/ci-verify.sh`  
   Optional release-style versioned build: `PACKAGE_VERSION=2026.03.31.1 bash tools/ci-verify.sh`
 
+On GitHub Actions, the same script leaves **TRX** files under the runner temp `test-results` folder (artifact `ci-test-results-*`) and the workflow also publishes **RoboSharp.Studio** for **linux-x64** and **win-x64** (artifact `studio-ci-*`, self-contained single-file style).
+
 The **Release** workflow (see [`.github/workflows/release.yml`](../.github/workflows/release.yml)) runs on tags **`vyyyy.MM.dd.#`** (four parts, calendar-style; **example** `v2026.03.31.1` for the first release of that day). It adds versioned publish, tarballs, `SHA256SUMS.txt`, and a GitHub Release whose **description** is a human-written intro (table of assets, verify command, doc links) **prepended** to GitHub’s auto-generated notes. To reproduce packaging locally (without creating a GitHub Release): [`tools/release-pack-local.ps1`](../tools/release-pack-local.ps1) `-Version` `2026.03.31.1` (no leading `v`).
+
+## Testing (TUnit)
+
+Tests use **[TUnit](https://tunit.dev/)** on **Microsoft.Testing.Platform** (not VSTest). Keep these in mind:
+
+- **Await every** `Assert.That(...)` — without `await`, assertions do not run ([awaiting assertions](https://tunit.dev/docs/assertions/awaiting)).
+- Prefer **`await Assert.That(() => ...).Throws<T>()`** for expected exceptions ([exception assertions](https://tunit.dev/docs/assertions/exceptions)).
+- **CI reporting:** `tools/ci-verify.sh` uses **`--report-trx`**, **`--timeout 15m`**, and **`--disable-logo`**. The **`robo-build-verify`** composite action sets **`TUNIT_GITHUB_REPORTER_STYLE=collapsible`** and **`TESTINGPLATFORM_TELEMETRY_OPTOUT=1`** for GitHub-hosted runs ([CI/CD reporting](https://tunit.dev/docs/execution/ci-cd-reporting)).
+- More tips: [best practices](https://tunit.dev/docs/guides/best-practices), [parallelism](https://tunit.dev/docs/execution/parallelism).
 
 ## Continuous integration
 

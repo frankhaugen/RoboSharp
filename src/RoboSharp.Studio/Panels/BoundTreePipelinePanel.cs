@@ -4,7 +4,6 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
-using RoboSharp.IL;
 using RoboSharp.Locales;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.Shell;
@@ -71,7 +70,7 @@ public sealed class IlPipelinePanel : IStudioPanel
     private TextBlock? _preambleBlock;
     private StackPanel? _listingHost;
     private TextBlock? _footnoteBlock;
-    private Button? _copyButton;
+    private ScrollViewer? _listingScroll;
     private string? _copyPayload;
     private readonly List<(Border box, int fi, int ip)> _stepRows = new();
     private int? _lastHighlightFi;
@@ -98,17 +97,17 @@ public sealed class IlPipelinePanel : IStudioPanel
             Margin = new Thickness(0, 0, 0, 8),
         };
 
-        _copyButton = new Button
+        var copyBtn = new Button
         {
             Content = _locale.Panels.IlCopyDisassembly,
             HorizontalAlignment = HorizontalAlignment.Left,
             Margin = new Thickness(0, 0, 0, 8),
         };
-        _copyButton.Click += OnCopyClick;
+        copyBtn.Click += OnCopyClick;
 
         _listingHost = new StackPanel { Spacing = 0 };
 
-        var listingScroll = new ScrollViewer
+        _listingScroll = new ScrollViewer
         {
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
@@ -132,14 +131,14 @@ public sealed class IlPipelinePanel : IStudioPanel
             Children =
             {
                 _preambleBlock,
-                _copyButton,
-                listingScroll,
+                copyBtn,
+                _listingScroll,
                 _footnoteBlock,
             },
         };
         Grid.SetRow(_preambleBlock, 0);
-        Grid.SetRow(_copyButton, 1);
-        Grid.SetRow(listingScroll, 2);
+        Grid.SetRow(copyBtn, 1);
+        Grid.SetRow(_listingScroll, 2);
         Grid.SetRow(_footnoteBlock, 3);
 
         var layered = new Grid();
@@ -160,9 +159,6 @@ public sealed class IlPipelinePanel : IStudioPanel
         if (_fallbackText is null || _structuredRoot is null || _preambleBlock is null ||
             _listingHost is null || _footnoteBlock is null)
             return;
-
-        if (_copyButton is not null)
-            _copyButton.Content = _locale.Panels.IlCopyDisassembly;
 
         if (snapshot.IlProgram is not null && snapshot.IlDisassemblyText is { Length: > 0 } ilText)
         {
@@ -243,7 +239,7 @@ public sealed class IlPipelinePanel : IStudioPanel
         _lastHighlightIp = null;
     }
 
-    private void RebuildListing(RoboProgram program)
+    private void RebuildListing(RoboSharp.IL.RoboProgram program)
     {
         if (_listingHost is null)
             return;

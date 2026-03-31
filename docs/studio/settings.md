@@ -2,7 +2,7 @@
 
 ## Application settings
 
-- **UI locale (Studio):** optional environment variable `ROBOSHARP_LOCALE`. Set to `la` or `latin` to load the playful **Latin** demo pack (sources under `src/RoboSharp.Locales/Latin/`). Omit or use any other value for **English** (`src/RoboSharp.Locales/English/`). `TeachingLocaleStringGuard` tests ensure no blank strings ship for either pack. Example (PowerShell): `$env:ROBOSHARP_LOCALE='la'; dotnet run --project src/RoboSharp.Studio/RoboSharp.Studio.csproj`.
+- **UI locale (Studio):** **dynamically changeable at runtime** — use **Settings → Language** to switch **English** or **Latin (demo)** without restarting Studio; menus, toolbar, sidebar, inspector panels, and pipeline text refresh immediately (the current build snapshot is re-applied in the new language). The choice is saved under **LocalApplicationData** as `RoboSharp/Studio/user-settings.json` (`localeId`: `en` or `la`). On first launch, if that file has no `localeId`, Studio falls back to the optional environment variable `ROBOSHARP_LOCALE` (`la` / `latin` → Latin pack; otherwise English). Sources: `src/RoboSharp.Locales/English/` and `Latin/`; `TeachingLocaleStringGuard` tests ensure no blank strings ship for either pack.
 - theme
 - font size
 - default layout

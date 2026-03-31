@@ -6,6 +6,8 @@ Concrete choices for **RoboSharpStudio**: **Avalonia**, **Microsoft.Extensions.D
 
 Use **Avalonia** as the desktop UI shell.
 
+**AvaloniaEdit** (the main code buffer) needs its **Fluent** theme merged into `Application.Styles` — e.g. `StyleInclude` for `avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml` alongside `FluentTheme`. Without it, the editor can appear empty. This is wired in [`StudioApp.cs`](../../src/RoboSharp.Studio/Shell/StudioApp.cs).
+
 Reasons:
 
 - better fit for code-first UI than WPF
