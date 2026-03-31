@@ -6,6 +6,7 @@ Specifications for **RoboSharpStudio**, the desktop IDE host. Authoritative repo
 | ----- | -------- |
 | Role of Studio, goals | [overview.md](overview.md) |
 | Avalonia, DI, code-first UI | [technology-stack.md](technology-stack.md) |
+| Avalonia MCP (agent / CLI UI inspection) | [avalonia-mcp.md](avalonia-mcp.md) |
 | Illustrative solution shape (vs `AGENTS.md` layout) | [referenced-solution-shape.md](referenced-solution-shape.md) |
 | Composition root, DI, domain sessions, core types | [composition-and-domain.md](composition-and-domain.md) |
 | Shell tree, main window, navigation | [ide-layout.md](ide-layout.md) |

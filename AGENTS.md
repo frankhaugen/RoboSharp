@@ -25,7 +25,7 @@ Human-oriented documentation (build, repository layout, diagrams, and topic stub
   - `Microsoft.Extensions.*`
   - `TUnit` for tests
   - `Microsoft.Testing.Extensions.TrxReport` for test projects only (TRX reports from Microsoft.Testing.Platform in CI)
-  - **Avalonia** (`Avalonia`, `Avalonia.Desktop`, `Avalonia.AvaloniaEdit`, `Avalonia.Themes.*`, `Avalonia.Fonts.*`, and `Avalonia.Diagnostics` **only for `RoboSharp.Studio` Debug builds** for built-in UI inspection) for **`RoboSharp.Studio` only**, as the approved code-first desktop host UI (see `docs/studio/technology-stack.md` and `docs/nuget.md`)
+  - **Avalonia** (`Avalonia`, `Avalonia.Desktop`, `Avalonia.AvaloniaEdit`, `Avalonia.Themes.*`, `Avalonia.Fonts.*`, `Avalonia.Diagnostics` **only for `RoboSharp.Studio` Debug builds** for built-in UI inspection, and **`AvaloniaMcp.Diagnostics` only for `RoboSharp.Studio` Debug builds** for optional [AvaloniaMcp](https://github.com/adirh3/AvaloniaMcp) agent/CLI inspection) for **`RoboSharp.Studio` only**, as the approved code-first desktop host UI (see `docs/studio/technology-stack.md` and `docs/nuget.md`). The **`AvaloniaMcp`** dotnet tool is referenced from [`.config/dotnet-tools.json`](.config/dotnet-tools.json) for contributor workflows, not as a `PackageReference` in product projects other than the diagnostics library above.
 - Do not introduce third-party frameworks, helper libraries, ORMs, serializers, UI frameworks, test helpers, mocking libraries, analyzers, or utility packages beyond the allowed set (the Avalonia line above is the explicit Studio exception).
 
 ## Solution intent
@@ -432,7 +432,7 @@ When changing this repository:
 4. Prefer DI-based composition with restrained interface use.
 5. Route persistence through IO/workspace abstractions.
 6. Keep host/UI projects thin.
-7. Reject new dependencies unless they are BCL, `Microsoft.Extensions.*`, `TUnit`, `Microsoft.Testing.Extensions.TrxReport` (test projects, CI TRX only), or Avalonia for `RoboSharp.Studio` only as documented.
+7. Reject new dependencies unless they are BCL, `Microsoft.Extensions.*`, `TUnit`, `Microsoft.Testing.Extensions.TrxReport` (test projects, CI TRX only), or Avalonia (including `AvaloniaMcp.Diagnostics` in Debug and the `AvaloniaMcp` dotnet tool manifest) for `RoboSharp.Studio` only as documented.
 8. Reject XAML.
 9. Reject Blazor host patterns that are not true Server-Side Interactive Blazor.
 10. Prefer concrete, testable, modern C# over cleverness.

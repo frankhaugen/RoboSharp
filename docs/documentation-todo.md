@@ -242,6 +242,7 @@ Split from the former `general-specs.md`; some pages are stubs.
 | [studio/README.md](studio/README.md) | Yes | Partial |
 | [studio/overview.md](studio/overview.md) | Yes | Partial |
 | [studio/technology-stack.md](studio/technology-stack.md) | Yes | Partial |
+| [studio/avalonia-mcp.md](studio/avalonia-mcp.md) | Yes | N/A |
 | [studio/referenced-solution-shape.md](studio/referenced-solution-shape.md) | Yes | Partial |
 | [studio/composition-and-domain.md](studio/composition-and-domain.md) | Yes | Partial |
 | [studio/ide-layout.md](studio/ide-layout.md) | Yes | Partial |

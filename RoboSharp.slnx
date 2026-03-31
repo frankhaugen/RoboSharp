@@ -143,6 +143,7 @@
   </Folder>
   <Folder Name="/docs/studio/">
     <File Path="docs/studio/README.md" />
+    <File Path="docs/studio/avalonia-mcp.md" />
     <File Path="docs/studio/build-and-analysis.md" />
     <File Path="docs/studio/composition-and-domain.md" />
     <File Path="docs/studio/editor-behavior.md" />

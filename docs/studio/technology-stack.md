@@ -22,6 +22,10 @@ Run Studio under the debugger (or `dotnet run` on a Debug build), focus the main
 
 Release builds omit the package and the hook so published/self-contained Studio binaries stay slimmer.
 
+### Avalonia MCP (optional — Debug configuration only)
+
+For **AI assistants / scripted inspection** over a named pipe, Debug builds also reference **`AvaloniaMcp.Diagnostics`** and call **`UseMcpDiagnostics()`** in [`Program.cs`](../../src/RoboSharp.Studio/Program.cs). Pair that with the **`AvaloniaMcp`** dotnet tool from [`.config/dotnet-tools.json`](../../.config/dotnet-tools.json) (`dotnet tool restore`). Full setup (Cursor MCP snippet, CLI, security notes) is in [avalonia-mcp.md](avalonia-mcp.md).
+
 ## DI container
 
 Use only:

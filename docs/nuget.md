@@ -23,7 +23,7 @@ Per [`AGENTS.md`](../AGENTS.md), only these NuGet families are in scope unless p
 - `Microsoft.Extensions.*`
 - `TUnit` (tests)
 - `Microsoft.Testing.Extensions.TrxReport` (tests only — TRX output for CI from Microsoft.Testing.Platform; see `Directory.Build.props`)
-- **Avalonia** (`Avalonia`, `Avalonia.Desktop`, `Avalonia.AvaloniaEdit`, `Avalonia.Themes.*`, `Avalonia.Fonts.*`, and **`Avalonia.Diagnostics` for Debug-configuration `RoboSharp.Studio` builds only**) as the approved cross-platform desktop host UI (see [`docs/studio/technology-stack.md`](studio/technology-stack.md))
+- **Avalonia** (`Avalonia`, `Avalonia.Desktop`, `Avalonia.AvaloniaEdit`, `Avalonia.Themes.*`, `Avalonia.Fonts.*`, **`Avalonia.Diagnostics` for Debug-configuration `RoboSharp.Studio` builds only**, and **`AvaloniaMcp.Diagnostics` for Debug-configuration `RoboSharp.Studio` builds only** for optional [AvaloniaMcp](https://github.com/adirh3/AvaloniaMcp) tooling) as the approved cross-platform desktop host UI (see [`docs/studio/technology-stack.md`](studio/technology-stack.md) and [`docs/studio/avalonia-mcp.md`](studio/avalonia-mcp.md))
 
 `Directory.Packages.props` includes a label reminding maintainers of that surface.
 
