@@ -23,7 +23,7 @@ internal sealed class LatinStudioLessonCatalog : IStudioLessonCatalog
             [StudioLessonIds.FirstMoves] = new(
                 StudioLessonIds.FirstMoves,
                 "Primi motus",
-                "Tantum move() et turnLeft() nunc necesse sunt. Aedifica ut tabulas renoves, Curr ut robotem programma tuum in huius lectionis campo exercitationis agere videas.",
+                "Tantum move() et turnLeft() adhibe. Aedifica, Curr, robotem in hac charta ad metam duc.",
                 "Verba clavis: integer (genus), while, nomina procedurarum quas declares.\n" +
                 "Imperata hac lectione: move, turnLeft.",
                 "Sententiae finiuntur ;\n" +
@@ -37,14 +37,13 @@ internal sealed class LatinStudioLessonCatalog : IStudioLessonCatalog
                 "Programma tantum builtina quae haec lectio introduxit vocare potest. Si nomen reicitur, saepe significat imperatum nondum lectio aperuit — non orthographiam falsam esse.",
                 [
                     StudioPanelIds.LessonToolbox,
-                    StudioPanelIds.Diagnostics,
-                    StudioPanelIds.WorldRuntime,
+                    StudioPanelIds.Tokens,
                 ]),
 
             [StudioLessonIds.Steering] = new(
                 StudioLessonIds.Steering,
                 "Gubernatio",
-                "Adde turnRight() ut quamvis partem versus. Fabula manet «robotem quo vis ducere», sed nunc conversiones eligere potes.",
+                "Etiam turnRight() adhibe; conversiones et motus disponito ut robotem ad metam ducas.",
                 "Eadem verba clavis; nulla nova.\n" +
                 "Imperata: move, turnLeft, turnRight.",
                 "Eadem regulae. Consocia conversiones et motus.",
@@ -56,14 +55,12 @@ internal sealed class LatinStudioLessonCatalog : IStudioLessonCatalog
                 [
                     StudioPanelIds.LessonToolbox,
                     StudioPanelIds.Tokens,
-                    StudioPanelIds.Diagnostics,
-                    StudioPanelIds.WorldRuntime,
                 ]),
 
             [StudioLessonIds.LoopsAndPrint] = new(
                 StudioLessonIds.LoopsAndPrint,
                 "Gyri et print",
-                "while ad repetendum, print() ad numeros et textum ostendendos. Gyri formas faciunt; print() exitum in cursu visibilem reddit.",
+                "while ad iterationem; print() ad numeros et stringas. Curr et quod programma scribit statim lege.",
                 "Verba: integer, while, print.\n" +
                 "Imperata: move, turnLeft, turnRight, print (numeri et stringae inter signa).",
                 "print(\"textus\");\nprint(42);\ninteger n = 0;\nwhile (n < 3) { … n = n + 1; }",
@@ -76,14 +73,12 @@ internal sealed class LatinStudioLessonCatalog : IStudioLessonCatalog
                     StudioPanelIds.LessonToolbox,
                     StudioPanelIds.Tokens,
                     StudioPanelIds.SyntaxTree,
-                    StudioPanelIds.Diagnostics,
-                    StudioPanelIds.WorldRuntime,
                 ]),
 
             [StudioLessonIds.Sensing] = new(
                 StudioLessonIds.Sensing,
                 "Parietes videre",
-                "Interroga reticulum cum frontIsClear(), leftIsClear(), rightIsClear(). Cum while conjunge ut meatus petas, non caecum offendas.",
+                "frontIsClear, leftIsClear, rightIsClear cum while adhibe ut per labyrinthum meatus sine ictu parietum eas.",
                 "Nova imperata: frontIsClear, leftIsClear, rightIsClear.",
                 "Exemplum: while (frontIsClear()) { move(); }",
                 StudioLessonSharedExamples.Sensing,
@@ -95,15 +90,13 @@ internal sealed class LatinStudioLessonCatalog : IStudioLessonCatalog
                     StudioPanelIds.LessonToolbox,
                     StudioPanelIds.Tokens,
                     StudioPanelIds.SyntaxTree,
-                    StudioPanelIds.Diagnostics,
                     StudioPanelIds.BoundTree,
-                    StudioPanelIds.WorldRuntime,
                 ]),
 
             [StudioLessonIds.FullLanguage] = new(
                 StudioLessonIds.FullLanguage,
                 "Arca plena",
-                "Omnia quae profilium docendi sinit: procedurae longiores, aenigmata opulentiora, omnia priora in uno loco.",
+                "Omnia consocia: procedurae longiores, imperata plena, haec arena — a notis per IL usque ad cursum ad metam.",
                 "Verba priora et quae cursus addit (vide tabulam instrumentorum post Aedifica).\n" +
                 "Pro singulis nominibus vide panellem \"Lesson toolbox\".",
                 "Eadem regulae RoboSharp; proceduris longa cohibe.",
@@ -116,10 +109,8 @@ internal sealed class LatinStudioLessonCatalog : IStudioLessonCatalog
                     StudioPanelIds.LessonToolbox,
                     StudioPanelIds.Tokens,
                     StudioPanelIds.SyntaxTree,
-                    StudioPanelIds.Diagnostics,
                     StudioPanelIds.BoundTree,
                     StudioPanelIds.Il,
-                    StudioPanelIds.WorldRuntime,
                 ]),
         };
 

@@ -20,7 +20,8 @@ public sealed class IlPipelinePanel : IStudioPanel
     private readonly ITeachingLocale _locale;
     private TextBox? _fallbackText;
     private Grid? _structuredRoot;
-    private TextBlock? _preambleBlock;
+    private TextBlock? _leadBlock;
+    private TextBlock? _guideBlock;
     private StackPanel? _listingHost;
     private TextBlock? _footnoteBlock;
     private Button? _copyButton;
@@ -45,12 +46,22 @@ public sealed class IlPipelinePanel : IStudioPanel
     {
         _fallbackText = StudioCopyableText.CreateReadOnlyOutput(fontSize: 11);
 
-        _preambleBlock = new TextBlock
+        _leadBlock = new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            FontSize = 14,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.AccentBrush,
+            Margin = new Thickness(0, 0, 0, 6),
+        };
+
+        _guideBlock = new TextBlock
         {
             TextWrapping = TextWrapping.Wrap,
             FontSize = 12,
+            LineHeight = 20,
             Foreground = StudioVisual.TextPrimaryBrush,
-            Margin = new Thickness(0, 0, 0, 8),
+            Margin = new Thickness(0, 0, 0, 10),
         };
 
         _copyButton = new Button
@@ -68,7 +79,17 @@ public sealed class IlPipelinePanel : IStudioPanel
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             Content = _listingHost,
-            MinHeight = 120,
+            MinHeight = 140,
+        };
+
+        var listingCard = new Border
+        {
+            Background = StudioVisual.SurfaceElevatedBrush,
+            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(8),
+            Padding = new Thickness(10, 8),
+            Child = _listingScroll,
         };
 
         _footnoteBlock = new TextBlock
@@ -76,26 +97,29 @@ public sealed class IlPipelinePanel : IStudioPanel
             TextWrapping = TextWrapping.Wrap,
             FontSize = 11,
             Foreground = StudioVisual.TextMutedBrush,
+            LineHeight = 17,
             Margin = new Thickness(0, 12, 0, 0),
             IsVisible = false,
         };
 
         _structuredRoot = new Grid
         {
-            RowDefinitions = new RowDefinitions("Auto,Auto,*,Auto"),
+            RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*,Auto"),
             IsVisible = false,
             Children =
             {
-                _preambleBlock,
+                _leadBlock,
+                _guideBlock,
                 _copyButton,
-                _listingScroll,
+                listingCard,
                 _footnoteBlock,
             },
         };
-        Grid.SetRow(_preambleBlock, 0);
-        Grid.SetRow(_copyButton, 1);
-        Grid.SetRow(_listingScroll, 2);
-        Grid.SetRow(_footnoteBlock, 3);
+        Grid.SetRow(_leadBlock, 0);
+        Grid.SetRow(_guideBlock, 1);
+        Grid.SetRow(_copyButton, 2);
+        Grid.SetRow(listingCard, 3);
+        Grid.SetRow(_footnoteBlock, 4);
 
         var layered = new Grid();
         layered.Children.Add(_fallbackText);
@@ -103,33 +127,37 @@ public sealed class IlPipelinePanel : IStudioPanel
 
         return new Border
         {
-            Padding = new Thickness(4),
+            Padding = new Thickness(4, 2, 4, 8),
             Child = layered,
         };
     }
+
+    private static string IlTeachingHeader(ITeachingLocale locale) =>
+        locale.Panels.IlLead + "\r\n\r\n" + locale.Panels.IlGuide;
 
     public void OnSnapshotChanged(PipelineSnapshot snapshot)
     {
         ClearStepHighlight();
 
-        if (_fallbackText is null || _structuredRoot is null || _preambleBlock is null ||
+        if (_fallbackText is null || _structuredRoot is null || _leadBlock is null || _guideBlock is null ||
             _listingHost is null || _footnoteBlock is null)
             return;
 
         if (_copyButton is not null)
             _copyButton.Content = _locale.Panels.IlCopyDisassembly;
 
+        _leadBlock.Text = _locale.Panels.IlLead;
+        _guideBlock.Text = _locale.Panels.IlGuide;
+
         if (snapshot.IlProgram is not null && snapshot.IlDisassemblyText is { Length: > 0 } ilText)
         {
             _fallbackText.IsVisible = false;
             _structuredRoot.IsVisible = true;
 
-            _preambleBlock.Text = _locale.Panels.IlPreamble.TrimEnd();
-
             var body = ilText;
             if (snapshot.IlExecutionFootnote is { Length: > 0 } foot)
                 body += "\r\n\r\n" + foot;
-            _copyPayload = _locale.Panels.IlPreamble + body;
+            _copyPayload = IlTeachingHeader(_locale) + "\r\n\r\n" + body;
 
             RebuildListing(snapshot.IlProgram);
 
@@ -156,13 +184,25 @@ public sealed class IlPipelinePanel : IStudioPanel
             var body = il;
             if (snapshot.IlExecutionFootnote is { Length: > 0 } foot)
                 body += "\r\n\r\n" + foot;
-            _fallbackText.Text = _locale.Panels.IlPreamble + body;
+            _fallbackText.Text = IlTeachingHeader(_locale) + "\r\n\r\n" + body;
             return;
         }
 
-        _fallbackText.Text = _locale.Panels.IlPreamble + (snapshot.CompileReachedPhase < CompilePhase.Lowered
+        _fallbackText.Text = IlTeachingHeader(_locale) + "\r\n\r\n" + (snapshot.CompileReachedPhase < CompilePhase.Lowered
             ? _locale.Panels.IlWaitingForLowering
             : _locale.Panels.IlNoTextUnexpected);
+    }
+
+    public void ApplyLocale(PipelineSnapshot? lastSnapshot)
+    {
+        if (_leadBlock is not null)
+            _leadBlock.Text = _locale.Panels.IlLead;
+        if (_guideBlock is not null)
+            _guideBlock.Text = _locale.Panels.IlGuide;
+        if (_copyButton is not null)
+            _copyButton.Content = _locale.Panels.IlCopyDisassembly;
+        if (lastSnapshot is not null)
+            OnSnapshotChanged(lastSnapshot);
     }
 
     public void OnRunProgress(StudioRunProgress progress)

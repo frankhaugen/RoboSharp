@@ -2,7 +2,8 @@ namespace RoboSharp.Locales;
 
 public interface IStudioSidebarTexts
 {
-    string StartHereHeading { get; }
+    /// <summary>Hero heading for the left rail (mission / task).</summary>
+    string LessonTaskHeading { get; }
     /// <summary>Short line under the lesson ribbon (teaching chrome).</summary>
     string LessonRibbonSubtitle { get; }
     string LessonSectionGoalHeading { get; }
@@ -13,6 +14,8 @@ public interface IStudioSidebarTexts
     string KeywordsHeading { get; }
     string SyntaxHeading { get; }
     string LoadLessonExampleButton { get; }
-    string WorldPreviewHeading { get; }
-    string WorldPreviewHint { get; }
+    /// <summary>Title above the world grid in the bottom dock.</summary>
+    string WorldDockTitle { get; }
+    /// <summary>Hint under the world grid (legend, Build vs Run).</summary>
+    string WorldDockSubtitle { get; }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -35,8 +36,11 @@ public sealed class MainWindow : Window
     private PipelineSnapshot? _lastPipelineSnapshot;
     private RobotWorldGridView? _worldGridPreview;
     private RoboSharpSourceEditor? _sourceEditor;
-    private EditorSyntaxDock? _editorSyntaxDock;
     private TabControl? _inspectorTabs;
+    private readonly DiagnosticsPipelinePanel _diagnosticsPanel;
+    private readonly WorldRuntimePipelinePanel _worldRuntimePanel;
+    private Window? _diagnosticsFlyout;
+    private Window? _runReportFlyout;
     private bool _closeBypassDirtyCheck;
     private readonly List<(string Id, Button Btn)> _lessonRibbonEntries = new();
     private ComboBox? _speedCombo;
@@ -50,6 +54,8 @@ public sealed class MainWindow : Window
             Patterns = ["*.robo"],
         };
         _panels = panels.OrderBy(p => p.Order).ToList();
+        _diagnosticsPanel = _panels.OfType<DiagnosticsPipelinePanel>().Single();
+        _worldRuntimePanel = _panels.OfType<WorldRuntimePipelinePanel>().Single();
 
         Width = 1320;
         Height = 840;
@@ -129,10 +135,16 @@ public sealed class MainWindow : Window
             ReplaceChildAtGridColumn(_workspaceGrid, 0, sb);
             _sidebarBorder = sb;
 
+            var editor = BuildEditorPane();
+            ReplaceChildAtGridColumn(_workspaceGrid, 2, editor);
+
             var ins = (Border)BuildInspectorColumn();
             ReplaceChildAtGridColumn(_workspaceGrid, 4, ins);
             _inspectorBorder = ins;
         }
+
+        _diagnosticsFlyout?.Close();
+        _runReportFlyout?.Close();
 
         _viewModel.ApplyLocaleRefresh();
 
@@ -147,8 +159,7 @@ public sealed class MainWindow : Window
         else
             _viewModel.Build();
 
-        _editorSyntaxDock?.ApplyLocale();
-        _editorSyntaxDock?.ApplySnapshot(_lastPipelineSnapshot);
+        RefreshFlyoutsIfOpen();
     }
 
     private static void ReplaceChromeRow(Grid grid, int row, Control replacement)
@@ -235,6 +246,18 @@ public sealed class MainWindow : Window
             Items = { languageMenu },
         };
 
+        var viewDiagnostics = new MenuItem { Header = _locale.Shell.MenuViewCompilerDiagnostics };
+        viewDiagnostics.Click += (_, _) => OpenDiagnosticsFlyout();
+
+        var viewRunReport = new MenuItem { Header = _locale.Shell.MenuViewRunReport };
+        viewRunReport.Click += (_, _) => OpenRunReportFlyout();
+
+        var viewMenu = new MenuItem
+        {
+            Header = _locale.Shell.ViewMenuHeader,
+            Items = { viewDiagnostics, viewRunReport },
+        };
+
         return new Menu
         {
             Background = StudioVisual.SurfaceBrush,
@@ -255,6 +278,7 @@ public sealed class MainWindow : Window
                         fileExit,
                     },
                 },
+                viewMenu,
                 settingsMenu,
                 new MenuItem
                 {
@@ -877,16 +901,16 @@ public sealed class MainWindow : Window
 
     private Border BuildSidebar()
     {
-        var startHeading = new TextBlock
+        var taskHeading = new TextBlock
         {
-            Text = _locale.Sidebar.StartHereHeading,
+            Text = _locale.Sidebar.LessonTaskHeading,
             FontSize = 14,
             FontWeight = FontWeight.SemiBold,
             Foreground = StudioVisual.AccentBrush,
             Margin = new Thickness(0, 0, 0, 8),
         };
 
-        var startBlurb = new TextBlock
+        var taskBody = new TextBlock
         {
             TextWrapping = TextWrapping.Wrap,
             LineHeight = 18,
@@ -894,7 +918,7 @@ public sealed class MainWindow : Window
             Foreground = StudioVisual.TextPrimaryBrush,
             Margin = new Thickness(0, 0, 0, 8),
         };
-        startBlurb.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.CurrentLessonStartBlurb)));
+        taskBody.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.CurrentLessonTaskChallengeBody)));
 
         var loadExample = new Button
         {
@@ -949,17 +973,6 @@ public sealed class MainWindow : Window
             Margin = new Thickness(0, 0, 0, 8),
         };
         worldName.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.CurrentLessonWorldDisplayName)));
-
-        var worldPreviewTitle = new TextBlock
-        {
-            Text = _locale.Sidebar.WorldPreviewHeading,
-            FontSize = 12,
-            FontWeight = FontWeight.SemiBold,
-            Foreground = StudioVisual.AccentBrush,
-            Margin = new Thickness(0, 0, 0, 6),
-        };
-
-        _worldGridPreview = new RobotWorldGridView();
 
         var commandsSectionHeading = new TextBlock
         {
@@ -1047,43 +1060,18 @@ public sealed class MainWindow : Window
         };
         synBody.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.CurrentLessonSyntax)));
 
-        var runStatus = new TextBlock
-        {
-            TextWrapping = TextWrapping.Wrap,
-            LineHeight = 18,
-            FontSize = 12,
-            Foreground = StudioVisual.TextPrimaryBrush,
-            Margin = new Thickness(0, 0, 0, 12),
-        };
-        runStatus.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.LiveRunStatus))
-        {
-            Mode = BindingMode.OneWay,
-        });
-
-        var hint = new TextBlock
-        {
-            Text = _locale.Sidebar.WorldPreviewHint,
-            TextWrapping = TextWrapping.Wrap,
-            Foreground = StudioVisual.TextMutedBrush,
-            LineHeight = 20,
-            FontSize = 11,
-            Margin = new Thickness(0, 8, 0, 0),
-        };
-
         var stack = new StackPanel
         {
             Spacing = 0,
             Children =
             {
-                startHeading,
-                startBlurb,
+                taskHeading,
+                taskBody,
                 loadExample,
                 goalSectionHeading,
                 goalSectionBody,
                 worldLabel,
                 worldName,
-                worldPreviewTitle,
-                _worldGridPreview,
                 commandsSectionHeading,
                 commandsSectionBody,
                 profileLabel,
@@ -1093,8 +1081,6 @@ public sealed class MainWindow : Window
                 kwBody,
                 synHeading,
                 synBody,
-                runStatus,
-                hint,
             },
         };
 
@@ -1156,14 +1142,59 @@ public sealed class MainWindow : Window
         grid.Children.Add(editorRowSplit);
         Grid.SetRow(editorRowSplit, 1);
 
-        _editorSyntaxDock = new EditorSyntaxDock(_locale)
+        var dockTitle = new TextBlock
         {
-            MinHeight = 88,
+            Text = _locale.Sidebar.WorldDockTitle,
+            FontSize = 13,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.AccentBrush,
+            Margin = new Thickness(0, 0, 0, 8),
         };
-        grid.Children.Add(_editorSyntaxDock);
-        Grid.SetRow(_editorSyntaxDock, 2);
 
-        _editorSyntaxDock.ApplySnapshot(_lastPipelineSnapshot);
+        _worldGridPreview = new RobotWorldGridView();
+
+        var runStatus = new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            LineHeight = 18,
+            FontSize = 12,
+            Foreground = StudioVisual.TextPrimaryBrush,
+            Margin = new Thickness(0, 10, 0, 8),
+        };
+        runStatus.Bind(TextBlock.TextProperty, new Binding(nameof(MainWindowViewModel.LiveRunStatus))
+        {
+            Mode = BindingMode.OneWay,
+        });
+
+        var dockHint = new TextBlock
+        {
+            Text = _locale.Sidebar.WorldDockSubtitle,
+            TextWrapping = TextWrapping.Wrap,
+            Foreground = StudioVisual.TextMutedBrush,
+            LineHeight = 18,
+            FontSize = 11,
+        };
+
+        var dockStack = new StackPanel
+        {
+            Spacing = 0,
+            Children = { dockTitle, _worldGridPreview, runStatus, dockHint },
+        };
+
+        var worldDock = new Border
+        {
+            Background = StudioVisual.SurfaceElevatedBrush,
+            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderThickness = new Thickness(0, 1, 0, 0),
+            Padding = new Thickness(12, 10, 12, 12),
+            MinHeight = 200,
+            Child = dockStack,
+        };
+        grid.Children.Add(worldDock);
+        Grid.SetRow(worldDock, 2);
+
+        if (_lastPipelineSnapshot?.WorldVisualization is { } w0)
+            ApplyWorldGridPreviewSnapshot(w0);
 
         return grid;
     }
@@ -1275,12 +1306,12 @@ public sealed class MainWindow : Window
         foreach (var panel in _panels)
             panel.OnSnapshotChanged(snapshot);
 
-        _editorSyntaxDock?.ApplySnapshot(snapshot);
-
         _sourceEditor?.ApplyDiagnosticSpans(snapshot.SourceDiagnosticSpans);
 
         if (snapshot.WorldVisualization is { } w)
             ApplyWorldGridPreviewSnapshot(w);
+
+        RefreshFlyoutsIfOpen();
     }
 
     private void OnRunProgress(StudioRunProgress progress)
@@ -1295,6 +1326,75 @@ public sealed class MainWindow : Window
         if (_worldGridPreview is null)
             return;
         _worldGridPreview.Update(snapshot);
+    }
+
+    private void OpenDiagnosticsFlyout()
+    {
+        if (_diagnosticsFlyout is { IsVisible: true } existing)
+        {
+            existing.Activate();
+            return;
+        }
+
+        var window = CreatePipelineFlyoutWindow(_locale.Shell.MenuViewCompilerDiagnostics, _diagnosticsPanel);
+        window.Closed += (_, _) =>
+        {
+            if (ReferenceEquals(window, _diagnosticsFlyout))
+                _diagnosticsFlyout = null;
+        };
+        _diagnosticsFlyout = window;
+        window.Show(this);
+    }
+
+    private void OpenRunReportFlyout()
+    {
+        if (_runReportFlyout is { IsVisible: true } existing)
+        {
+            existing.Activate();
+            return;
+        }
+
+        var window = CreatePipelineFlyoutWindow(_locale.Shell.MenuViewRunReport, _worldRuntimePanel);
+        window.Closed += (_, _) =>
+        {
+            if (ReferenceEquals(window, _runReportFlyout))
+                _runReportFlyout = null;
+        };
+        _runReportFlyout = window;
+        window.Show(this);
+    }
+
+    private Window CreatePipelineFlyoutWindow(string title, IStudioPanel panel)
+    {
+        var window = new Window
+        {
+            Title = title,
+            Width = 640,
+            Height = 520,
+            MinWidth = 420,
+            MinHeight = 320,
+            Background = StudioVisual.BackgroundDeepBrush,
+            Foreground = StudioVisual.TextPrimaryBrush,
+            FontFamily = StudioVisual.UiFontFamily,
+        };
+
+        window.Content = BuildInspectorTabContent(panel);
+        if (_lastPipelineSnapshot is { } snap)
+            panel.OnSnapshotChanged(snap);
+
+        return window;
+    }
+
+    private void RefreshFlyoutsIfOpen()
+    {
+        if (_lastPipelineSnapshot is not { } snap)
+            return;
+
+        if (_diagnosticsFlyout is { IsVisible: true })
+            _diagnosticsPanel.OnSnapshotChanged(snap);
+
+        if (_runReportFlyout is { IsVisible: true })
+            _worldRuntimePanel.OnSnapshotChanged(snap);
     }
 
 }

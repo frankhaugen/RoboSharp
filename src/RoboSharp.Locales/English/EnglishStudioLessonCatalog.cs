@@ -23,7 +23,7 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
             [StudioLessonIds.FirstMoves] = new(
                 StudioLessonIds.FirstMoves,
                 "First moves",
-                "You only need move() and turnLeft() for now. Press Build to refresh the teaching panels, then Run to watch the robot act out your program on the practice map for this lesson.",
+                "Use only move() and turnLeft(). Build, then Run, and get the robot to the goal on this lesson’s map.",
                 "Keywords: integer (type), while, procedure names you declare.\n" +
                 "Built-ins in this lesson: move, turnLeft.",
                 "Syntax: statements end with ;\n" +
@@ -37,14 +37,13 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                 "Your program may only call built-ins that this lesson has introduced. If a name is rejected, it usually means the lesson has not unlocked that command yet — not that the spelling is wrong.",
                 [
                     StudioPanelIds.LessonToolbox,
-                    StudioPanelIds.Diagnostics,
-                    StudioPanelIds.WorldRuntime,
+                    StudioPanelIds.Tokens,
                 ]),
 
             [StudioLessonIds.Steering] = new(
                 StudioLessonIds.Steering,
                 "Steering",
-                "Add turnRight() so you can face any direction before you move. The story is still “get the robot where you want it,” but now you can choose how you turn.",
+                "Use turnRight() too—plan turns and moves so the robot reaches the goal.",
                 "Keywords: same as before; no new keywords.\n" +
                 "Built-ins: move, turnLeft, turnRight.",
                 "Same statement rules. Chain turns and moves to face any direction.",
@@ -64,14 +63,12 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                 [
                     StudioPanelIds.LessonToolbox,
                     StudioPanelIds.Tokens,
-                    StudioPanelIds.Diagnostics,
-                    StudioPanelIds.WorldRuntime,
                 ]),
 
             [StudioLessonIds.LoopsAndPrint] = new(
                 StudioLessonIds.LoopsAndPrint,
                 "Loops and print",
-                "Use while to repeat work and print() to show numbers and text. Loops make patterns; print() makes the invisible visible in the Run output.",
+                "Repeat work with while; show numbers and strings with print(). Run and read what the program prints live.",
                 "Keywords: integer, while, print.\n" +
                 "Built-ins: move, turnLeft, turnRight, print (numbers and strings in quotes).",
                 "print(\"text\");\nprint(42);\ninteger n = 0;\nwhile (n < 3) { … n = n + 1; }",
@@ -84,14 +81,12 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                     StudioPanelIds.LessonToolbox,
                     StudioPanelIds.Tokens,
                     StudioPanelIds.SyntaxTree,
-                    StudioPanelIds.Diagnostics,
-                    StudioPanelIds.WorldRuntime,
                 ]),
 
             [StudioLessonIds.Sensing] = new(
                 StudioLessonIds.Sensing,
                 "Seeing walls",
-                "Ask the grid questions with frontIsClear(), leftIsClear(), and rightIsClear(). Combine answers with while to crawl corridors instead of bumping blindly.",
+                "Ask the grid with frontIsClear, leftIsClear, and rightIsClear; loop so the robot follows the corridor maze without bumping walls.",
                 "Built-ins added: frontIsClear, leftIsClear, rightIsClear (return truth you can use in while/if when available).",
                 "Typical pattern: while (frontIsClear()) { move(); }",
                 StudioLessonSharedExamples.Sensing,
@@ -103,15 +98,13 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                     StudioPanelIds.LessonToolbox,
                     StudioPanelIds.Tokens,
                     StudioPanelIds.SyntaxTree,
-                    StudioPanelIds.Diagnostics,
                     StudioPanelIds.BoundTree,
-                    StudioPanelIds.WorldRuntime,
                 ]),
 
             [StudioLessonIds.FullLanguage] = new(
                 StudioLessonIds.FullLanguage,
                 "Full toolbox",
-                "Everything the teaching profile allows: longer procedures, richer puzzles, and every idea from earlier lessons in one place.",
+                "Combine everything: longer procedures, the full built-in set, and this arena—trace Tokens through IL, then Run to the goal.",
                 "Includes prior keywords plus whatever your course adds (arrays, pick/drop, etc. when in profile).\n" +
                 "See the Lesson toolbox panel after Build for the exact list.",
                 "Same RoboSharp statement and block rules; use procedures to organize longer code.",
@@ -124,10 +117,8 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                     StudioPanelIds.LessonToolbox,
                     StudioPanelIds.Tokens,
                     StudioPanelIds.SyntaxTree,
-                    StudioPanelIds.Diagnostics,
                     StudioPanelIds.BoundTree,
                     StudioPanelIds.Il,
-                    StudioPanelIds.WorldRuntime,
                 ]),
         };
 

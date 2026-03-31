@@ -1,5 +1,5 @@
-using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using RoboSharp.Locales;
 using RoboSharp.Application.Teaching;
 using RoboSharp.Studio.Shell;
@@ -9,6 +9,9 @@ namespace RoboSharp.Studio.Panels;
 public sealed class TokenPipelinePanel : IStudioPanel
 {
     private readonly ITeachingLocale _locale;
+    private TextBlock? _lead;
+    private TextBlock? _guide;
+    private TextBlock? _footer;
     private TextBox? _text;
 
     public TokenPipelinePanel(ITeachingLocale locale) =>
@@ -25,12 +28,23 @@ public sealed class TokenPipelinePanel : IStudioPanel
     public Control CreateView()
     {
         _text = StudioCopyableText.CreateReadOnlyOutput();
-
-        return new Border
+        var scroll = new ScrollViewer
         {
-            Padding = new Thickness(8),
-            Child = _text,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            Content = _text,
+            MinHeight = 140,
         };
+
+        var (root, parts) = TeachingInspectPanelChrome.Create(scroll, dataMinHeight: 0);
+        _lead = parts.Lead;
+        _guide = parts.Guide;
+        _footer = parts.Footer;
+        _lead.Text = _locale.Panels.TokensLead;
+        _guide.Text = _locale.Panels.TokensGuide;
+        _footer.Text = _locale.Panels.TokensFootnote;
+
+        return root;
     }
 
     public void OnSnapshotChanged(PipelineSnapshot snapshot)
@@ -41,7 +55,19 @@ public sealed class TokenPipelinePanel : IStudioPanel
         var rows = snapshot.Tokens.Select(t =>
             $"{t.Kind,-22}  @{t.Span.Start,4} len {t.Span.Length,3}  {VisualizeText(t.Text)}");
 
-        _text.Text = _locale.Panels.TokensPreamble + string.Join(Environment.NewLine, rows);
+        _text.Text = _locale.Panels.TokensColumnHeader + Environment.NewLine + string.Join(Environment.NewLine, rows);
+    }
+
+    public void ApplyLocale(PipelineSnapshot? lastSnapshot)
+    {
+        if (_lead is not null)
+            _lead.Text = _locale.Panels.TokensLead;
+        if (_guide is not null)
+            _guide.Text = _locale.Panels.TokensGuide;
+        if (_footer is not null)
+            _footer.Text = _locale.Panels.TokensFootnote;
+        if (lastSnapshot is not null)
+            OnSnapshotChanged(lastSnapshot);
     }
 
     private static string VisualizeText(string text)

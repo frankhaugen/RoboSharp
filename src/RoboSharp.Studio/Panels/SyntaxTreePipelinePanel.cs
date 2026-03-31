@@ -1,4 +1,3 @@
-using Avalonia;
 using Avalonia.Controls;
 using RoboSharp.Language;
 using RoboSharp.Locales;
@@ -11,6 +10,9 @@ public sealed class SyntaxTreePipelinePanel : IStudioPanel
 {
     private readonly ISyntaxTreeSerializer _serializer;
     private readonly ITeachingLocale _locale;
+    private TextBlock? _lead;
+    private TextBlock? _guide;
+    private TextBlock? _footer;
     private TextBox? _text;
 
     public SyntaxTreePipelinePanel(ISyntaxTreeSerializer serializer, ITeachingLocale locale)
@@ -30,12 +32,23 @@ public sealed class SyntaxTreePipelinePanel : IStudioPanel
     public Control CreateView()
     {
         _text = StudioCopyableText.CreateReadOnlyOutput();
-
-        return new Border
+        var scroll = new ScrollViewer
         {
-            Padding = new Thickness(8),
-            Child = _text,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            Content = _text,
+            MinHeight = 140,
         };
+
+        var (root, parts) = TeachingInspectPanelChrome.Create(scroll, dataMinHeight: 0);
+        _lead = parts.Lead;
+        _guide = parts.Guide;
+        _footer = parts.Footer;
+        _lead.Text = _locale.Panels.SyntaxTreeLead;
+        _guide.Text = _locale.Panels.SyntaxTreeGuide;
+        _footer.Text = _locale.Panels.SyntaxTreeFootnote;
+
+        return root;
     }
 
     public void OnSnapshotChanged(PipelineSnapshot snapshot)
@@ -43,6 +56,18 @@ public sealed class SyntaxTreePipelinePanel : IStudioPanel
         if (_text is null)
             return;
 
-        _text.Text = _locale.Panels.SyntaxTreePreamble + _serializer.Serialize(snapshot.SyntaxTree.Root);
+        _text.Text = _serializer.Serialize(snapshot.SyntaxTree.Root);
+    }
+
+    public void ApplyLocale(PipelineSnapshot? lastSnapshot)
+    {
+        if (_lead is not null)
+            _lead.Text = _locale.Panels.SyntaxTreeLead;
+        if (_guide is not null)
+            _guide.Text = _locale.Panels.SyntaxTreeGuide;
+        if (_footer is not null)
+            _footer.Text = _locale.Panels.SyntaxTreeFootnote;
+        if (lastSnapshot is not null)
+            OnSnapshotChanged(lastSnapshot);
     }
 }

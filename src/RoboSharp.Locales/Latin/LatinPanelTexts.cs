@@ -2,97 +2,95 @@ namespace RoboSharp.Locales.Latin;
 
 internal sealed class LatinPanelTexts : IStudioPanelTexts
 {
-    public string EditorSyntaxDockTitle => "Colores lexici (referentia)";
-    public string EditorSyntaxDockSubtitle =>
-        "Idem fons ac editor, tinctus post ultimum lexicum Aedificationis — legenda ostendit genera signorum. Supra editor simplex manet.";
-    public string EditorSyntaxDockEmpty => "(Nihil ostendere — fons vacuus est aut Aedificatio nondum cucurrit.)";
-    public string EditorSyntaxLegendKeyword => "verbum clavis";
-    public string EditorSyntaxLegendIdentifier => "nomen";
-    public string EditorSyntaxLegendNumberLiteral => "numerus";
-    public string EditorSyntaxLegendStringLiteral => "textus";
-    public string EditorSyntaxLegendComment => "commentarium";
-    public string EditorSyntaxLegendPunctuation => "alia";
-    public string EditorSyntaxLegendError => "vitium";
-
     public string LessonToolboxTitle => "Arca instrumentorum lectionis";
     public string LessonToolboxSubtitle =>
-        "Builtina quae profilium quod elegisti permittit. Profilia minora aenigmata continent; nomina ignota saepe profilium significant, non errorem grammaticae.";
-    public string LessonToolboxPreamble =>
-        "# Arca instrumentorum\r\n" +
+        "Nomina quae compilator hac lectione accipit — cum profilio lectionis cohaerent, non cum omni verbo RoboSharp umquam discet.";
+    public string LessonToolboxLead => "Quae vocare licet";
+    public string LessonToolboxGuide =>
+        "Haec index est **profilium**: builtina et typi quibus programma tuum nunc uti potest. " +
         LatinTeachingExplainer.ProfilesVsGrammar +
-        "\r\n\r\nIndex infra congruit cum selecto profili lectionis.\r\n\r\n";
+        " Post **Aedifica**, lineae infra sunt index vivus ex illo profilio.";
+    public string LessonToolboxFooter =>
+        "Si nomen quod exspectas deest, fortasse lectionem antecessisti — muta lectionem in fasciā aut postea profilius latiore utere.";
     public string LessonToolboxBuildPrompt =>
-        "(Semel aedifica ut profilium activum et orbis titulos in imaginem trahas.)";
+        "(Semel aedifica ut profilium activum in hanc imaginem trahas.)";
 
     public string TokensTitle => "Signa";
     public string TokensSubtitle =>
-        "Exitus lexici: una linea per signum (genus, index initii, longitudo, textus effugatus). Copia cum Ctrl+A, Ctrl+C intra arcam.";
-    public string TokensPreamble =>
-        "# Signa lexica (analysis lexicalis)\r\n" +
-        "Quaelibet linea unum signum: genus, index @initii, longitudo, et litterae ipsae (\\r, \\n, \\t effugatae).\r\n" +
-        LatinTeachingExplainer.LexerToParser +
-        "\r\n\r\n";
+        "Exitus lexici: quomodo textus planus in fluxum partium signatarum ante syntacticum agens factus sit.";
+    public string TokensLead => "Analysis lexicalis";
+    public string TokensGuide =>
+        "**Lexicum** textum a sinistra ad dexteram legit et **signa** facit — verba clavis, nomina, numeri, interpunctio, commentaria. " +
+        "Quaelibet linea infra unum signum: genus, ubi incipit, longitudo, textus ipsus (\\r, \\n, \\t effugata).\r\n\r\n" +
+        LatinTeachingExplainer.LexerToParser;
+    public string TokensColumnHeader => "genus                     @init  long  textus";
+    public string TokensFootnote =>
+        "Signa sunt imago ab ultima **Aedificatione**. Muta editorum, dein Aedifica iterum. Signa mira saepe significant litteram erraticam quam lexicum «malum» notavit.";
 
     public string SyntaxTreeTitle => "Arbor syntactica";
     public string SyntaxTreeSubtitle =>
-        "Exitus syntactici: nodi inclusi. Arbor bona + diagnostica saepe significant gradum proximum esse nexum, non lexicum.";
-    public string SyntaxTreePreamble =>
-        "# Arbor syntactica (parsing)\r\n" +
-        "Syntaxis concreta: indentatio ostendit quomodo signa in declarationes, sententias, expressiones coierint.\r\n" +
-        LatinTeachingExplainer.PhasesDependOnEachOther +
-        "\r\n\r\n";
+        "Quomodo syntacticus signa in formas grammaticas — proceduras, cuneos, expressiones — coegerit.";
+    public string SyntaxTreeLead => "Parsing";
+    public string SyntaxTreeGuide =>
+        "**Syntacticus** flumen signorum legit et **arborem syntacticam** aedificat: nodi inclusi qui grammaticae RoboSharp congruunt. " +
+        "Indentatio in effusione structuram parentis/filii ostendit. Arbor munda hic saepe significat «syntaxis bona est; si quid adhuc male est, specta nexum aut typōs», non lexicum.\r\n\r\n" +
+        LatinTeachingExplainer.PhasesDependOnEachOther;
+    public string SyntaxTreeFootnote =>
+        "Arbor textus tantum lectu est quem copiare potes. Eadem structura quam gradus nexūs deinde perambulat.";
 
-    public string DiagnosticsTitle => "Diagnostica";
+    public string DiagnosticsTitle => "Nuntii compilatōris";
     public string DiagnosticsSubtitle =>
-        "Nuntii syntactici, significativi, et exsecutorii ab ultima Aedificatione vel Cursu. Quaelibet linea gradu signata est.";
+        "Lineae syntacticae, significativae, exsecutoriae ab ultima Aedificatione vel Cursu — quaelibet gradu signata.";
     public string DiagnosticsPreamble =>
-        "# Diagnostica (compilatorem et interpretem)\r\n" +
+        "# Nuntii compilatōris\r\n" +
         LatinTeachingExplainer.WhatIsASourceSpan +
         "\r\n\r\n" +
-        "• lexica — lexicum/syntacticus arborem validam facere non potuit.\r\n" +
-        "• significativa — regulae nexūs/types post syntaxin felicem defecerunt. " + LatinTeachingExplainer.WhatIsBinding + "\r\n" +
-        "• exsecutorius — interpres culpam post IL demissam nuntiavit (post Curr). " + LatinTeachingExplainer.StdoutVsDiagnostics + "\r\n" +
+        "• **lexica** — lexicum/syntacticus arborem validam facere non potuit.\r\n" +
+        "• **significativa** — regulae nexūs/types post syntaxin felicem defecerunt. " + LatinTeachingExplainer.WhatIsBinding + "\r\n" +
+        "• **exsecutoria** — interpres culpam post IL demissam nuntiavit. " + LatinTeachingExplainer.StdoutVsDiagnostics + "\r\n" +
         "\r\n";
 
     public string DiagnosticsNone =>
-        "(Nulla diagnostica in his gradibus — ultima Aedificatio/Cursus nullas culpas hic nuntiavit.)";
+        "(Nulla nuntiata in his gradibus — ultima Aedificatio/Cursus nullas culpas hic nuntiavit.)";
 
     public string DiagnosticsRuntimePrefix => "exsecutorius ";
 
     public string BoundTreeTitle => "Arbor nexa";
     public string BoundTreeSubtitle =>
-        "Analysis significativa: singulum nomen ad symbolum resolutum, omnis expressio typata. Hinc demissio IL fictam facit.";
-    public string BoundTreePreamble =>
-        "# Arbor nexa (analysis significativa)\r\n" +
+        "Analysis significativa: nomina ad symbola, expressiones ad typōs — intratura demissionis.";
+    public string BoundTreeLead => "Nexus et typī";
+    public string BoundTreeGuide =>
+        "**Nexus** nomina ad declarationes resolvit, typōs probat, significationem arbori adnectit. " +
         LatinTeachingExplainer.WhatIsBinding +
-        "\r\n\r\nEffusio infra est stratum significationis quod gradus demissionis IL consumit.\r\n\r\n";
-
+        "\r\n\r\nQuod infra vidēs est programma **nexum**: stratum quod gradus demissionis IL consumit. Cum hic textus apparet, compilator sensum satis intellexit ut conetur instructiones fingere.";
+    public string BoundTreeFootnote =>
+        "Si haec tabula vacua est aut brevem notam monstrat, corrige quod dicit, dein Aedifica. **Visum → Nuntii compilatōris** pro indice pleno.";
     public string BoundTreeNeedParseFirst =>
-        "Nexus post syntaxin felicem tantum currit. Primum diagnostica syntactica corrige (arbor + titulus tabulae), dein Aedifica.";
+        "Nexus post syntaxin felicem tantum currit. Primum nuntiata syntactica corrige (arbor + Nuntii compilatōris), dein Aedifica.";
     public string BoundTreeSemanticsStopped =>
-        "Analysis significativa cito substitit — vide Diagnostica pro nuntiis nexūs. Saepe discordia typorum aut nomen ignotum in profilio.";
+        "Analysis significativa cito substitit — aperi **Visum → Nuntii compilatōris** pro nuntiis nexūs (nomina ignota, typī falsi, fines profilii).";
     public string BoundTreeUnexpectedEmpty =>
-        "(Textus arboris nexae deest quamquam demissio successum nuntiavit — inopinatum; vide Diagnostica et indicium mitte si manet.)";
+        "(Textus arboris nexae deest quamquam demissio successum nuntiavit — inopinatum; Nuntii compilatōris vide et indicium mitte si manet.)";
     public string BoundTreeBuildPrompt => "Aedifica ut ductum renoves et hanc tabulam impleas cum compilatio felix est.";
 
     public string IlTitle => "IL (demissa)";
     public string IlSubtitle =>
-        "Dissectio IL fictae: opcodes et operandi quos interpres agit. Non IL CLR — vide explicator in nota post Curr.";
-    public string IlPreamble =>
-        "# IL ficta (demissio)\r\n" +
+        "Index fictarum instructionum quas interpres gradatim agit — non IL CLR; vide ductum et notam post Curr.";
+    public string IlLead => "Demissio";
+    public string IlGuide =>
         LatinTeachingExplainer.FakeIlVersusDotNet +
-        "\r\n\r\n";
+        "\r\n\r\nQuaelibet instructio unus gradus est quem interpres docens exsequitur. Dum **Curr** gradatim agit, linea praesens illustratur ut motum IL cum roboto coniungas.";
 
     public string IlWaitingForLowering =>
-        "IL post nexum et demissionem felicem apparet: typi validi, nomina resoluta, et introitus currens. Diagnostica significativa clara fac, dein Aedifica.";
+        "IL post nexum et demissionem felicem tantum apparet. Nuntiata significativa clara fac, dein Aedifica.";
     public string IlNoTextUnexpected =>
-        "(Demissio successum nuntiavit sed textus IL deest — inopinatum. Aedifica iterum et Diagnostica vide.)";
+        "(Demissio successum nuntiavit sed textus IL deest — inopinatum. Aedifica iterum et Nuntii compilatōris vide.)";
 
     public string IlCopyDisassembly => "Copia textum IL";
 
-    public string WorldRuntimeTitle => "Orbis et interpres";
+    public string WorldRuntimeTitle => "Relatio cursūs";
     public string WorldRuntimeSubtitle =>
-        "Post Curr: summarium orbis, perfectio aut culpa, print() stdout, et stderr. Secta signata sunt ut exempla maneant clara.";
+        "Post Curr: responsum meta, summarium orbis, print(), stderr, eventus — ex menu Visum apertum.";
     public string FormatWorldRuntimePanel(
         bool? runtimeSucceeded,
         bool hasRunnableIl,
@@ -104,7 +102,7 @@ internal sealed class LatinPanelTexts : IStudioPanelTexts
         string? runtimeStderr)
     {
         var doc =
-            "# Orbis et interpres\r\n" +
+            "# Relatio cursūs\r\n" +
             "Aedificatio tantum compila. Curr iterum compila, dein IL in reticulo gradatim agit.\r\n" +
             LatinTeachingExplainer.StdoutVsDiagnostics +
             "\r\n\r\n";
@@ -141,7 +139,7 @@ internal sealed class LatinPanelTexts : IStudioPanelTexts
                 "## Error standardus\r\n" +
                 "(non praesto donec compilatio felix sit)\r\n" +
                 "\r\n" +
-                "Monitum: voca imperata ad summum scopum (exempli gratia move();) et diagnostica syntactica/significativa clara fac. " +
+                "Monitum: voca imperata ad summum scopum (exempli gratia move();) et nuntiata syntactica/significativa clara fac. " +
                 LatinTeachingExplainer.PhasesDependOnEachOther +
                 "\r\n";
         }
@@ -169,7 +167,7 @@ internal sealed class LatinPanelTexts : IStudioPanelTexts
             "\r\n" +
             (runtimeSucceeded == true
                 ? "Perfectum sine culpa.\r\n"
-                : "Substitit cum culpa — lege nuntium infra et Diagnostica pro rebus compilationis.\r\n") +
+                : "Substitit cum culpa — lege nuntium infra et **Visum → Nuntii compilatōris** pro rebus compilationis.\r\n") +
             (string.IsNullOrWhiteSpace(runtimeFaultMessage)
                 ? ""
                 : "\r\n" + runtimeFaultMessage.TrimEnd() + "\r\n");

@@ -1,6 +1,4 @@
-using Avalonia;
 using Avalonia.Controls;
-
 using RoboSharp.Locales;
 using RoboSharp.Application.Teaching;
 using RoboSharp.Studio.Shell;
@@ -11,6 +9,9 @@ namespace RoboSharp.Studio.Panels;
 public sealed class BoundTreePipelinePanel : IStudioPanel
 {
     private readonly ITeachingLocale _locale;
+    private TextBlock? _lead;
+    private TextBlock? _guide;
+    private TextBlock? _footer;
     private TextBox? _text;
 
     public BoundTreePipelinePanel(ITeachingLocale locale) =>
@@ -27,12 +28,23 @@ public sealed class BoundTreePipelinePanel : IStudioPanel
     public Control CreateView()
     {
         _text = StudioCopyableText.CreateReadOnlyOutput();
-
-        return new Border
+        var scroll = new ScrollViewer
         {
-            Padding = new Thickness(4),
-            Child = _text,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            Content = _text,
+            MinHeight = 140,
         };
+
+        var (root, parts) = TeachingInspectPanelChrome.Create(scroll, dataMinHeight: 0);
+        _lead = parts.Lead;
+        _guide = parts.Guide;
+        _footer = parts.Footer;
+        _lead.Text = _locale.Panels.BoundTreeLead;
+        _guide.Text = _locale.Panels.BoundTreeGuide;
+        _footer.Text = _locale.Panels.BoundTreeFootnote;
+
+        return root;
     }
 
     public void OnSnapshotChanged(PipelineSnapshot snapshot)
@@ -42,7 +54,7 @@ public sealed class BoundTreePipelinePanel : IStudioPanel
 
         if (snapshot.BoundTreeText is { Length: > 0 } body)
         {
-            _text.Text = _locale.Panels.BoundTreePreamble + body;
+            _text.Text = body;
             return;
         }
 
@@ -54,6 +66,18 @@ public sealed class BoundTreePipelinePanel : IStudioPanel
             _ => _locale.Panels.BoundTreeBuildPrompt,
         };
 
-        _text.Text = _locale.Panels.BoundTreePreamble + note;
+        _text.Text = note;
+    }
+
+    public void ApplyLocale(PipelineSnapshot? lastSnapshot)
+    {
+        if (_lead is not null)
+            _lead.Text = _locale.Panels.BoundTreeLead;
+        if (_guide is not null)
+            _guide.Text = _locale.Panels.BoundTreeGuide;
+        if (_footer is not null)
+            _footer.Text = _locale.Panels.BoundTreeFootnote;
+        if (lastSnapshot is not null)
+            OnSnapshotChanged(lastSnapshot);
     }
 }

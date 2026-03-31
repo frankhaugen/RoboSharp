@@ -6,7 +6,7 @@ using RoboSharp.World;
 
 namespace RoboSharp.Studio.Shell;
 
-/// <summary>Tile-based world preview for the sidebar — clearer than raw ASCII in a <see cref="TextBlock"/>.</summary>
+/// <summary>Tile-based world preview for the editor dock — clearer than raw ASCII in a <see cref="TextBlock"/>.</summary>
 public sealed class RobotWorldGridView : Border
 {
     /// <summary>

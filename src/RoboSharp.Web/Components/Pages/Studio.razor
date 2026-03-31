@@ -216,36 +216,44 @@
 
     private string ToolboxText()
     {
+        var header = Locale.Panels.LessonToolboxLead + Environment.NewLine + Environment.NewLine
+                     + Locale.Panels.LessonToolboxGuide + Environment.NewLine + Environment.NewLine;
+        var footer = Environment.NewLine + Environment.NewLine + Locale.Panels.LessonToolboxFooter;
         if (_snapshot is null)
-            return Locale.Panels.LessonToolboxPreamble + Locale.Panels.LessonToolboxBuildPrompt;
+            return header + Locale.Panels.LessonToolboxBuildPrompt + footer;
 
         var help = _snapshot.LessonProfileHelpText;
-        return Locale.Panels.LessonToolboxPreamble
-               + (string.IsNullOrWhiteSpace(help) ? Locale.Panels.LessonToolboxBuildPrompt : help);
+        return header + (string.IsNullOrWhiteSpace(help) ? Locale.Panels.LessonToolboxBuildPrompt : help) + footer;
     }
 
     private string TokensText()
     {
+        var header = Locale.Panels.TokensLead + Environment.NewLine + Environment.NewLine
+                     + Locale.Panels.TokensGuide + Environment.NewLine + Environment.NewLine;
         if (_snapshot is null)
-            return Locale.Panels.TokensPreamble + "(Build to populate tokens.)";
+            return header + "(Build to populate tokens.)";
 
         var rows = _snapshot.Tokens.Select(t =>
             $"{t.Kind,-22}  @{t.Span.Start,4} len {t.Span.Length,3}  {VisualizeTokenText(t.Text)}");
-        return Locale.Panels.TokensPreamble + string.Join(Environment.NewLine, rows);
+        return header + string.Join(Environment.NewLine, rows) + Environment.NewLine + Environment.NewLine
+               + Locale.Panels.TokensFootnote;
     }
 
     private string SyntaxTreeText()
     {
+        var header = Locale.Panels.SyntaxTreeLead + Environment.NewLine + Environment.NewLine
+                     + Locale.Panels.SyntaxTreeGuide + Environment.NewLine + Environment.NewLine;
         if (_snapshot is null)
-            return Locale.Panels.SyntaxTreePreamble + "(Build to populate the syntax tree.)";
+            return header + "(Build to populate the syntax tree.)";
 
         try
         {
-            return Locale.Panels.SyntaxTreePreamble + SyntaxSerializer.Serialize(_snapshot.SyntaxTree.Root);
+            return header + SyntaxSerializer.Serialize(_snapshot.SyntaxTree.Root) + Environment.NewLine
+                   + Environment.NewLine + Locale.Panels.SyntaxTreeFootnote;
         }
         catch (Exception ex)
         {
-            return Locale.Panels.SyntaxTreePreamble + ex.Message;
+            return header + ex.Message;
         }
     }
 
@@ -275,11 +283,13 @@
 
     private string BoundTreeText()
     {
+        var header = Locale.Panels.BoundTreeLead + Environment.NewLine + Environment.NewLine
+                     + Locale.Panels.BoundTreeGuide + Environment.NewLine + Environment.NewLine;
         if (_snapshot is null)
-            return Locale.Panels.BoundTreePreamble + Locale.Panels.BoundTreeBuildPrompt;
+            return header + Locale.Panels.BoundTreeBuildPrompt;
 
         if (_snapshot.BoundTreeText is { Length: > 0 } body)
-            return Locale.Panels.BoundTreePreamble + body;
+            return header + body + Environment.NewLine + Environment.NewLine + Locale.Panels.BoundTreeFootnote;
 
         var note = _snapshot.CompileReachedPhase switch
         {
@@ -289,23 +299,25 @@
             _ => Locale.Panels.BoundTreeBuildPrompt,
         };
 
-        return Locale.Panels.BoundTreePreamble + note;
+        return header + note;
     }
 
     private string IlText()
     {
+        var header = Locale.Panels.IlLead + Environment.NewLine + Environment.NewLine
+                     + Locale.Panels.IlGuide + Environment.NewLine + Environment.NewLine;
         if (_snapshot is null)
-            return Locale.Panels.IlPreamble + "(Build to populate IL.)";
+            return header + "(Build to populate IL.)";
 
         if (_snapshot.IlDisassemblyText is { Length: > 0 } il)
         {
             var body = il;
             if (_snapshot.IlExecutionFootnote is { Length: > 0 } foot)
                 body += Environment.NewLine + Environment.NewLine + foot;
-            return Locale.Panels.IlPreamble + body;
+            return header + body;
         }
 
-        return Locale.Panels.IlPreamble + (_snapshot.CompileReachedPhase < CompilePhase.Lowered
+        return header + (_snapshot.CompileReachedPhase < CompilePhase.Lowered
             ? Locale.Panels.IlWaitingForLowering
             : Locale.Panels.IlNoTextUnexpected);
     }

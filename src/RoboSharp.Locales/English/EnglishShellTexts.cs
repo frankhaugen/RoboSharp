@@ -9,6 +9,9 @@ internal sealed class EnglishShellTexts : IStudioShellTexts
 
     public string UntitledFileName => "Untitled.robo";
     public string FileMenuHeader => "_File";
+    public string ViewMenuHeader => "_View";
+    public string MenuViewCompilerDiagnostics => "_Compiler messages…";
+    public string MenuViewRunReport => "_Run report…";
     public string MenuNew => "_New";
     public string MenuOpen => "_Open…";
     public string MenuSave => "_Save";
@@ -42,7 +45,7 @@ internal sealed class EnglishShellTexts : IStudioShellTexts
     public string ToolbarStepSpeed => "Step speed";
     public string ToolbarAppTitle => "RoboSharp Studio";
     public string ToolbarSubtitle =>
-        "Pick a lesson and goal on the left. Build = compile and refresh panels. Run = compile then step the robot on your goal map.";
+        "Lesson ribbon picks the track (map + profile + pipeline tabs). Build = refresh stages. Run = step the robot in the arena below.";
     public string RunSpeedRealtime =>
         "Realtime — run to the end without pausing between IL instructions";
     public string RunSpeedSlow =>

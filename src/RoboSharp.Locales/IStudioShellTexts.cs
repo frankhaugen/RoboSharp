@@ -6,6 +6,9 @@ public interface IStudioShellTexts
     string FormatWindowTitle(string fileDisplayName, bool dirty);
     string UntitledFileName { get; }
     string FileMenuHeader { get; }
+    string ViewMenuHeader { get; }
+    string MenuViewCompilerDiagnostics { get; }
+    string MenuViewRunReport { get; }
     string MenuNew { get; }
     string MenuOpen { get; }
     string MenuSave { get; }

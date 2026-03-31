@@ -45,8 +45,8 @@ public static class TeachingLocaleStringGuard
                 issues.Add($"{path}: lesson with empty {nameof(StudioLessonDefinition.Id)}.");
             if (string.IsNullOrWhiteSpace(L.Title))
                 issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.Title)}.");
-            if (string.IsNullOrWhiteSpace(L.StartHereBlurb))
-                issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.StartHereBlurb)}.");
+            if (string.IsNullOrWhiteSpace(L.TaskChallengeBody))
+                issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.TaskChallengeBody)}.");
             if (string.IsNullOrWhiteSpace(L.KeywordsSection))
                 issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.KeywordsSection)}.");
             if (string.IsNullOrWhiteSpace(L.SyntaxSection))

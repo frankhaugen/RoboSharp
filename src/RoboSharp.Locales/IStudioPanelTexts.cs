@@ -2,46 +2,49 @@ namespace RoboSharp.Locales;
 
 public interface IStudioPanelTexts
 {
-    string EditorSyntaxDockTitle { get; }
-    string EditorSyntaxDockSubtitle { get; }
-    string EditorSyntaxDockEmpty { get; }
-    string EditorSyntaxLegendKeyword { get; }
-    string EditorSyntaxLegendIdentifier { get; }
-    string EditorSyntaxLegendNumberLiteral { get; }
-    string EditorSyntaxLegendStringLiteral { get; }
-    string EditorSyntaxLegendComment { get; }
-    string EditorSyntaxLegendPunctuation { get; }
-    string EditorSyntaxLegendError { get; }
     string LessonToolboxTitle { get; }
     string LessonToolboxSubtitle { get; }
-    string LessonToolboxPreamble { get; }
+    string LessonToolboxLead { get; }
+    string LessonToolboxGuide { get; }
+    string LessonToolboxFooter { get; }
     string LessonToolboxBuildPrompt { get; }
+
     string TokensTitle { get; }
     string TokensSubtitle { get; }
-    string TokensPreamble { get; }
+    string TokensLead { get; }
+    string TokensGuide { get; }
+    string TokensColumnHeader { get; }
+    string TokensFootnote { get; }
+
     string SyntaxTreeTitle { get; }
     string SyntaxTreeSubtitle { get; }
-    string SyntaxTreePreamble { get; }
+    string SyntaxTreeLead { get; }
+    string SyntaxTreeGuide { get; }
+    string SyntaxTreeFootnote { get; }
+
     string DiagnosticsTitle { get; }
     string DiagnosticsSubtitle { get; }
     string DiagnosticsPreamble { get; }
     string DiagnosticsNone { get; }
-    /// <summary>Prefix for a runtime fault line in the diagnostics panel (before the message).</summary>
     string DiagnosticsRuntimePrefix { get; }
     string BoundTreeTitle { get; }
     string BoundTreeSubtitle { get; }
-    string BoundTreePreamble { get; }
+    string BoundTreeLead { get; }
+    string BoundTreeGuide { get; }
+    string BoundTreeFootnote { get; }
     string BoundTreeNeedParseFirst { get; }
     string BoundTreeSemanticsStopped { get; }
     string BoundTreeUnexpectedEmpty { get; }
     string BoundTreeBuildPrompt { get; }
+
     string IlTitle { get; }
     string IlSubtitle { get; }
-    string IlPreamble { get; }
+    string IlLead { get; }
+    string IlGuide { get; }
     string IlWaitingForLowering { get; }
     string IlNoTextUnexpected { get; }
-    /// <summary>Label for copying full IL disassembly text to the clipboard.</summary>
     string IlCopyDisassembly { get; }
+
     string WorldRuntimeTitle { get; }
     string WorldRuntimeSubtitle { get; }
     string FormatWorldRuntimePanel(

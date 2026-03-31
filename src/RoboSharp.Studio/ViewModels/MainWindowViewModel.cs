@@ -261,7 +261,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string CurrentLessonTitle => _locale.Lessons.Get(_selectedLessonId).Title;
 
-    public string CurrentLessonStartBlurb => _locale.Lessons.Get(_selectedLessonId).StartHereBlurb;
+    public string CurrentLessonTaskChallengeBody => _locale.Lessons.Get(_selectedLessonId).TaskChallengeBody;
 
     public string CurrentLessonKeywords => _locale.Lessons.Get(_selectedLessonId).KeywordsSection;
 
@@ -278,7 +278,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     void NotifyLessonPresentationChanged()
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonTitle)));
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonStartBlurb)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonTaskChallengeBody)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonKeywords)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonSyntax)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLessonGoalSectionBody)));

@@ -9,6 +9,9 @@ internal sealed class LatinShellTexts : IStudioShellTexts
 
     public string UntitledFileName => "Sine nomine.robo";
     public string FileMenuHeader => "_Tabula";
+    public string ViewMenuHeader => "_Visum";
+    public string MenuViewCompilerDiagnostics => "_Nuntii compilatōris…";
+    public string MenuViewRunReport => "_Relatio cursūs…";
     public string MenuNew => "_Nova";
     public string MenuOpen => "_Aperi…";
     public string MenuSave => "_Serva";
@@ -42,7 +45,7 @@ internal sealed class LatinShellTexts : IStudioShellTexts
     public string ToolbarStepSpeed => "Celeritas graduum";
     public string ToolbarAppTitle => "RoboSharp Studium";
     public string ToolbarSubtitle =>
-        "Lectionem et metam sinistra elige. Aedifica = compila et renova tabulas. Curr = compila dein robotem in meta gradatim age.";
+        "Fascia lectionis cursum eligit (charta + profilium + tabulae). Aedifica gradus renovat; Curr robotem in area infra gradatim agit.";
     public string RunSpeedRealtime =>
         "Statim — ad finem sine mora inter singulas instructiones IL";
     public string RunSpeedSlow =>
