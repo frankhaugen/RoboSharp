@@ -109,6 +109,9 @@
   <Folder Name="/docs/player/">
     <File Path="docs/player/README.md" />
   </Folder>
+  <Folder Name="/docs/readme/">
+    <File Path="docs/readme/studio-hero.png" />
+  </Folder>
   <Folder Name="/docs/rendering/">
     <File Path="docs/rendering/README.md" />
     <File Path="docs/rendering/ascii-renderer.md" />
