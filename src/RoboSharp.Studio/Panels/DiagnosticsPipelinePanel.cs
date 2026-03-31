@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using RoboSharp.Locales;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.Shell;
 
@@ -7,14 +8,17 @@ namespace RoboSharp.Studio.Panels;
 
 public sealed class DiagnosticsPipelinePanel : IStudioPanel
 {
+    private readonly ITeachingLocale _locale;
     private TextBox? _text;
+
+    public DiagnosticsPipelinePanel(ITeachingLocale locale) =>
+        _locale = locale;
 
     public int Order => 30;
 
-    public string DisplayName => "Diagnostics";
+    public string DisplayName => _locale.Panels.DiagnosticsTitle;
 
-    public string? InspectorSubtitle =>
-        "Parse, semantic (binder), and runtime messages from the last Build or Run. Lines are prefixed by phase.";
+    public string? InspectorSubtitle => _locale.Panels.DiagnosticsSubtitle;
 
     public Control CreateView()
     {
@@ -32,30 +36,23 @@ public sealed class DiagnosticsPipelinePanel : IStudioPanel
         if (_text is null)
             return;
 
-        const string preamble =
-            "# Diagnostics (compiler & interpreter)\r\n" +
-            "parse    — lexer/parser could not build a syntax tree (see span: start:length in source).\r\n" +
-            "semantic — binder/type rules failed after a successful parse.\r\n" +
-            "runtime  — interpreter reported a fault while executing lowered IL (after Run).\r\n" +
-            "\r\n";
-
         var lines = new List<string>();
 
         foreach (var d in snapshot.ParseDiagnostics)
         {
             var loc = SourceLocationFormatter.FormatLine(snapshot.Source, d.Span);
-            lines.Add($"parse     @{d.Span.Start}:{d.Span.Length}  ({loc})  {d.Message}");
+            lines.Add(_locale.Pipeline.FormatParseDiagnosticLine(d.Span.Start, d.Span.Length, loc, d.Message));
         }
 
         foreach (var s in snapshot.SemanticDiagnosticLines)
-            lines.Add($"semantic  {s}");
+            lines.Add(s);
 
         if (snapshot.RuntimeFaultMessage is not null)
-            lines.Add($"runtime   {snapshot.RuntimeFaultMessage}");
+            lines.Add(_locale.Panels.DiagnosticsRuntimePrefix + snapshot.RuntimeFaultMessage);
 
         if (lines.Count == 0)
-            lines.Add("(No diagnostics — last Build/Run did not report errors in these phases.)");
+            lines.Add(_locale.Panels.DiagnosticsNone);
 
-        _text.Text = preamble + string.Join(Environment.NewLine, lines);
+        _text.Text = _locale.Panels.DiagnosticsPreamble + string.Join(Environment.NewLine, lines);
     }
 }

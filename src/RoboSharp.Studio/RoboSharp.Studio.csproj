@@ -21,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RoboSharp.Hosting\RoboSharp.Hosting.csproj" />
+    <ProjectReference Include="..\RoboSharp.Locales\RoboSharp.Locales.csproj" />
     <ProjectReference Include="..\RoboSharp.IL\RoboSharp.IL.csproj" />
     <ProjectReference Include="..\RoboSharp.Language\RoboSharp.Language.csproj" />
     <ProjectReference Include="..\RoboSharp.Runtime\RoboSharp.Runtime.csproj" />

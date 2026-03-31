@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Input;
 using Avalonia.Threading;
+using RoboSharp.Locales;
 using RoboSharp.Semantics;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.World;
@@ -33,6 +34,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         """;
 
     private readonly IPipelineInspectionService _pipeline;
+    private readonly ITeachingLocale _locale;
     private CancellationTokenSource? _runCancellation;
 
     private string _sourceDocument = DefaultStarterSource;
@@ -44,14 +46,24 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private StudioRunSpeed _selectedRunSpeed = StudioRunSpeed.Slow;
     private string _selectedProfileId = LessonBuiltinProfiles.MovementAndPrintId;
     private string _selectedWorldPresetId = RobotWorldPresets.GoalCornerId;
-    private string _liveRunStatus = "Choose lesson profile + map below, then Build or Run.";
+    private string _liveRunStatus;
 
-    public MainWindowViewModel(IPipelineInspectionService pipeline)
+    public MainWindowViewModel(IPipelineInspectionService pipeline, ITeachingLocale locale)
     {
         _pipeline = pipeline;
+        _locale = locale;
+        _liveRunStatus = locale.Shell.DefaultLiveRunStatus;
+        RunSpeedOptions =
+        [
+            new(StudioRunSpeed.Realtime, locale.Shell.RunSpeedRealtime),
+            new(StudioRunSpeed.Slow, locale.Shell.RunSpeedSlow),
+            new(StudioRunSpeed.Glacial, locale.Shell.RunSpeedGlacial),
+        ];
         BuildCommand = new DelegateCommand(Build);
         RunCommand = new AsyncDelegateCommand(RunAsync);
     }
+
+    public IReadOnlyList<RunSpeedOption> RunSpeedOptions { get; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -94,9 +106,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         get
         {
-            var name = DocumentPath is null ? "Untitled.robo" : Path.GetFileName(DocumentPath);
-            var star = IsDirty ? " *" : "";
-            return $"{name}{star} — RoboSharp Studio";
+            var name = DocumentPath is null ? _locale.Shell.UntitledFileName : Path.GetFileName(DocumentPath);
+            return _locale.Shell.FormatWindowTitle(name, IsDirty);
         }
     }
 
@@ -176,6 +187,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 return;
             _selectedRunSpeed = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedRunSpeed)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedRunSpeedOption)));
+        }
+    }
+
+    public RunSpeedOption? SelectedRunSpeedOption
+    {
+        get => RunSpeedOptions.FirstOrDefault(o => o.Speed == _selectedRunSpeed);
+        set
+        {
+            if (value is null || value.Speed == _selectedRunSpeed)
+                return;
+            _selectedRunSpeed = value.Speed;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedRunSpeed)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedRunSpeedOption)));
         }
     }
 
@@ -256,13 +281,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         try
         {
-            LiveRunStatus = "Running…";
+            LiveRunStatus = _locale.Shell.LiveRunInProgress;
             var options = CreatePipelineOptions();
             var progress = new Progress<StudioRunProgress>(p =>
                 Dispatcher.UIThread.Post(() =>
                 {
-                    LiveRunStatus =
-                        $"{p.InstructionsExecutedSoFar} IL steps · {p.InstructionDescription ?? "…"}";
+                    LiveRunStatus = _locale.Shell.FormatLiveRunProgress(
+                        p.InstructionsExecutedSoFar,
+                        p.InstructionDescription);
                     RunProgressUpdated?.Invoke(p);
                 }));
 
@@ -274,11 +300,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             PipelineUpdated?.Invoke(snap);
 
             if (snap.LessonOutcomeSummary is { } story)
-                LiveRunStatus = snap.LessonScore is { } sc ? $"{story}  →  Score: {sc}" : story;
+                LiveRunStatus = _locale.Shell.FormatLessonOutcomeLine(story, snap.LessonScore);
             else if (snap.RuntimeSucceeded == true)
-                LiveRunStatus = "Finished run.";
+                LiveRunStatus = _locale.Shell.LiveRunFinished;
             else
-                LiveRunStatus = snap.RuntimeFaultMessage ?? "Run stopped.";
+                LiveRunStatus = snap.RuntimeFaultMessage ?? _locale.Shell.LiveRunFaultFallback;
         }
         catch (OperationCanceledException)
         {

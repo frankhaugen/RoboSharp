@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Media;
 using RoboSharp.Language;
+using RoboSharp.Locales;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.Shell;
 
@@ -11,14 +12,17 @@ namespace RoboSharp.Studio.Panels;
 /// <summary>Lexer-based syntax coloring (updates on Build) — kid-friendly without a full code editor package.</summary>
 public sealed class ColoredSourcePreviewPanel : IStudioPanel
 {
+    private readonly ITeachingLocale _locale;
     private TextBlock? _text;
+
+    public ColoredSourcePreviewPanel(ITeachingLocale locale) =>
+        _locale = locale;
 
     public int Order => 6;
 
-    public string DisplayName => "Syntax colors";
+    public string DisplayName => _locale.Panels.ColoredSourceTitle;
 
-    public string? InspectorSubtitle =>
-        "Keywords, strings, and comments tinted from the last Build. Edit in the main editor; this panel refreshes when you Build.";
+    public string? InspectorSubtitle => _locale.Panels.ColoredSourceSubtitle;
 
     public Control CreateView()
     {
@@ -48,15 +52,11 @@ public sealed class ColoredSourcePreviewPanel : IStudioPanel
             return;
 
         _text.Inlines?.Clear();
-        const string preamble =
-            "# Syntax colors (teaching preview)\r\n" +
-            "This is the same text as your editor, colored by the lexer. It is not live while you type — press Build to refresh.\r\n\r\n";
-
-        _text.Inlines!.Add(new Run(preamble) { Foreground = StudioVisual.TextMutedBrush });
+        _text.Inlines!.Add(new Run(_locale.Panels.ColoredSourcePreamble) { Foreground = StudioVisual.TextMutedBrush });
 
         if (snapshot.Tokens.Count == 0)
         {
-            _text.Inlines.Add(new Run("(Nothing to show.)"));
+            _text.Inlines.Add(new Run(_locale.Panels.ColoredSourceEmpty));
             return;
         }
 

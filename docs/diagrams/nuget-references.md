@@ -15,6 +15,7 @@ flowchart LR
   RoboSharp_Integration_Tests["RoboSharp.Integration.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_IO_Tests["RoboSharp.IO.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Language_Tests["RoboSharp.Language.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
+  RoboSharp_Locales_Tests["RoboSharp.Locales.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Runtime_Tests["RoboSharp.Runtime.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Semantics_Tests["RoboSharp.Semantics.Tests"] --> pkg_TUnit["TUnit v0.55.23"]
   RoboSharp_Studio["RoboSharp.Studio"] --> pkg_Avalonia["Avalonia v11.2.5"]

@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using RoboSharp.Locales;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.Shell;
 
@@ -7,14 +8,17 @@ namespace RoboSharp.Studio.Panels;
 
 public sealed class TokenPipelinePanel : IStudioPanel
 {
+    private readonly ITeachingLocale _locale;
     private TextBox? _text;
+
+    public TokenPipelinePanel(ITeachingLocale locale) =>
+        _locale = locale;
 
     public int Order => 10;
 
-    public string DisplayName => "Tokens";
+    public string DisplayName => _locale.Panels.TokensTitle;
 
-    public string? InspectorSubtitle =>
-        "Lexer output: one line per token (kind, source index, length, escaped text). Click inside, then Ctrl+A / Ctrl+C to copy.";
+    public string? InspectorSubtitle => _locale.Panels.TokensSubtitle;
 
     public Control CreateView()
     {
@@ -32,15 +36,10 @@ public sealed class TokenPipelinePanel : IStudioPanel
         if (_text is null)
             return;
 
-        const string preamble =
-            "# Lexer tokens (output of lexical analysis)\r\n" +
-            "Each line is one token from your source before parsing: kind, @start index, length in characters, and token text (escape sequences shown as \\r, \\n, \\t).\r\n" +
-            "\r\n";
-
         var rows = snapshot.Tokens.Select(t =>
             $"{t.Kind,-22}  @{t.Span.Start,4} len {t.Span.Length,3}  {VisualizeText(t.Text)}");
 
-        _text.Text = preamble + string.Join(Environment.NewLine, rows);
+        _text.Text = _locale.Panels.TokensPreamble + string.Join(Environment.NewLine, rows);
     }
 
     private static string VisualizeText(string text)

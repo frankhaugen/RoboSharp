@@ -8,6 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using RoboSharp.Locales;
 using RoboSharp.Semantics;
 using RoboSharp.Studio.Editor;
 using RoboSharp.Studio.Panels;
@@ -19,22 +20,24 @@ namespace RoboSharp.Studio.Shell;
 
 public sealed class MainWindow : Window
 {
-    private static readonly FilePickerFileType RoboSourceFileType = new("RoboSharp source (.robo)")
-    {
-        Patterns = ["*.robo"],
-    };
-
     private static readonly UTF8Encoding Utf8NoBom = new(encoderShouldEmitUTF8Identifier: false);
 
     private readonly MainWindowViewModel _viewModel;
+    private readonly ITeachingLocale _locale;
+    private readonly FilePickerFileType _roboSourceFileType;
     private readonly IReadOnlyList<IStudioPanel> _panels;
     private KarelWorldGridView? _karelWorld;
     private RoboSharpSourceEditor? _sourceEditor;
     private bool _closeBypassDirtyCheck;
 
-    public MainWindow(MainWindowViewModel viewModel, IEnumerable<IStudioPanel> panels)
+    public MainWindow(MainWindowViewModel viewModel, ITeachingLocale locale, IEnumerable<IStudioPanel> panels)
     {
         _viewModel = viewModel;
+        _locale = locale;
+        _roboSourceFileType = new FilePickerFileType(locale.Shell.RoboFileTypeDescription)
+        {
+            Patterns = ["*.robo"],
+        };
         _panels = panels.OrderBy(p => p.Order).ToList();
 
         Width = 1320;
@@ -83,36 +86,36 @@ public sealed class MainWindow : Window
     {
         var fileNew = new MenuItem
         {
-            Header = "_New",
+            Header = _locale.Shell.MenuNew,
             HotKey = new KeyGesture(Key.N, KeyModifiers.Control),
         };
         fileNew.Click += (_, _) => _ = NewDocumentWithPromptAsync();
 
         var fileOpen = new MenuItem
         {
-            Header = "_Open…",
+            Header = _locale.Shell.MenuOpen,
             HotKey = new KeyGesture(Key.O, KeyModifiers.Control),
         };
         fileOpen.Click += (_, _) => _ = OpenDocumentWithPromptAsync();
 
         var fileSave = new MenuItem
         {
-            Header = "_Save",
+            Header = _locale.Shell.MenuSave,
             HotKey = new KeyGesture(Key.S, KeyModifiers.Control),
         };
         fileSave.Click += (_, _) => _ = TrySaveDocumentAsync();
 
         var fileSaveAs = new MenuItem
         {
-            Header = "Save _As…",
+            Header = _locale.Shell.MenuSaveAs,
             HotKey = new KeyGesture(Key.S, KeyModifiers.Control | KeyModifiers.Shift),
         };
         fileSaveAs.Click += (_, _) => _ = TrySaveAsAsync();
 
-        var fileExit = new MenuItem { Header = "E_xit" };
+        var fileExit = new MenuItem { Header = _locale.Shell.MenuExit };
         fileExit.Click += (_, _) => Close();
 
-        var about = new MenuItem { Header = "_About…" };
+        var about = new MenuItem { Header = _locale.Shell.MenuAbout };
         about.Click += (_, _) => ShowAbout();
 
         return new Menu
@@ -123,7 +126,7 @@ public sealed class MainWindow : Window
             {
                 new MenuItem
                 {
-                    Header = "_File",
+                    Header = _locale.Shell.FileMenuHeader,
                     Items =
                     {
                         fileNew,
@@ -137,7 +140,7 @@ public sealed class MainWindow : Window
                 },
                 new MenuItem
                 {
-                    Header = "_Help",
+                    Header = _locale.Shell.HelpMenuHeader,
                     Items = { about },
                 },
             },
@@ -211,9 +214,9 @@ public sealed class MainWindow : Window
 
         var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Open RoboSharp source",
+            Title = _locale.Shell.OpenFilePickerTitle,
             AllowMultiple = false,
-            FileTypeFilter = [RoboSourceFileType],
+            FileTypeFilter = [_roboSourceFileType],
         });
 
         if (files.Count == 0)
@@ -235,7 +238,7 @@ public sealed class MainWindow : Window
         }
         catch (Exception ex)
         {
-            await ShowMessageDialogAsync("Open failed", ex.Message);
+            await ShowMessageDialogAsync(_locale.Shell.OpenFailedTitle, ex.Message);
             return;
         }
 
@@ -270,7 +273,7 @@ public sealed class MainWindow : Window
             }
             catch (Exception ex)
             {
-                await ShowMessageDialogAsync("Save failed", ex.Message);
+                await ShowMessageDialogAsync(_locale.Shell.SaveFailedTitle, ex.Message);
                 return false;
             }
         }
@@ -282,15 +285,15 @@ public sealed class MainWindow : Window
     {
         var suggested = _viewModel.DocumentPath is { } p
             ? Path.GetFileName(p)
-            : "Untitled.robo";
+            : _locale.Shell.UntitledFileName;
 
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = "Save RoboSharp source",
+            Title = _locale.Shell.SaveFilePickerTitle,
             DefaultExtension = "robo",
             ShowOverwritePrompt = true,
             SuggestedFileName = suggested,
-            FileTypeChoices = [RoboSourceFileType],
+            FileTypeChoices = [_roboSourceFileType],
         });
 
         if (file is null)
@@ -300,8 +303,8 @@ public sealed class MainWindow : Window
         if (path is null)
         {
             await ShowMessageDialogAsync(
-                "Save failed",
-                "Could not resolve a local file path. Try saving to a folder on this computer.");
+                _locale.Shell.SaveFailedTitle,
+                _locale.Shell.SaveNoLocalPathMessage);
             return false;
         }
 
@@ -313,7 +316,7 @@ public sealed class MainWindow : Window
         }
         catch (Exception ex)
         {
-            await ShowMessageDialogAsync("Save failed", ex.Message);
+            await ShowMessageDialogAsync(_locale.Shell.SaveFailedTitle, ex.Message);
             return false;
         }
     }
@@ -322,7 +325,7 @@ public sealed class MainWindow : Window
     {
         var ok = new Button
         {
-            Content = "OK",
+            Content = _locale.Shell.DialogOk,
             HorizontalAlignment = HorizontalAlignment.Right,
             Padding = new Thickness(20, 8),
             CornerRadius = StudioVisual.ButtonRadius,
@@ -369,7 +372,7 @@ public sealed class MainWindow : Window
 
         var save = new Button
         {
-            Content = "Save",
+            Content = _locale.Shell.ButtonSave,
             Padding = new Thickness(16, 8),
             CornerRadius = StudioVisual.ButtonRadius,
             Background = StudioVisual.AccentBrush,
@@ -377,7 +380,7 @@ public sealed class MainWindow : Window
         };
         var discard = new Button
         {
-            Content = "Don't save",
+            Content = _locale.Shell.ButtonDontSave,
             Padding = new Thickness(16, 8),
             CornerRadius = StudioVisual.ButtonRadius,
             Background = StudioVisual.SurfaceElevatedBrush,
@@ -387,7 +390,7 @@ public sealed class MainWindow : Window
         };
         var cancel = new Button
         {
-            Content = "Cancel",
+            Content = _locale.Shell.ButtonCancel,
             Padding = new Thickness(16, 8),
             CornerRadius = StudioVisual.ButtonRadius,
             Background = StudioVisual.SurfaceElevatedBrush,
@@ -398,7 +401,7 @@ public sealed class MainWindow : Window
 
         var w = new Window
         {
-            Title = "RoboSharp Studio",
+            Title = _locale.Shell.UnsavedDialogTitle,
             Width = 420,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             CanResize = false,
@@ -413,7 +416,7 @@ public sealed class MainWindow : Window
                     {
                         new TextBlock
                         {
-                            Text = "Save changes to the current document?",
+                            Text = _locale.Shell.UnsavedDialogHeading,
                             FontSize = 15,
                             FontWeight = FontWeight.SemiBold,
                             Foreground = StudioVisual.TextPrimaryBrush,
@@ -421,7 +424,7 @@ public sealed class MainWindow : Window
                         },
                         new TextBlock
                         {
-                            Text = "Your source buffer has unsaved edits. Choose Save to write the .robo file, Don't save to discard them, or Cancel to stay in the editor.",
+                            Text = _locale.Shell.UnsavedDialogBody,
                             Foreground = StudioVisual.TextMutedBrush,
                             TextWrapping = TextWrapping.Wrap,
                             LineHeight = 20,
@@ -469,7 +472,7 @@ public sealed class MainWindow : Window
     {
         var ok = new Button
         {
-            Content = "OK",
+            Content = _locale.Shell.DialogOk,
             HorizontalAlignment = HorizontalAlignment.Right,
             Padding = new Thickness(20, 8),
             CornerRadius = StudioVisual.ButtonRadius,
@@ -479,7 +482,7 @@ public sealed class MainWindow : Window
 
         var w = new Window
         {
-            Title = "About",
+            Title = _locale.Shell.AboutTitle,
             Width = 420,
             Height = 220,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -495,14 +498,14 @@ public sealed class MainWindow : Window
                     {
                         new TextBlock
                         {
-                            Text = "RoboSharp Studio",
+                            Text = _locale.Shell.AboutAppName,
                             FontSize = 22,
                             FontWeight = FontWeight.Bold,
                             Foreground = StudioVisual.AccentBrush,
                         },
                         new TextBlock
                         {
-                            Text = "Teaching IDE host — modular pipeline panels, code-first Avalonia UI.\nSee docs/studio/ for the full specification.",
+                            Text = _locale.Shell.AboutBody,
                             TextWrapping = TextWrapping.Wrap,
                             Foreground = StudioVisual.TextMutedBrush,
                             LineHeight = 22,
@@ -521,7 +524,7 @@ public sealed class MainWindow : Window
     {
         var build = new Button
         {
-            Content = "Build",
+            Content = _locale.Shell.ToolbarBuild,
             Padding = new Thickness(16, 10),
             CornerRadius = StudioVisual.ButtonRadius,
             Background = StudioVisual.SurfaceElevatedBrush,
@@ -535,7 +538,7 @@ public sealed class MainWindow : Window
 
         var run = new Button
         {
-            Content = "▶  Run",
+            Content = _locale.Shell.ToolbarRun,
             Padding = new Thickness(20, 10),
             CornerRadius = StudioVisual.ButtonRadius,
             Background = StudioVisual.AccentBrush,
@@ -547,7 +550,7 @@ public sealed class MainWindow : Window
 
         var speedLabel = new TextBlock
         {
-            Text = "Step speed",
+            Text = _locale.Shell.ToolbarStepSpeed,
             VerticalAlignment = VerticalAlignment.Center,
             Foreground = StudioVisual.TextMutedBrush,
             FontSize = 13,
@@ -556,17 +559,17 @@ public sealed class MainWindow : Window
         var speedBox = new ComboBox
         {
             MinWidth = 120,
-            ItemsSource = Enum.GetValues<StudioRunSpeed>(),
+            ItemsSource = _viewModel.RunSpeedOptions,
             VerticalAlignment = VerticalAlignment.Center,
         };
-        speedBox.Bind(ComboBox.SelectedItemProperty, new Binding(nameof(MainWindowViewModel.SelectedRunSpeed))
+        speedBox.Bind(ComboBox.SelectedItemProperty, new Binding(nameof(MainWindowViewModel.SelectedRunSpeedOption))
         {
             Mode = BindingMode.TwoWay,
         });
 
         var title = new TextBlock
         {
-            Text = "RoboSharp Studio",
+            Text = _locale.Shell.ToolbarAppTitle,
             VerticalAlignment = VerticalAlignment.Center,
             FontSize = 20,
             FontWeight = FontWeight.SemiBold,
@@ -576,7 +579,7 @@ public sealed class MainWindow : Window
 
         var subtitle = new TextBlock
         {
-            Text = "Karel grid (left) · Build = compile only · Run = compile then step interpreter (see speed)",
+            Text = _locale.Shell.ToolbarSubtitle,
             VerticalAlignment = VerticalAlignment.Center,
             Foreground = StudioVisual.TextMutedBrush,
             FontSize = 13,
@@ -644,7 +647,7 @@ public sealed class MainWindow : Window
     {
         var lessonHeading = new TextBlock
         {
-            Text = "Lesson & map",
+            Text = _locale.Sidebar.LessonAndMapHeading,
             FontSize = 14,
             FontWeight = FontWeight.SemiBold,
             Foreground = StudioVisual.AccentBrush,
@@ -653,7 +656,7 @@ public sealed class MainWindow : Window
 
         var profileCaption = new TextBlock
         {
-            Text = "Profile (which commands work)",
+            Text = _locale.Sidebar.ProfileCaption,
             FontSize = 11,
             Foreground = StudioVisual.TextMutedBrush,
             Margin = new Thickness(0, 0, 0, 4),
@@ -675,7 +678,7 @@ public sealed class MainWindow : Window
 
         var worldCaption = new TextBlock
         {
-            Text = "World (size & obstacles)",
+            Text = _locale.Sidebar.WorldCaption,
             FontSize = 11,
             Foreground = StudioVisual.TextMutedBrush,
             Margin = new Thickness(0, 0, 0, 4),
@@ -710,7 +713,7 @@ public sealed class MainWindow : Window
 
         var karelTitle = new TextBlock
         {
-            Text = "Karel world",
+            Text = _locale.Sidebar.KarelWorldHeading,
             FontSize = 14,
             FontWeight = FontWeight.SemiBold,
             Foreground = StudioVisual.AccentBrush,
@@ -721,10 +724,7 @@ public sealed class MainWindow : Window
 
         var hint = new TextBlock
         {
-            Text =
-                "Tiles: dark = wall, blue-gray = floor, teal tint = goal. Arrows show the robot facing.\n\n" +
-                "Build refreshes compile stages; Run compiles again then animates the robot. " +
-                "Try Realtime for instant finish, Slow or Glacial to watch each IL step.",
+            Text = _locale.Sidebar.KarelWorldHint,
             TextWrapping = TextWrapping.Wrap,
             Foreground = StudioVisual.TextMutedBrush,
             LineHeight = 20,

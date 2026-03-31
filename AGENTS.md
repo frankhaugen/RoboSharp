@@ -60,6 +60,7 @@ src/
   RoboSharp.IL/
   RoboSharp.Runtime/
   RoboSharp.World/
+  RoboSharp.Locales/
   RoboSharp.IO/
   RoboSharp.Workspaces/
   RoboSharp.Toolchain/
@@ -80,6 +81,7 @@ tests/
   RoboSharp.Toolchain.Tests/
   RoboSharp.Application.Tests/
   RoboSharp.Architecture.Tests/
+  RoboSharp.Locales.Tests/
 ```
 
 Keep names aligned with responsibilities. Avoid “Core”, “Common”, “Shared”, or “Utils” dumping grounds.
@@ -148,6 +150,15 @@ Contains world simulation and analysis:
 - render projection models
 
 Keep rendering itself out of the core world model.
+
+### `RoboSharp.Locales`
+Contains **code-first** teaching copy for hosts:
+
+- `ITeachingLocale` and language-specific implementations (e.g. English) with hardcoded strings — **no .resx**
+- panel preambles, shell chrome, pipeline footers, and kid-friendly status lines
+- `TeachingExplainer` static paragraphs about lexer/parser/binder/IL/runtime
+
+No dependency on Avalonia, Language, or IL. Hosts reference this project and inject `ITeachingLocale` at composition roots.
 
 ### `RoboSharp.IO`
 Contains storage abstractions and implementations.

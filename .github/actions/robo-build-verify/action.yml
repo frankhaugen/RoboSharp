@@ -10,37 +10,8 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Restore
-      shell: bash
-      run: dotnet restore RoboSharp.slnx
-
-    - name: Build (Release)
+    - name: Restore, build, test, verify generated files
       shell: bash
       env:
         PACKAGE_VERSION: ${{ inputs.package_version }}
-      run: |
-        set -euo pipefail
-        if [ -n "${PACKAGE_VERSION}" ]; then
-          dotnet build RoboSharp.slnx --configuration Release --no-restore -p:Version="${PACKAGE_VERSION}"
-        else
-          dotnet build RoboSharp.slnx --configuration Release --no-restore
-        fi
-
-    - name: Test (Release)
-      shell: bash
-      run: >
-        dotnet test RoboSharp.slnx
-        --configuration Release
-        --no-build
-        --verbosity normal
-        --logger "trx;LogFileName=test-results.trx"
-        --results-directory "${RUNNER_TEMP}/test-results"
-
-    - name: Verify generated solution and diagram docs
-      shell: bash
-      run: |
-        set -euo pipefail
-        dotnet run --file .githooks/GenerateDocDiagrams.cs -- "$GITHUB_WORKSPACE"
-        dotnet run --file .githooks/UpdateSlnx.cs -- "$GITHUB_WORKSPACE"
-        git diff --exit-code RoboSharp.slnx
-        git diff --exit-code docs/
+      run: bash "${GITHUB_WORKSPACE}/tools/ci-verify.sh"

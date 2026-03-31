@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using RoboSharp.Language;
+using RoboSharp.Locales;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.Shell;
 
@@ -9,17 +10,20 @@ namespace RoboSharp.Studio.Panels;
 public sealed class SyntaxTreePipelinePanel : IStudioPanel
 {
     private readonly ISyntaxTreeSerializer _serializer;
+    private readonly ITeachingLocale _locale;
     private TextBox? _text;
 
-    public SyntaxTreePipelinePanel(ISyntaxTreeSerializer serializer) =>
+    public SyntaxTreePipelinePanel(ISyntaxTreeSerializer serializer, ITeachingLocale locale)
+    {
         _serializer = serializer;
+        _locale = locale;
+    }
 
     public int Order => 20;
 
-    public string DisplayName => "Syntax tree";
+    public string DisplayName => _locale.Panels.SyntaxTreeTitle;
 
-    public string? InspectorSubtitle =>
-        "Parser output: indented tree of syntax nodes. The copyable area includes a heading so pasted text explains itself.";
+    public string? InspectorSubtitle => _locale.Panels.SyntaxTreeSubtitle;
 
     public Control CreateView()
     {
@@ -37,11 +41,6 @@ public sealed class SyntaxTreePipelinePanel : IStudioPanel
         if (_text is null)
             return;
 
-        const string preamble =
-            "# Syntax tree (output of the parser)\r\n" +
-            "Concrete syntax: nesting shows how the parser grouped tokens into declarations, statements, and expressions.\r\n" +
-            "\r\n";
-
-        _text.Text = preamble + _serializer.Serialize(snapshot.SyntaxTree.Root);
+        _text.Text = _locale.Panels.SyntaxTreePreamble + _serializer.Serialize(snapshot.SyntaxTree.Root);
     }
 }

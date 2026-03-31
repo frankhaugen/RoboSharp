@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RoboSharp.Hosting;
 using RoboSharp.Language;
+using RoboSharp.Locales;
 using RoboSharp.Studio.Panels;
 using RoboSharp.Studio.Pipeline;
 using RoboSharp.Studio.Shell;
@@ -20,20 +21,23 @@ public static class StudioServiceRegistration
 
         services.AddRoboSharpHosting();
 
+        services.AddSingleton<ITeachingLocale, EnglishTeachingLocale>();
         services.AddSingleton<IPipelineInspectionService, PipelineInspectionService>();
         services.AddSingleton<ISyntaxTreeSerializer, SyntaxTreeSerializer>();
 
         services.AddSingleton<MainWindowViewModel>();
 
         // Inspection panels: registration order is top-to-bottom in the stack (pipeline narrative).
-        services.AddSingleton<IStudioPanel, ColoredSourcePreviewPanel>();
-        services.AddSingleton<IStudioPanel, LessonToolboxPanel>();
-        services.AddSingleton<IStudioPanel, TokenPipelinePanel>();
-        services.AddSingleton<IStudioPanel, SyntaxTreePipelinePanel>();
-        services.AddSingleton<IStudioPanel, DiagnosticsPipelinePanel>();
-        services.AddSingleton<IStudioPanel, BoundTreePipelinePanel>();
-        services.AddSingleton<IStudioPanel, IlPipelinePanel>();
-        services.AddSingleton<IStudioPanel, WorldRuntimePipelinePanel>();
+        services.AddSingleton<IStudioPanel>(sp => new ColoredSourcePreviewPanel(sp.GetRequiredService<ITeachingLocale>()));
+        services.AddSingleton<IStudioPanel>(sp => new LessonToolboxPanel(sp.GetRequiredService<ITeachingLocale>()));
+        services.AddSingleton<IStudioPanel>(sp => new TokenPipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
+        services.AddSingleton<IStudioPanel>(sp => new SyntaxTreePipelinePanel(
+            sp.GetRequiredService<ISyntaxTreeSerializer>(),
+            sp.GetRequiredService<ITeachingLocale>()));
+        services.AddSingleton<IStudioPanel>(sp => new DiagnosticsPipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
+        services.AddSingleton<IStudioPanel>(sp => new BoundTreePipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
+        services.AddSingleton<IStudioPanel>(sp => new IlPipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
+        services.AddSingleton<IStudioPanel>(sp => new WorldRuntimePipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
 
         services.AddSingleton<MainWindow>();
 

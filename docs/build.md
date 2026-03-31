@@ -109,6 +109,16 @@ The repo enables the .NET SDK **artifacts output** layout (`UseArtifactsOutput` 
 
 Intermediate files still use each project’s `obj` folder under the project directory (SDK default). The root [`artifacts/`](../artifacts/) directory is listed in [`.gitignore`](../.gitignore).
 
+## Local CI/CD parity
+
+The GitHub Actions **CI** job (`.github/workflows/ci.yml`) delegates build, test, and generated-file checks to [`tools/ci-verify.sh`](../tools/ci-verify.sh) via [`.github/actions/robo-build-verify`](../.github/actions/robo-build-verify/action.yml). Run the same sequence locally from the repo root:
+
+- **Windows (PowerShell):** [`tools/ci-local.ps1`](../tools/ci-local.ps1) (uses Git Bash’s `bash` when available so behavior matches CI; otherwise runs equivalent `dotnet`/`git` commands).
+- **Bash (Git Bash, WSL, Linux, macOS):** `bash tools/ci-verify.sh`  
+  Optional release-style versioned build: `PACKAGE_VERSION=1.2.3 bash tools/ci-verify.sh`
+
+The **Release** workflow adds versioned publish, tarballs, and `SHA256SUMS.txt` (see [`.github/workflows/release.yml`](../.github/workflows/release.yml)). To reproduce that packaging locally (without creating a GitHub Release): [`tools/release-pack-local.ps1`](../tools/release-pack-local.ps1) `-Version` `1.2.3`.
+
 ## Continuous integration
 
 When `CI`, `GITHUB_ACTIONS`, or `TF_BUILD` is set, [`Directory.Build.props`](../Directory.Build.props) sets `ContinuousIntegrationBuild` for deterministic, CI-friendly behavior. Individual pipelines can set additional properties as needed.

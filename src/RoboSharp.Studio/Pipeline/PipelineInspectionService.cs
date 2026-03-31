@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using RoboSharp.Language;
+using RoboSharp.Locales;
 using RoboSharp.Runtime;
 using RoboSharp.Semantics;
 using RoboSharp.Toolchain;
@@ -13,9 +14,13 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
     private const int MaxInterpreterSteps = 500_000;
 
     private readonly ILogger<PipelineInspectionService> _logger;
+    private readonly ITeachingLocale _locale;
 
-    public PipelineInspectionService(ILogger<PipelineInspectionService> logger) =>
+    public PipelineInspectionService(ILogger<PipelineInspectionService> logger, ITeachingLocale locale)
+    {
         _logger = logger;
+        _locale = locale;
+    }
 
     public PipelineSnapshot InspectBuildOnly(string source, StudioPipelineOptions options)
     {
@@ -114,7 +119,7 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
 
                     if (++steps > MaxInterpreterSteps)
                     {
-                        stepFault = new RuntimeFault("Interpreter step limit exceeded (safety cap).", -1, -1);
+                        stepFault = new RuntimeFault(_locale.Pipeline.InterpreterStepLimitFault, -1, -1);
                         break;
                     }
 
@@ -132,7 +137,7 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
                         case InterpreterStepKind.Advanced:
                             continue;
                         default:
-                            stepFault = new RuntimeFault($"Unexpected step outcome: {step.Kind}.", -1, -1);
+                            stepFault = new RuntimeFault(_locale.Pipeline.InterpreterUnexpectedStepKind(step.Kind.ToString()), -1, -1);
                             goto RunFinished;
                     }
                 }
@@ -145,12 +150,9 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
                 worldSummary = FormatWorldSummary(world);
                 worldVis = world.CreateSnapshot();
                 ilSteps = session.InstructionsExecuted;
-                ilFootnote =
-                    $"# Execution trace (last Run)\r\n" +
-                    $"IL instructions executed: {session.InstructionsExecuted}\r\n" +
-                    (session.CurrentInstructionDescription is { } d
-                        ? $"Last stepped: {d}\r\n"
-                        : "");
+                ilFootnote = _locale.Pipeline.IlTraceFootnote(
+                    session.InstructionsExecuted,
+                    session.CurrentInstructionDescription);
 
                 var goal = LessonGoalEvaluator.Evaluate(world, session.InstructionsExecuted);
                 lessonOutcome = goal.SummaryForKids;
@@ -171,7 +173,7 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
                 else
                 {
                     runtimeOk = false;
-                    fault = "Interpreter stopped without completion or fault (unexpected).";
+                    fault = _locale.Shell.InterpreterUnexpectedStop;
                 }
             }
             catch (InvalidOperationException ex)
@@ -220,11 +222,11 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
             session.CurrentInstructionDescription));
     }
 
-    private static string BuildProfileHelp(StudioPipelineOptions options) =>
-        $"Lesson profile: {options.ProfileLabel}\r\n" +
-        $"World map: {options.WorldPresetLabel}\r\n\r\n" +
-        "You can call:\r\n" +
-        LessonBuiltinProfiles.DescribeBuiltinsForHelp(options.BuiltinProfile);
+    private string BuildProfileHelp(StudioPipelineOptions options) =>
+        _locale.Pipeline.BuildProfileHelp(
+            options.ProfileLabel,
+            options.WorldPresetLabel,
+            LessonBuiltinProfiles.DescribeBuiltinsForHelp(options.BuiltinProfile));
 
     private BuiltPipeline CompileThroughLowering(string source, IBuiltinProfileProvider profile)
     {
@@ -244,7 +246,11 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
         {
             semanticLines = compile.SemanticModel.Diagnostics
                 .Select(d =>
-                    $"semantic  @{d.Span.Start}:{d.Span.Length}  ({SourceLocationFormatter.FormatLine(source, d.Span)})  {d.Message}")
+                    _locale.Pipeline.FormatSemanticDiagnosticLine(
+                        d.Span.Start,
+                        d.Span.Length,
+                        SourceLocationFormatter.FormatLine(source, d.Span),
+                        d.Message))
                 .ToList();
         }
 
@@ -257,7 +263,7 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
             }
             catch (Exception ex)
             {
-                boundText = $"(Could not format bound tree: {ex.Message})";
+                boundText = _locale.Pipeline.BoundTreeFormatFailed(ex.Message);
                 _logger.LogWarning(ex, "Bound tree formatting failed");
             }
         }
@@ -330,19 +336,19 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
         return list;
     }
 
-    private static string FormatWorldSummary(RobotWorld world)
+    private string FormatWorldSummary(RobotWorld world)
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"{world.Terrain.Width}×{world.Terrain.Height} grid ({world.Metadata.Name})");
+        sb.AppendLine(_locale.Pipeline.WorldGridLine(world.Terrain.Width, world.Terrain.Height, world.Metadata.Name));
         if (world.Metadata.PrimaryGoalPosition is { } g)
-            sb.AppendLine($"Goal tile: ({g.X}, {g.Y}) — drive the robot onto the teal square!");
+            sb.AppendLine(_locale.Pipeline.WorldGoalLine(g.X, g.Y));
         if (world.ActorsById.TryGetValue(1, out var actor))
         {
-            sb.AppendLine($"Robot: tile ({actor.Position.X}, {actor.Position.Y}), facing {actor.Direction}");
+            sb.AppendLine(_locale.Pipeline.WorldRobotLine(actor.Position.X, actor.Position.Y, actor.Direction.ToString()));
         }
         else
         {
-            sb.AppendLine("No actor id 1 in world.");
+            sb.AppendLine(_locale.Pipeline.WorldNoPrimaryRobotLine);
         }
 
         return sb.ToString().TrimEnd();

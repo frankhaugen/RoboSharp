@@ -13,6 +13,7 @@ public class ProjectDependencyGuardTests
         ["RoboSharp.World"] = new(StringComparer.OrdinalIgnoreCase),
         ["RoboSharp.Runtime"] = new(StringComparer.OrdinalIgnoreCase) { "RoboSharp.IL", "RoboSharp.World" },
         ["RoboSharp.IO"] = new(StringComparer.OrdinalIgnoreCase),
+        ["RoboSharp.Locales"] = new(StringComparer.OrdinalIgnoreCase),
         ["RoboSharp.Workspaces"] = new(StringComparer.OrdinalIgnoreCase) { "RoboSharp.IO" },
         ["RoboSharp.Toolchain"] = new(StringComparer.OrdinalIgnoreCase)
         {
@@ -44,6 +45,7 @@ public class ProjectDependencyGuardTests
         {
             "RoboSharp.Hosting",
             "RoboSharp.Language",
+            "RoboSharp.Locales",
             "RoboSharp.Toolchain",
             "RoboSharp.Semantics",
             "RoboSharp.IL",
