@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 
 using RoboSharp.Locales;
@@ -14,6 +14,8 @@ public sealed class WorldRuntimePipelinePanel : IStudioPanel
 
     public WorldRuntimePipelinePanel(ITeachingLocale locale) =>
         _locale = locale;
+
+    public string PanelId => StudioPanelIds.WorldRuntime;
 
     public int Order => 60;
 

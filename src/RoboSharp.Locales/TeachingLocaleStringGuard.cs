@@ -55,6 +55,19 @@ public static class TeachingLocaleStringGuard
                 issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.ExampleSource)}.");
             if (string.IsNullOrWhiteSpace(L.DefaultProfileId))
                 issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.DefaultProfileId)}.");
+            if (L.VisiblePanelIds is null || L.VisiblePanelIds.Count == 0)
+            {
+                issues.Add($"{path}: lesson '{L.Id}' has empty {nameof(StudioLessonDefinition.VisiblePanelIds)}.");
+                continue;
+            }
+
+            foreach (var pid in L.VisiblePanelIds)
+            {
+                if (string.IsNullOrWhiteSpace(pid))
+                    issues.Add($"{path}: lesson '{L.Id}' has a null/whitespace entry in {nameof(StudioLessonDefinition.VisiblePanelIds)}.");
+                else if (!StudioPanelIds.All.Contains(pid))
+                    issues.Add($"{path}: lesson '{L.Id}' references unknown panel id '{pid}' in {nameof(StudioLessonDefinition.VisiblePanelIds)}.");
+            }
         }
     }
 

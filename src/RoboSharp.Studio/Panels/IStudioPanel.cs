@@ -8,6 +8,9 @@ namespace RoboSharp.Studio.Panels;
 /// </summary>
 public interface IStudioPanel
 {
+    /// <summary>Stable id for lesson gating (<see cref="T:RoboSharp.Locales.StudioPanelIds"/>).</summary>
+    string PanelId { get; }
+
     /// <summary>Sort key for the inspector stack (lower = higher in the list).</summary>
     int Order { get; }
 

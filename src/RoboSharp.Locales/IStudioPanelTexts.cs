@@ -1,11 +1,17 @@
-﻿namespace RoboSharp.Locales;
+namespace RoboSharp.Locales;
 
 public interface IStudioPanelTexts
 {
-    string ColoredSourceTitle { get; }
-    string ColoredSourceSubtitle { get; }
-    string ColoredSourcePreamble { get; }
-    string ColoredSourceEmpty { get; }
+    string EditorSyntaxDockTitle { get; }
+    string EditorSyntaxDockSubtitle { get; }
+    string EditorSyntaxDockEmpty { get; }
+    string EditorSyntaxLegendKeyword { get; }
+    string EditorSyntaxLegendIdentifier { get; }
+    string EditorSyntaxLegendNumberLiteral { get; }
+    string EditorSyntaxLegendStringLiteral { get; }
+    string EditorSyntaxLegendComment { get; }
+    string EditorSyntaxLegendPunctuation { get; }
+    string EditorSyntaxLegendError { get; }
     string LessonToolboxTitle { get; }
     string LessonToolboxSubtitle { get; }
     string LessonToolboxPreamble { get; }

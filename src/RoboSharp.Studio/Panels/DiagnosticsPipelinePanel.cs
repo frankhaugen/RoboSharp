@@ -14,6 +14,8 @@ public sealed class DiagnosticsPipelinePanel : IStudioPanel
     public DiagnosticsPipelinePanel(ITeachingLocale locale) =>
         _locale = locale;
 
+    public string PanelId => StudioPanelIds.Diagnostics;
+
     public int Order => 30;
 
     public string DisplayName => _locale.Panels.DiagnosticsTitle;

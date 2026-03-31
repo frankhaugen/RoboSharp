@@ -35,6 +35,8 @@ public sealed class MainWindow : Window
     private PipelineSnapshot? _lastPipelineSnapshot;
     private RobotWorldGridView? _worldGridPreview;
     private RoboSharpSourceEditor? _sourceEditor;
+    private EditorSyntaxDock? _editorSyntaxDock;
+    private TabControl? _inspectorTabs;
     private bool _closeBypassDirtyCheck;
     private ComboBox? _lessonCombo;
     private ComboBox? _profileCombo;
@@ -143,6 +145,9 @@ public sealed class MainWindow : Window
         }
         else
             _viewModel.Build();
+
+        _editorSyntaxDock?.ApplyLocale();
+        _editorSyntaxDock?.ApplySnapshot(_lastPipelineSnapshot);
     }
 
     private static void ReplaceChromeRow(Grid grid, int row, Control replacement)
@@ -640,6 +645,7 @@ public sealed class MainWindow : Window
         {
             case nameof(MainWindowViewModel.SelectedLessonId):
                 SyncLessonComboFromViewModel();
+                PopulateInspectorTabs();
                 break;
             case nameof(MainWindowViewModel.SelectedProfileId):
                 SyncProfileComboFromViewModel();
@@ -1109,9 +1115,15 @@ public sealed class MainWindow : Window
 
     private Control BuildEditorPane()
     {
+        var grid = new Grid
+        {
+            RowDefinitions = new RowDefinitions("*,6,Auto"),
+            MinHeight = 360,
+        };
+
         _sourceEditor = new RoboSharpSourceEditor
         {
-            MinHeight = 360,
+            MinHeight = 200,
         };
         _sourceEditor.SetDocumentText(_viewModel.SourceDocument, suspendEvents: true);
         _sourceEditor.TextChanged += text =>
@@ -1125,7 +1137,31 @@ public sealed class MainWindow : Window
                 _sourceEditor?.SetDocumentText(_viewModel.SourceDocument, suspendEvents: true);
         };
 
-        return _sourceEditor;
+        grid.Children.Add(_sourceEditor);
+        Grid.SetRow(_sourceEditor, 0);
+
+        var editorRowSplit = new GridSplitter
+        {
+            Height = 6,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Background = Brushes.Transparent,
+            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderThickness = new Thickness(0, 1, 0, 1),
+            ResizeDirection = GridResizeDirection.Rows,
+        };
+        grid.Children.Add(editorRowSplit);
+        Grid.SetRow(editorRowSplit, 1);
+
+        _editorSyntaxDock = new EditorSyntaxDock(_locale)
+        {
+            MinHeight = 88,
+        };
+        grid.Children.Add(_editorSyntaxDock);
+        Grid.SetRow(_editorSyntaxDock, 2);
+
+        _editorSyntaxDock.ApplySnapshot(_lastPipelineSnapshot);
+
+        return grid;
     }
 
     private Border BuildInspectorColumn()
@@ -1136,15 +1172,8 @@ public sealed class MainWindow : Window
             VerticalAlignment = VerticalAlignment.Stretch,
             HorizontalAlignment = HorizontalAlignment.Stretch,
         };
-
-        foreach (var panel in _panels)
-        {
-            tabs.Items.Add(new TabItem
-            {
-                Header = panel.DisplayName,
-                Content = BuildInspectorTabContent(panel),
-            });
-        }
+        _inspectorTabs = tabs;
+        PopulateInspectorTabs();
 
         return new Border
         {
@@ -1156,6 +1185,37 @@ public sealed class MainWindow : Window
             BoxShadow = StudioVisual.SubtleCardShadow,
             Child = tabs,
         };
+    }
+
+    private void PopulateInspectorTabs()
+    {
+        if (_inspectorTabs is null)
+            return;
+
+        _inspectorTabs.Items.Clear();
+        foreach (var panel in VisiblePanelsOrdered())
+        {
+            _inspectorTabs.Items.Add(new TabItem
+            {
+                Header = panel.DisplayName,
+                Content = BuildInspectorTabContent(panel),
+            });
+        }
+
+        if (_lastPipelineSnapshot is { } snap)
+        {
+            foreach (var panel in VisiblePanelsOrdered())
+                panel.OnSnapshotChanged(snap);
+        }
+    }
+
+    private IEnumerable<IStudioPanel> VisiblePanelsOrdered()
+    {
+        var lesson = _locale.Lessons.Get(_viewModel.SelectedLessonId);
+        var allow = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var id in lesson.VisiblePanelIds)
+            allow.Add(id);
+        return _panels.Where(p => allow.Contains(p.PanelId)).OrderBy(p => p.Order);
     }
 
     private static Control BuildInspectorTabContent(IStudioPanel panel)
@@ -1210,6 +1270,8 @@ public sealed class MainWindow : Window
         _lastPipelineSnapshot = snapshot;
         foreach (var panel in _panels)
             panel.OnSnapshotChanged(snapshot);
+
+        _editorSyntaxDock?.ApplySnapshot(snapshot);
 
         _sourceEditor?.ApplyDiagnosticSpans(snapshot.SourceDiagnosticSpans);
 

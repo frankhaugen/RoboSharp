@@ -2,14 +2,17 @@ namespace RoboSharp.Locales.Latin;
 
 internal sealed class LatinPanelTexts : IStudioPanelTexts
 {
-    public string ColoredSourceTitle => "Colores syntaxeos";
-    public string ColoredSourceSubtitle =>
-        "Verba clavis, literalia, commentaria tincta post ultimam Aedificationem. Editor principalis vivus est; haec tabula est imago lexici cum Aedificas.";
-    public string ColoredSourcePreamble =>
-        "# Colores syntaxeos (imago lexici)\r\n" +
-        LatinTeachingExplainer.LexerToParser +
-        "\r\n\r\nHaec tabula eundem textum cum coloribus lexici ostendit. Aedifica ut post mutationes renoves.\r\n\r\n";
-    public string ColoredSourceEmpty => "(Nihil ostendere — fons vacuus est aut Aedificatio nondum cucurrit.)";
+    public string EditorSyntaxDockTitle => "Colores lexici (referentia)";
+    public string EditorSyntaxDockSubtitle =>
+        "Idem fons ac editor, tinctus post ultimum lexicum Aedificationis — legenda ostendit genera signorum. Supra editor simplex manet.";
+    public string EditorSyntaxDockEmpty => "(Nihil ostendere — fons vacuus est aut Aedificatio nondum cucurrit.)";
+    public string EditorSyntaxLegendKeyword => "verbum clavis";
+    public string EditorSyntaxLegendIdentifier => "nomen";
+    public string EditorSyntaxLegendNumberLiteral => "numerus";
+    public string EditorSyntaxLegendStringLiteral => "textus";
+    public string EditorSyntaxLegendComment => "commentarium";
+    public string EditorSyntaxLegendPunctuation => "alia";
+    public string EditorSyntaxLegendError => "vitium";
 
     public string LessonToolboxTitle => "Arca instrumentorum lectionis";
     public string LessonToolboxSubtitle =>

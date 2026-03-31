@@ -33,6 +33,8 @@ public sealed class IlPipelinePanel : IStudioPanel
     public IlPipelinePanel(ITeachingLocale locale) =>
         _locale = locale;
 
+    public string PanelId => StudioPanelIds.Il;
+
     public int Order => 50;
 
     public string DisplayName => _locale.Panels.IlTitle;

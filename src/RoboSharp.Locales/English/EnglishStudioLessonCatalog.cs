@@ -31,7 +31,12 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                 "Declare a procedure: void Name() { … }\n" +
                 "Use while (condition) { … } for repetition.",
                 StudioLessonSharedExamples.FirstMoves,
-                "basic-movement"),
+                "basic-movement",
+                [
+                    StudioPanelIds.LessonToolbox,
+                    StudioPanelIds.Diagnostics,
+                    StudioPanelIds.WorldRuntime,
+                ]),
 
             [StudioLessonIds.Steering] = new(
                 StudioLessonIds.Steering,
@@ -49,7 +54,13 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                 move();
 
                 """,
-                "movement-turns"),
+                "movement-turns",
+                [
+                    StudioPanelIds.LessonToolbox,
+                    StudioPanelIds.Tokens,
+                    StudioPanelIds.Diagnostics,
+                    StudioPanelIds.WorldRuntime,
+                ]),
 
             [StudioLessonIds.LoopsAndPrint] = new(
                 StudioLessonIds.LoopsAndPrint,
@@ -59,7 +70,14 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                 "Built-ins: move, turnLeft, turnRight, print (numbers and strings in quotes).",
                 "print(\"text\");\nprint(42);\ninteger n = 0;\nwhile (n < 3) { … n = n + 1; }",
                 StudioLessonSharedExamples.LoopsAndPrint,
-                "movement-print"),
+                "movement-print",
+                [
+                    StudioPanelIds.LessonToolbox,
+                    StudioPanelIds.Tokens,
+                    StudioPanelIds.SyntaxTree,
+                    StudioPanelIds.Diagnostics,
+                    StudioPanelIds.WorldRuntime,
+                ]),
 
             [StudioLessonIds.Sensing] = new(
                 StudioLessonIds.Sensing,
@@ -68,7 +86,15 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                 "Built-ins added: frontIsClear, leftIsClear, rightIsClear (return truth you can use in while/if when available).",
                 "Typical pattern: while (frontIsClear()) { move(); }",
                 StudioLessonSharedExamples.Sensing,
-                "with-sensing"),
+                "with-sensing",
+                [
+                    StudioPanelIds.LessonToolbox,
+                    StudioPanelIds.Tokens,
+                    StudioPanelIds.SyntaxTree,
+                    StudioPanelIds.Diagnostics,
+                    StudioPanelIds.BoundTree,
+                    StudioPanelIds.WorldRuntime,
+                ]),
 
             [StudioLessonIds.FullLanguage] = new(
                 StudioLessonIds.FullLanguage,
@@ -78,7 +104,16 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                 "See the Lesson toolbox panel after Build for the exact list.",
                 "Same RoboSharp statement and block rules; use procedures to organize longer code.",
                 StudioLessonSharedExamples.FullLanguage,
-                "full"),
+                "full",
+                [
+                    StudioPanelIds.LessonToolbox,
+                    StudioPanelIds.Tokens,
+                    StudioPanelIds.SyntaxTree,
+                    StudioPanelIds.Diagnostics,
+                    StudioPanelIds.BoundTree,
+                    StudioPanelIds.Il,
+                    StudioPanelIds.WorldRuntime,
+                ]),
         };
 
         return map;

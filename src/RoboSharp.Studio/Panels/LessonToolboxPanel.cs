@@ -15,6 +15,8 @@ public sealed class LessonToolboxPanel : IStudioPanel
     public LessonToolboxPanel(ITeachingLocale locale) =>
         _locale = locale;
 
+    public string PanelId => StudioPanelIds.LessonToolbox;
+
     public int Order => 7;
 
     public string DisplayName => _locale.Panels.LessonToolboxTitle;

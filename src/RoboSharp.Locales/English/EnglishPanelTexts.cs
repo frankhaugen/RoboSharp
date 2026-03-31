@@ -2,14 +2,17 @@ namespace RoboSharp.Locales.English;
 
 internal sealed class EnglishPanelTexts : IStudioPanelTexts
 {
-    public string ColoredSourceTitle => "Syntax colors";
-    public string ColoredSourceSubtitle =>
-        "Keywords, literals, and comments tinted from the last Build. The main editor updates live; this panel is a lexer snapshot when you Build.";
-    public string ColoredSourcePreamble =>
-        "# Syntax colors (lexer snapshot)\r\n" +
-        EnglishTeachingExplainer.LexerToParser +
-        "\r\n\r\nThis panel shows the same source text with colors from the lexer. Press Build to refresh after edits.\r\n\r\n";
-    public string ColoredSourceEmpty => "(Nothing to show — source is empty or Build has not run yet.)";
+    public string EditorSyntaxDockTitle => "Lexer colors (reference)";
+    public string EditorSyntaxDockSubtitle =>
+        "Same source as the editor, tinted from the last Build lexer pass — use the legend to connect colors with token kinds. The editor above stays plain for typing.";
+    public string EditorSyntaxDockEmpty => "(Nothing to show — source is empty or Build has not run yet.)";
+    public string EditorSyntaxLegendKeyword => "keyword";
+    public string EditorSyntaxLegendIdentifier => "name";
+    public string EditorSyntaxLegendNumberLiteral => "number";
+    public string EditorSyntaxLegendStringLiteral => "text";
+    public string EditorSyntaxLegendComment => "comment";
+    public string EditorSyntaxLegendPunctuation => "other";
+    public string EditorSyntaxLegendError => "bad";
 
     public string LessonToolboxTitle => "Lesson toolbox";
     public string LessonToolboxSubtitle =>

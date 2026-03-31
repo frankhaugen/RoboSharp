@@ -11,6 +11,7 @@ public interface IStudioLessonCatalog
 }
 
 /// <param name="DefaultProfileId">Suggested <c>LessonBuiltinProfiles</c> id applied when the user picks this lesson.</param>
+/// <param name="VisiblePanelIds">Which inspector tabs to show (<see cref="StudioPanelIds"/>). Order in the UI follows each panel's <c>Order</c>.</param>
 public sealed record StudioLessonDefinition(
     string Id,
     string Title,
@@ -18,4 +19,5 @@ public sealed record StudioLessonDefinition(
     string KeywordsSection,
     string SyntaxSection,
     string ExampleSource,
-    string DefaultProfileId);
+    string DefaultProfileId,
+    IReadOnlyList<string> VisiblePanelIds);

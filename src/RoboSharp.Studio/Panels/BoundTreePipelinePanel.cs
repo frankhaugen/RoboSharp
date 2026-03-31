@@ -16,6 +16,8 @@ public sealed class BoundTreePipelinePanel : IStudioPanel
     public BoundTreePipelinePanel(ITeachingLocale locale) =>
         _locale = locale;
 
+    public string PanelId => StudioPanelIds.BoundTree;
+
     public int Order => 40;
 
     public string DisplayName => _locale.Panels.BoundTreeTitle;

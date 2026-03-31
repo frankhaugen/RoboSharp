@@ -31,7 +31,12 @@ internal sealed class LatinStudioLessonCatalog : IStudioLessonCatalog
                 "Procedura: void Nomen() { … }\n" +
                 "while (condicio) { … } ad repetitionem.",
                 StudioLessonSharedExamples.FirstMoves,
-                "basic-movement"),
+                "basic-movement",
+                [
+                    StudioPanelIds.LessonToolbox,
+                    StudioPanelIds.Diagnostics,
+                    StudioPanelIds.WorldRuntime,
+                ]),
 
             [StudioLessonIds.Steering] = new(
                 StudioLessonIds.Steering,
@@ -41,7 +46,13 @@ internal sealed class LatinStudioLessonCatalog : IStudioLessonCatalog
                 "Imperata: move, turnLeft, turnRight.",
                 "Eadem regulae. Consocia conversiones et motus.",
                 StudioLessonSharedExamples.Steering,
-                "movement-turns"),
+                "movement-turns",
+                [
+                    StudioPanelIds.LessonToolbox,
+                    StudioPanelIds.Tokens,
+                    StudioPanelIds.Diagnostics,
+                    StudioPanelIds.WorldRuntime,
+                ]),
 
             [StudioLessonIds.LoopsAndPrint] = new(
                 StudioLessonIds.LoopsAndPrint,
@@ -51,7 +62,14 @@ internal sealed class LatinStudioLessonCatalog : IStudioLessonCatalog
                 "Imperata: move, turnLeft, turnRight, print (numeri et stringae inter signa).",
                 "print(\"textus\");\nprint(42);\ninteger n = 0;\nwhile (n < 3) { … n = n + 1; }",
                 StudioLessonSharedExamples.LoopsAndPrint,
-                "movement-print"),
+                "movement-print",
+                [
+                    StudioPanelIds.LessonToolbox,
+                    StudioPanelIds.Tokens,
+                    StudioPanelIds.SyntaxTree,
+                    StudioPanelIds.Diagnostics,
+                    StudioPanelIds.WorldRuntime,
+                ]),
 
             [StudioLessonIds.Sensing] = new(
                 StudioLessonIds.Sensing,
@@ -60,7 +78,15 @@ internal sealed class LatinStudioLessonCatalog : IStudioLessonCatalog
                 "Nova imperata: frontIsClear, leftIsClear, rightIsClear.",
                 "Exemplum: while (frontIsClear()) { move(); }",
                 StudioLessonSharedExamples.Sensing,
-                "with-sensing"),
+                "with-sensing",
+                [
+                    StudioPanelIds.LessonToolbox,
+                    StudioPanelIds.Tokens,
+                    StudioPanelIds.SyntaxTree,
+                    StudioPanelIds.Diagnostics,
+                    StudioPanelIds.BoundTree,
+                    StudioPanelIds.WorldRuntime,
+                ]),
 
             [StudioLessonIds.FullLanguage] = new(
                 StudioLessonIds.FullLanguage,
@@ -70,7 +96,16 @@ internal sealed class LatinStudioLessonCatalog : IStudioLessonCatalog
                 "Pro singulis nominibus vide panellem \"Lesson toolbox\".",
                 "Eadem regulae RoboSharp; proceduris longa cohibe.",
                 StudioLessonSharedExamples.FullLanguage,
-                "full"),
+                "full",
+                [
+                    StudioPanelIds.LessonToolbox,
+                    StudioPanelIds.Tokens,
+                    StudioPanelIds.SyntaxTree,
+                    StudioPanelIds.Diagnostics,
+                    StudioPanelIds.BoundTree,
+                    StudioPanelIds.Il,
+                    StudioPanelIds.WorldRuntime,
+                ]),
         };
 
         return map;

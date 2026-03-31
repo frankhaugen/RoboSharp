@@ -14,6 +14,8 @@ public sealed class TokenPipelinePanel : IStudioPanel
     public TokenPipelinePanel(ITeachingLocale locale) =>
         _locale = locale;
 
+    public string PanelId => StudioPanelIds.Tokens;
+
     public int Order => 10;
 
     public string DisplayName => _locale.Panels.TokensTitle;

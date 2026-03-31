@@ -19,6 +19,8 @@ public sealed class SyntaxTreePipelinePanel : IStudioPanel
         _locale = locale;
     }
 
+    public string PanelId => StudioPanelIds.SyntaxTree;
+
     public int Order => 20;
 
     public string DisplayName => _locale.Panels.SyntaxTreeTitle;
