@@ -9,6 +9,8 @@ public static class StudioPanelIds
     public const string Diagnostics = "diagnostics";
     public const string BoundTree = "bound-tree";
     public const string Il = "il";
+    public const string SharpAssembly = "sharp-assembly";
+    public const string FakeMachineCode = "fake-machine-code";
     public const string WorldRuntime = "world-runtime";
 
     public static readonly IReadOnlySet<string> All = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -19,6 +21,8 @@ public static class StudioPanelIds
         Diagnostics,
         BoundTree,
         Il,
+        SharpAssembly,
+        FakeMachineCode,
         WorldRuntime,
     };
 }

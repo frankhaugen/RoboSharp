@@ -37,6 +37,8 @@ public static class StudioServiceRegistration
         services.AddSingleton<IStudioPanel>(sp => new DiagnosticsPipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
         services.AddSingleton<IStudioPanel>(sp => new BoundTreePipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
         services.AddSingleton<IStudioPanel>(sp => new IlPipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
+        services.AddSingleton<IStudioPanel>(sp => new SharpAssemblyPipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
+        services.AddSingleton<IStudioPanel>(sp => new FakeMachineCodePipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
         services.AddSingleton<IStudioPanel>(sp => new WorldRuntimePipelinePanel(sp.GetRequiredService<ITeachingLocale>()));
 
         services.AddSingleton<MainWindow>(static sp =>

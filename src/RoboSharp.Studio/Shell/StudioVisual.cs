@@ -103,4 +103,20 @@ public static class StudioVisual
     public static CornerRadius PanelRadius { get; } = new(10);
 
     public static CornerRadius ButtonRadius { get; } = new(8);
+
+    /// <summary>Accent per pipeline stage (inspector rail + chrome).</summary>
+    public static SolidColorBrush TierBrush(PipelineInspectTier tier) =>
+        tier switch
+        {
+            PipelineInspectTier.Toolbox => new SolidColorBrush(Color.Parse("#9BB4D0")),
+            PipelineInspectTier.Lexical => new SolidColorBrush(Color.Parse("#5ED4F0")),
+            PipelineInspectTier.Syntax => new SolidColorBrush(Color.Parse("#8B9CF4")),
+            PipelineInspectTier.Diagnostics => new SolidColorBrush(Color.Parse("#FF7A6E")),
+            PipelineInspectTier.Semantic => new SolidColorBrush(Color.Parse("#C49CF5")),
+            PipelineInspectTier.VirtualIl => AccentBrush,
+            PipelineInspectTier.Assembly => new SolidColorBrush(Color.Parse("#FFB86C")),
+            PipelineInspectTier.MachineEncoding => new SolidColorBrush(Color.Parse("#FF6B9D")),
+            PipelineInspectTier.RuntimeSummary => new SolidColorBrush(Color.Parse("#7AE582")),
+            _ => AccentBrush,
+        };
 }

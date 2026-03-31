@@ -55,6 +55,12 @@ internal sealed class LatinPanelTexts : IStudioPanelTexts
 
     public string DiagnosticsRuntimePrefix => "exsecutorius ";
 
+    public string DiagnosticsLead => "Signa compilatōris et cursūs";
+    public string DiagnosticsGuide =>
+        "Lineae syntacticae, significativae, exsecutoriae ab ultima Aedificatione vel Cursu — quaelibet gradu signata.";
+    public string DiagnosticsFooter =>
+        "Monitum: **Visum → Nuntii compilatōris…** hanc indicem in fenestra propria aperit.";
+
     public string BoundTreeTitle => "Arbor nexa";
     public string BoundTreeSubtitle =>
         "Analysis significativa: nomina ad symbola, expressiones ad typōs — intratura demissionis.";
@@ -88,9 +94,36 @@ internal sealed class LatinPanelTexts : IStudioPanelTexts
 
     public string IlCopyDisassembly => "Copia textum IL";
 
+    public string SharpAssemblyTitle => "SharpAssembly (docens)";
+    public string SharpAssemblySubtitle =>
+        "IL in formam mnemonum quasi-assembleriam — idem gradūs, syntaxis similior «verae» asm (non est CPU).";
+    public string SharpAssemblyLead => "Sub IL in scala";
+    public string SharpAssemblyGuide =>
+        "**SharpAssembly** est lectio eadem IL RoboSharp quam interpres agit. Non est IL CLR nec x86/ARM. " +
+        "Adhibe ad operandōs et fluxum postquam tabulam IL intellegis.";
+    public string SharpAssemblyFooter =>
+        "Confer lineatim cum **IL (demissa)** — numerī et scopī saltūs congruere debent.";
+    public string SharpAssemblyWaitingForProgram =>
+        "(Programma demissum nondum est — corrige **Nuntii compilatōris**, dein Aedifica.)";
+
+    public string FakeMachineCodeTitle => "Verba machinae (docentia)";
+    public string FakeMachineCodeSubtitle =>
+        "Hexadecimales 32-bit fictae per instructionem — quomodo «binae in filo» videri possint sine ISA vera.";
+    public string FakeMachineCodeLead => "Codificatio (non machina vera)";
+    public string FakeMachineCodeGuide =>
+        "Quod **verbum** est codificatio ficta deterministica opcodis + operandōrum pro hac VM docente. " +
+        "CPU reales aliter disponunt; hoc tantum ad intuitionem hex.";
+    public string FakeMachineCodeFooter =>
+        "Columnae dexterae IL iterant ut nexum probes; hex tantum scholae causa.";
+    public string FakeMachineCodeWaitingForProgram =>
+        "(Programma demissum nondum est — Aedifica post compilationem felicem.)";
+
     public string WorldRuntimeTitle => "Relatio cursūs";
     public string WorldRuntimeSubtitle =>
         "Post Curr: responsum meta, summarium orbis, print(), stderr, eventus — ex menu Visum apertum.";
+    public string WorldRuntimeLead => "Imago cursūs";
+    public string WorldRuntimeFooter =>
+        "Etiam **Visum → Relatio cursūs…** in fenestra propria aperire potes.";
     public string FormatWorldRuntimePanel(
         bool? runtimeSucceeded,
         bool hasRunnableIl,

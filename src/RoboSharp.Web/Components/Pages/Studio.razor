@@ -94,6 +94,14 @@
             <textarea class="studio-readonly" readonly rows="16">@IlText()</textarea>
         </section>
         <section class="studio-panel">
+            <h2>@Locale.Panels.SharpAssemblyTitle</h2>
+            <textarea class="studio-readonly" readonly rows="14">@SharpAssemblyPanelText()</textarea>
+        </section>
+        <section class="studio-panel">
+            <h2>@Locale.Panels.FakeMachineCodeTitle</h2>
+            <textarea class="studio-readonly" readonly rows="14">@FakeMachinePanelText()</textarea>
+        </section>
+        <section class="studio-panel">
             <h2>World map (ASCII)</h2>
             <pre>@WorldAscii()</pre>
         </section>
@@ -320,6 +328,26 @@
         return header + (_snapshot.CompileReachedPhase < CompilePhase.Lowered
             ? Locale.Panels.IlWaitingForLowering
             : Locale.Panels.IlNoTextUnexpected);
+    }
+
+    private string SharpAssemblyPanelText()
+    {
+        var header = Locale.Panels.SharpAssemblyLead + Environment.NewLine + Environment.NewLine
+                     + Locale.Panels.SharpAssemblyGuide + Environment.NewLine + Environment.NewLine;
+        if (_snapshot?.SharpAssemblyText is { Length: > 0 } body)
+            return header + body + Environment.NewLine + Environment.NewLine + Locale.Panels.SharpAssemblyFooter;
+
+        return header + Locale.Panels.SharpAssemblyWaitingForProgram;
+    }
+
+    private string FakeMachinePanelText()
+    {
+        var header = Locale.Panels.FakeMachineCodeLead + Environment.NewLine + Environment.NewLine
+                     + Locale.Panels.FakeMachineCodeGuide + Environment.NewLine + Environment.NewLine;
+        if (_snapshot?.FakeMachineCodeText is { Length: > 0 } body)
+            return header + body + Environment.NewLine + Environment.NewLine + Locale.Panels.FakeMachineCodeFooter;
+
+        return header + Locale.Panels.FakeMachineCodeWaitingForProgram;
     }
 
     private string WorldAscii()

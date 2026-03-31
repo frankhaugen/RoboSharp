@@ -55,6 +55,12 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
 
     public string DiagnosticsRuntimePrefix => "runtime   ";
 
+    public string DiagnosticsLead => "Compile-time & runtime signals";
+    public string DiagnosticsGuide =>
+        "Parse, semantic, and runtime lines from the last Build or Run — each tagged by which part of the pipeline spoke.";
+    public string DiagnosticsFooter =>
+        "Tip: **View → Compiler messages…** opens this list in its own window when you want more room.";
+
     public string BoundTreeTitle => "Bound tree";
     public string BoundTreeSubtitle =>
         "Semantic analysis: every name tied to a symbol, every expression given a type — the input to lowering.";
@@ -88,9 +94,36 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
 
     public string IlCopyDisassembly => "Copy IL text";
 
+    public string SharpAssemblyTitle => "SharpAssembly (teaching)";
+    public string SharpAssemblySubtitle =>
+        "IL rewritten as mnemonic assembly — same steps, syntax that looks closer to “real” asm (still not a CPU).";
+    public string SharpAssemblyLead => "Below IL in the ladder";
+    public string SharpAssemblyGuide =>
+        "**SharpAssembly** is a readable spelling of the same RoboSharp IL the interpreter runs. " +
+        "It is not CLR IL and not tied to x86/ARM. Use it to practice reading operands and control flow after you understand the IL panel.";
+    public string SharpAssemblyFooter =>
+        "Compare line-by-line with **IL (lowered)** — counts and jump targets should match.";
+    public string SharpAssemblyWaitingForProgram =>
+        "(No lowered program yet — fix **Compiler messages**, then Build so IL and SharpAssembly can appear.)";
+
+    public string FakeMachineCodeTitle => "Machine words (teaching)";
+    public string FakeMachineCodeSubtitle =>
+        "Synthetic 32-bit hex per instruction — shows how “bytes on the wire” might look without teaching a real ISA.";
+    public string FakeMachineCodeLead => "Encoding (not functional hardware)";
+    public string FakeMachineCodeGuide =>
+        "Each **word** is a deterministic fake encoding of opcode + operands for this teaching VM. " +
+        "Real CPUs use different layouts; this is only to connect “hex dumps” to the instructions you already see in IL.";
+    public string FakeMachineCodeFooter =>
+        "The right-hand columns echo IL so you can verify the mapping; the hex is for classroom intuition only.";
+    public string FakeMachineCodeWaitingForProgram =>
+        "(No lowered program yet — Build after compile succeeds to fill machine words.)";
+
     public string WorldRuntimeTitle => "Run report";
     public string WorldRuntimeSubtitle =>
         "After Run: goal feedback, world summary, print() output, stderr, and interpreter outcome — opened from the View menu.";
+    public string WorldRuntimeLead => "Execution snapshot";
+    public string WorldRuntimeFooter =>
+        "You can also open **View → Run report…** in its own window when this stack feels crowded.";
     public string FormatWorldRuntimePanel(
         bool? runtimeSucceeded,
         bool hasRunnableIl,

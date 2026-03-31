@@ -38,6 +38,8 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                 [
                     StudioPanelIds.LessonToolbox,
                     StudioPanelIds.Tokens,
+                    StudioPanelIds.SharpAssembly,
+                    StudioPanelIds.FakeMachineCode,
                 ]),
 
             [StudioLessonIds.Steering] = new(
@@ -63,6 +65,8 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                 [
                     StudioPanelIds.LessonToolbox,
                     StudioPanelIds.Tokens,
+                    StudioPanelIds.SharpAssembly,
+                    StudioPanelIds.FakeMachineCode,
                 ]),
 
             [StudioLessonIds.LoopsAndPrint] = new(
@@ -81,6 +85,8 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                     StudioPanelIds.LessonToolbox,
                     StudioPanelIds.Tokens,
                     StudioPanelIds.SyntaxTree,
+                    StudioPanelIds.SharpAssembly,
+                    StudioPanelIds.FakeMachineCode,
                 ]),
 
             [StudioLessonIds.Sensing] = new(
@@ -99,6 +105,8 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                     StudioPanelIds.Tokens,
                     StudioPanelIds.SyntaxTree,
                     StudioPanelIds.BoundTree,
+                    StudioPanelIds.SharpAssembly,
+                    StudioPanelIds.FakeMachineCode,
                 ]),
 
             [StudioLessonIds.FullLanguage] = new(
@@ -119,6 +127,8 @@ internal sealed class EnglishStudioLessonCatalog : IStudioLessonCatalog
                     StudioPanelIds.SyntaxTree,
                     StudioPanelIds.BoundTree,
                     StudioPanelIds.Il,
+                    StudioPanelIds.SharpAssembly,
+                    StudioPanelIds.FakeMachineCode,
                 ]),
         };
 

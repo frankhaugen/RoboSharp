@@ -40,7 +40,9 @@ public sealed class IlPipelinePanel : IStudioPanel
 
     public string DisplayName => _locale.Panels.IlTitle;
 
-    public string? InspectorSubtitle => _locale.Panels.IlSubtitle;
+    public string? InspectorSubtitle => null;
+
+    public PipelineInspectTier AbstractionTier => PipelineInspectTier.VirtualIl;
 
     public Control CreateView()
     {
@@ -51,7 +53,7 @@ public sealed class IlPipelinePanel : IStudioPanel
             TextWrapping = TextWrapping.Wrap,
             FontSize = 14,
             FontWeight = FontWeight.SemiBold,
-            Foreground = StudioVisual.AccentBrush,
+            Foreground = StudioVisual.TierBrush(AbstractionTier),
             Margin = new Thickness(0, 0, 0, 6),
         };
 
@@ -82,10 +84,11 @@ public sealed class IlPipelinePanel : IStudioPanel
             MinHeight = 140,
         };
 
+        var ilAccent = StudioVisual.TierBrush(AbstractionTier);
         var listingCard = new Border
         {
             Background = StudioVisual.SurfaceElevatedBrush,
-            BorderBrush = StudioVisual.BorderSubtleBrush,
+            BorderBrush = new SolidColorBrush(ilAccent.Color) { Opacity = 0.42 },
             BorderThickness = new Thickness(1),
             CornerRadius = new CornerRadius(8),
             Padding = new Thickness(10, 8),
@@ -127,7 +130,9 @@ public sealed class IlPipelinePanel : IStudioPanel
 
         return new Border
         {
-            Padding = new Thickness(4, 2, 4, 8),
+            BorderBrush = ilAccent,
+            BorderThickness = new Thickness(4, 0, 0, 0),
+            Padding = new Thickness(10, 2, 4, 8),
             Child = layered,
         };
     }
@@ -273,7 +278,7 @@ public sealed class IlPipelinePanel : IStudioPanel
                     FontSize = line.Kind == IlListingLineKind.FunctionHeader ? 12 : 11,
                     FontWeight = line.Kind == IlListingLineKind.FunctionHeader ? FontWeight.SemiBold : FontWeight.Normal,
                     Foreground = line.Kind == IlListingLineKind.FunctionHeader
-                        ? StudioVisual.AccentBrush
+                        ? StudioVisual.TierBrush(PipelineInspectTier.VirtualIl)
                         : StudioVisual.TextPrimaryBrush,
                     TextWrapping = TextWrapping.Wrap,
                     Margin = new Thickness(0, line.Kind == IlListingLineKind.FunctionHeader ? 6 : 0, 0, 0),

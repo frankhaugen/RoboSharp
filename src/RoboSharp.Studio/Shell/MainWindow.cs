@@ -36,7 +36,7 @@ public sealed class MainWindow : Window
     private PipelineSnapshot? _lastPipelineSnapshot;
     private RobotWorldGridView? _worldGridPreview;
     private RoboSharpSourceEditor? _sourceEditor;
-    private TabControl? _inspectorTabs;
+    private StackPanel? _inspectorPanelStack;
     private readonly DiagnosticsPipelinePanel _diagnosticsPanel;
     private readonly WorldRuntimePipelinePanel _worldRuntimePanel;
     private Window? _diagnosticsFlyout;
@@ -668,7 +668,7 @@ public sealed class MainWindow : Window
         {
             case nameof(MainWindowViewModel.SelectedLessonId):
                 SyncLessonRibbonFromViewModel();
-                PopulateInspectorTabs();
+                PopulateInspectorStack();
                 break;
         }
     }
@@ -1201,14 +1201,21 @@ public sealed class MainWindow : Window
 
     private Border BuildInspectorColumn()
     {
-        var tabs = new TabControl
+        _inspectorPanelStack = new StackPanel
         {
-            TabStripPlacement = Dock.Top,
-            VerticalAlignment = VerticalAlignment.Stretch,
-            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Spacing = 0,
         };
-        _inspectorTabs = tabs;
-        PopulateInspectorTabs();
+
+        var scroll = new ScrollViewer
+        {
+            Content = _inspectorPanelStack,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
+        };
+
+        PopulateInspectorStack();
 
         return new Border
         {
@@ -1218,23 +1225,50 @@ public sealed class MainWindow : Window
             BorderThickness = new Thickness(1),
             Padding = new Thickness(8),
             BoxShadow = StudioVisual.SubtleCardShadow,
-            Child = tabs,
+            Child = scroll,
         };
     }
 
-    private void PopulateInspectorTabs()
+    private void PopulateInspectorStack()
     {
-        if (_inspectorTabs is null)
+        if (_inspectorPanelStack is null)
             return;
 
-        _inspectorTabs.Items.Clear();
+        _inspectorPanelStack.Children.Clear();
         foreach (var panel in VisiblePanelsOrdered())
         {
-            _inspectorTabs.Items.Add(new TabItem
+            var section = new StackPanel
             {
-                Header = panel.DisplayName,
-                Content = BuildInspectorTabContent(panel),
-            });
+                Spacing = 0,
+                Margin = new Thickness(0, 0, 0, 18),
+            };
+
+            var title = new TextBlock
+            {
+                Text = panel.DisplayName,
+                FontSize = 14,
+                FontWeight = FontWeight.SemiBold,
+                Foreground = StudioVisual.TierBrush(panel.AbstractionTier),
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0, 0, 0, 4),
+            };
+            section.Children.Add(title);
+
+            if (panel.InspectorSubtitle is { Length: > 0 } sub)
+            {
+                section.Children.Add(new TextBlock
+                {
+                    Text = sub,
+                    FontSize = 11,
+                    Foreground = StudioVisual.TextMutedBrush,
+                    TextWrapping = TextWrapping.Wrap,
+                    LineHeight = 16,
+                    Margin = new Thickness(0, 0, 0, 8),
+                });
+            }
+
+            section.Children.Add(panel.CreateView());
+            _inspectorPanelStack.Children.Add(section);
         }
 
         if (_lastPipelineSnapshot is { } snap)
@@ -1253,50 +1287,13 @@ public sealed class MainWindow : Window
         return _panels.Where(p => allow.Contains(p.PanelId)).OrderBy(p => p.Order);
     }
 
-    private static Control BuildInspectorTabContent(IStudioPanel panel)
+    private static Control BuildInspectorFlyoutBody(IStudioPanel panel)
     {
-        var body = panel.CreateView();
-        var bodyScroll = new ScrollViewer
+        return new ScrollViewer
         {
-            Content = body,
+            Content = panel.CreateView(),
             VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
-        };
-
-        var inner = new Grid();
-        if (panel.InspectorSubtitle is { Length: > 0 } sub)
-        {
-            inner.RowDefinitions = new RowDefinitions("Auto,*");
-            var subtitle = new TextBlock
-            {
-                Text = sub,
-                FontSize = 11,
-                Foreground = StudioVisual.TextMutedBrush,
-                TextWrapping = TextWrapping.Wrap,
-                LineHeight = 16,
-                Margin = new Thickness(0, 0, 0, 8),
-            };
-            inner.Children.Add(subtitle);
-            Grid.SetRow(subtitle, 0);
-            inner.Children.Add(bodyScroll);
-            Grid.SetRow(bodyScroll, 1);
-        }
-        else
-        {
-            inner.RowDefinitions = new RowDefinitions("*");
-            inner.Children.Add(bodyScroll);
-            Grid.SetRow(bodyScroll, 0);
-        }
-
-        return new Border
-        {
-            Background = StudioVisual.SurfaceElevatedBrush,
-            CornerRadius = StudioVisual.PanelRadius,
-            BorderBrush = StudioVisual.BorderSubtleBrush,
-            BorderThickness = new Thickness(1),
-            Padding = new Thickness(8),
-            BoxShadow = StudioVisual.SubtleCardShadow,
-            Child = inner,
         };
     }
 
@@ -1378,7 +1375,7 @@ public sealed class MainWindow : Window
             FontFamily = StudioVisual.UiFontFamily,
         };
 
-        window.Content = BuildInspectorTabContent(panel);
+        window.Content = BuildInspectorFlyoutBody(panel);
         if (_lastPipelineSnapshot is { } snap)
             panel.OnSnapshotChanged(snap);
 

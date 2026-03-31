@@ -25,6 +25,8 @@ public sealed class TokenPipelinePanel : IStudioPanel
 
     public string? InspectorSubtitle => _locale.Panels.TokensSubtitle;
 
+    public PipelineInspectTier AbstractionTier => PipelineInspectTier.Lexical;
+
     public Control CreateView()
     {
         _text = StudioCopyableText.CreateReadOnlyOutput();
@@ -36,7 +38,7 @@ public sealed class TokenPipelinePanel : IStudioPanel
             MinHeight = 140,
         };
 
-        var (root, parts) = TeachingInspectPanelChrome.Create(scroll, dataMinHeight: 0);
+        var (root, parts) = TeachingInspectPanelChrome.CreateWithTier(scroll, AbstractionTier, dataMinHeight: 0);
         _lead = parts.Lead;
         _guide = parts.Guide;
         _footer = parts.Footer;

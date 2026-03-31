@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using RoboSharp.Application.Teaching;
+using RoboSharp.Studio.Shell;
 
 namespace RoboSharp.Studio.Panels;
 
@@ -18,6 +19,9 @@ public interface IStudioPanel
 
     /// <summary>Short line under the title explaining what this pane shows (not included in the copyable body).</summary>
     string? InspectorSubtitle => null;
+
+    /// <summary>Pipeline tier for inspector accent color (stacked panels share one rail).</summary>
+    PipelineInspectTier AbstractionTier => PipelineInspectTier.VirtualIl;
 
     /// <summary>Build the view once; subsequent updates go through <see cref="OnSnapshotChanged"/>.</summary>
     Control CreateView();

@@ -15,6 +15,8 @@ public sealed record PipelineSnapshot(
     IReadOnlyList<string> SemanticDiagnosticLines,
     string? BoundTreeText,
     string? IlDisassemblyText,
+    string? SharpAssemblyText,
+    string? FakeMachineCodeText,
     string? RuntimeStdout,
     string? RuntimeStderr,
     bool? RuntimeSucceeded,

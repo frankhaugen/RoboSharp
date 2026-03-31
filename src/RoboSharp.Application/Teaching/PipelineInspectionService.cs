@@ -271,8 +271,20 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
         }
 
         string? ilText = compile.Program is not null ? IlTeachingFormatter.Format(compile.Program) : null;
+        string? asmText = compile.Program is not null ? MacroLayerTeachingFormatters.FormatSharpAssembly(compile.Program) : null;
+        string? machineText = compile.Program is not null ? MacroLayerTeachingFormatters.FormatFakeMachineCode(compile.Program) : null;
 
-        return new BuiltPipeline(source, tokens, syntaxTree, parseDiagnostics, compile, semanticLines, boundText, ilText);
+        return new BuiltPipeline(
+            source,
+            tokens,
+            syntaxTree,
+            parseDiagnostics,
+            compile,
+            semanticLines,
+            boundText,
+            ilText,
+            asmText,
+            machineText);
     }
 
     private static PipelineSnapshot FinalizeSnapshot(
@@ -301,6 +313,8 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
             built.SemanticLines,
             built.BoundTreeText,
             built.IlDisassemblyText,
+            built.SharpAssemblyText,
+            built.FakeMachineCodeText,
             stdout,
             stderr,
             runtimeOk,
@@ -365,5 +379,7 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
         CompileResult Compile,
         IReadOnlyList<string> SemanticLines,
         string? BoundTreeText,
-        string? IlDisassemblyText);
+        string? IlDisassemblyText,
+        string? SharpAssemblyText,
+        string? FakeMachineCodeText);
 }

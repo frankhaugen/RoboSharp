@@ -1,35 +1,30 @@
 using Avalonia.Controls;
-using RoboSharp.Language;
 using RoboSharp.Locales;
 using RoboSharp.Application.Teaching;
 using RoboSharp.Studio.Shell;
 
 namespace RoboSharp.Studio.Panels;
 
-public sealed class SyntaxTreePipelinePanel : IStudioPanel
+public sealed class FakeMachineCodePipelinePanel : IStudioPanel
 {
-    private readonly ISyntaxTreeSerializer _serializer;
     private readonly ITeachingLocale _locale;
     private TextBlock? _lead;
     private TextBlock? _guide;
     private TextBlock? _footer;
     private TextBox? _text;
 
-    public SyntaxTreePipelinePanel(ISyntaxTreeSerializer serializer, ITeachingLocale locale)
-    {
-        _serializer = serializer;
+    public FakeMachineCodePipelinePanel(ITeachingLocale locale) =>
         _locale = locale;
-    }
 
-    public string PanelId => StudioPanelIds.SyntaxTree;
+    public string PanelId => StudioPanelIds.FakeMachineCode;
 
-    public int Order => 20;
+    public int Order => 60;
 
-    public string DisplayName => _locale.Panels.SyntaxTreeTitle;
+    public string DisplayName => _locale.Panels.FakeMachineCodeTitle;
 
-    public string? InspectorSubtitle => _locale.Panels.SyntaxTreeSubtitle;
+    public string? InspectorSubtitle => _locale.Panels.FakeMachineCodeSubtitle;
 
-    public PipelineInspectTier AbstractionTier => PipelineInspectTier.Syntax;
+    public PipelineInspectTier AbstractionTier => PipelineInspectTier.MachineEncoding;
 
     public Control CreateView()
     {
@@ -39,16 +34,16 @@ public sealed class SyntaxTreePipelinePanel : IStudioPanel
             HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
             Content = _text,
-            MinHeight = 140,
+            MinHeight = 120,
         };
 
         var (root, parts) = TeachingInspectPanelChrome.CreateWithTier(scroll, AbstractionTier, dataMinHeight: 0);
         _lead = parts.Lead;
         _guide = parts.Guide;
         _footer = parts.Footer;
-        _lead.Text = _locale.Panels.SyntaxTreeLead;
-        _guide.Text = _locale.Panels.SyntaxTreeGuide;
-        _footer.Text = _locale.Panels.SyntaxTreeFootnote;
+        _lead.Text = _locale.Panels.FakeMachineCodeLead;
+        _guide.Text = _locale.Panels.FakeMachineCodeGuide;
+        _footer.Text = _locale.Panels.FakeMachineCodeFooter;
 
         return root;
     }
@@ -58,17 +53,19 @@ public sealed class SyntaxTreePipelinePanel : IStudioPanel
         if (_text is null)
             return;
 
-        _text.Text = _serializer.Serialize(snapshot.SyntaxTree.Root);
+        _text.Text = snapshot.FakeMachineCodeText is { Length: > 0 } body
+            ? body
+            : _locale.Panels.FakeMachineCodeWaitingForProgram;
     }
 
     public void ApplyLocale(PipelineSnapshot? lastSnapshot)
     {
         if (_lead is not null)
-            _lead.Text = _locale.Panels.SyntaxTreeLead;
+            _lead.Text = _locale.Panels.FakeMachineCodeLead;
         if (_guide is not null)
-            _guide.Text = _locale.Panels.SyntaxTreeGuide;
+            _guide.Text = _locale.Panels.FakeMachineCodeGuide;
         if (_footer is not null)
-            _footer.Text = _locale.Panels.SyntaxTreeFootnote;
+            _footer.Text = _locale.Panels.FakeMachineCodeFooter;
         if (lastSnapshot is not null)
             OnSnapshotChanged(lastSnapshot);
     }

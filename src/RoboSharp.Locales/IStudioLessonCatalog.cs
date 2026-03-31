@@ -15,7 +15,7 @@ public interface IStudioLessonCatalog
 /// <param name="GoalSectionBody">Didactic copy for the practice-map section (not the map name; that comes from presets).</param>
 /// <param name="CommandsSectionBody">Didactic copy for what the compiler allows in this lesson.</param>
 /// <param name="TaskChallengeBody">Left-rail mission copy: what the learner should try (imperative, short).</param>
-/// <param name="VisiblePanelIds">Which inspector tabs to show (<see cref="StudioPanelIds"/>). Order in the UI follows each panel's <c>Order</c>.</param>
+/// <param name="VisiblePanelIds">Which inspector panels to show (<see cref="StudioPanelIds"/>). Order in the UI follows each panel's <c>Order</c>.</param>
 public sealed record StudioLessonDefinition(
     string Id,
     string Title,
