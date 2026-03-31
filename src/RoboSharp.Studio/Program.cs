@@ -1,4 +1,7 @@
 using Avalonia;
+#if DEBUG
+using AvaloniaMcp.Diagnostics;
+#endif
 using Microsoft.Extensions.DependencyInjection;
 using RoboSharp.Studio.Composition;
 
@@ -22,5 +25,8 @@ internal static class Program
         AppBuilder.Configure<Shell.StudioApp>()
             .UsePlatformDetect()
             .WithInterFont()
+#if DEBUG
+            .UseMcpDiagnostics()
+#endif
             .LogToTrace();
 }
