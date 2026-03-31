@@ -9,7 +9,7 @@ public class ProjectDependencyGuardTests
     {
         ["RoboSharp.Language"] = new(StringComparer.OrdinalIgnoreCase),
         ["RoboSharp.Semantics"] = new(StringComparer.OrdinalIgnoreCase) { "RoboSharp.Language" },
-        ["RoboSharp.IL"] = new(StringComparer.OrdinalIgnoreCase) { "RoboSharp.Semantics" },
+        ["RoboSharp.IL"] = new(StringComparer.OrdinalIgnoreCase) { "RoboSharp.Language", "RoboSharp.Semantics" },
         ["RoboSharp.World"] = new(StringComparer.OrdinalIgnoreCase),
         ["RoboSharp.Runtime"] = new(StringComparer.OrdinalIgnoreCase) { "RoboSharp.IL", "RoboSharp.World" },
         ["RoboSharp.IO"] = new(StringComparer.OrdinalIgnoreCase),

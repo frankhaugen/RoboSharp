@@ -438,3 +438,4 @@ When changing this repository:
 9. Reject Blazor host patterns that are not true Server-Side Interactive Blazor.
 10. Prefer concrete, testable, modern C# over cleverness.
 11. Refresh generated diagram docs and `RoboSharp.slnx` by **committing** with `core.hooksPath` set to `.githooks` (pre-commit runs the generators and re-stages outputs). Do not run the hook scripts manually unless hooks are off or you are debugging them; see [`docs/build.md`](docs/build.md).
+12. After substantive changes, run **`dotnet test`** (or the repo’s CI-equivalent checks) locally; when they pass, **commit** with a clear message and **`git push`** to the tracked remote so the branch stays current. Do not leave a finished task only in the working tree.

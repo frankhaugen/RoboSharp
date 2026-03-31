@@ -1,18 +1,28 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Layout;
 using Avalonia.Media;
-using RoboSharp.Locales;
 using RoboSharp.Application.Teaching;
+using RoboSharp.Locales;
 using RoboSharp.Studio.Shell;
 
 namespace RoboSharp.Studio.Panels;
 
 public sealed class TokenPipelinePanel : IStudioPanel
 {
+    private static readonly SolidColorBrush StepHighlightBrush =
+        new SolidColorBrush(StudioVisual.Accent) { Opacity = 0.22 };
+
     private readonly ITeachingLocale _locale;
     private TextBlock? _lead;
     private TextBlock? _guide;
     private TextBlock? _footer;
-    private TextBox? _text;
+    private TextBox? _fallbackText;
+    private Grid? _structuredRoot;
+    private ScrollViewer? _listingScroll;
+    private StackPanel? _listingHost;
+    private readonly List<(Border box, int start, int len)> _stepRows = new();
 
     public TokenPipelinePanel(ITeachingLocale locale) =>
         _locale = locale;
@@ -29,16 +39,25 @@ public sealed class TokenPipelinePanel : IStudioPanel
 
     public Control CreateView()
     {
-        _text = StudioCopyableText.CreateReadOnlyOutput();
-        var scroll = new ScrollViewer
+        _fallbackText = StudioCopyableText.CreateReadOnlyOutput();
+
+        _listingHost = new StackPanel { Spacing = 0 };
+        _listingScroll = new ScrollViewer
         {
-            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-            Content = _text,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            Content = _listingHost,
             MinHeight = 140,
         };
 
-        var (root, parts) = TeachingInspectPanelChrome.CreateWithTier(scroll, AbstractionTier, dataMinHeight: 0);
+        _structuredRoot = new Grid();
+        _structuredRoot.Children.Add(_listingScroll);
+
+        var layered = new Grid();
+        layered.Children.Add(_fallbackText);
+        layered.Children.Add(_structuredRoot);
+
+        var (root, parts) = TeachingInspectPanelChrome.CreateWithTier(layered, AbstractionTier, dataMinHeight: 0);
         _lead = parts.Lead;
         _guide = parts.Guide;
         _footer = parts.Footer;
@@ -51,13 +70,75 @@ public sealed class TokenPipelinePanel : IStudioPanel
 
     public void OnSnapshotChanged(PipelineSnapshot snapshot)
     {
-        if (_text is null)
+        ClearStepHighlight();
+        if (_fallbackText is null || _structuredRoot is null || _listingHost is null)
             return;
 
-        var rows = snapshot.Tokens.Select(t =>
-            $"{t.Kind,-22}  @{t.Span.Start,4} len {t.Span.Length,3}  {VisualizeText(t.Text)}");
+        _fallbackText.IsVisible = false;
+        _structuredRoot.IsVisible = true;
+        _listingHost.Children.Clear();
+        _stepRows.Clear();
 
-        _text.Text = _locale.Panels.TokensColumnHeader + Environment.NewLine + string.Join(Environment.NewLine, rows);
+        _listingHost.Children.Add(BuildHeaderRow());
+
+        foreach (var t in snapshot.Tokens)
+        {
+            var line =
+                $"{t.Kind,-22}  @{t.Span.Start,4} len {t.Span.Length,3}  {VisualizeText(t.Text)}";
+            var inner = new TextBlock
+            {
+                Text = line,
+                FontFamily = StudioVisual.CodeFontFamily,
+                FontSize = 11,
+                Foreground = StudioVisual.TextPrimaryBrush,
+                Padding = new Thickness(4, 1, 4, 1),
+            };
+            var box = new Border { Child = inner };
+            _listingHost.Children.Add(box);
+            _stepRows.Add((box, t.Span.Start, t.Span.Length));
+        }
+    }
+
+    private TextBlock BuildHeaderRow() =>
+        new()
+        {
+            Text = _locale.Panels.TokensColumnHeader,
+            FontFamily = StudioVisual.CodeFontFamily,
+            FontSize = 11,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = StudioVisual.TextMutedBrush,
+            Margin = new Thickness(0, 0, 0, 4),
+        };
+
+    public void OnRunProgress(StudioRunProgress progress)
+    {
+        if (_listingHost is null || _structuredRoot is not { IsVisible: true })
+            return;
+
+        if (progress.SourceStepStart is not { } s0 || progress.SourceStepLength is not { } ln || ln <= 0)
+        {
+            foreach (var (box, _, _) in _stepRows)
+                box.Background = null;
+            return;
+        }
+
+        Border? scrollTo = null;
+        foreach (var (box, ts, tl) in _stepRows)
+        {
+            var on = TeachingPipelineListingLine.SpansOverlap(ts, tl, s0, ln);
+            box.Background = on ? StepHighlightBrush : null;
+            if (on)
+                scrollTo = box;
+        }
+
+        scrollTo?.BringIntoView();
+    }
+
+    private void ClearStepHighlight()
+    {
+        foreach (var (box, _, _) in _stepRows)
+            box.Background = null;
+        _stepRows.Clear();
     }
 
     public void ApplyLocale(PipelineSnapshot? lastSnapshot)

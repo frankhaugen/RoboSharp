@@ -7,6 +7,76 @@ namespace RoboSharp.Application.Teaching;
 /// <summary>Teaching-only views below IL: mnemonic assembly and fake machine words (not CLR, not a real ISA).</summary>
 public static class MacroLayerTeachingFormatters
 {
+    /// <summary>Structured SharpAssembly rows; instruction lines share fi/ip with the IL panel for stepping.</summary>
+    public static IReadOnlyList<IlListingLine> BuildSharpAssemblyListing(RoboProgram program)
+    {
+        var list = new List<IlListingLine>
+        {
+            new(IlListingLineKind.Meta, -1, -1,
+                "; SharpAssembly — teaching mnemonics derived from RoboSharp IL (not .NET IL, not a real CPU)."),
+            new(IlListingLineKind.Meta, -1, -1,
+                "; Same program as the IL panel, reshaped to look like assembly language."),
+            new(IlListingLineKind.Meta, -1, -1, string.Empty),
+        };
+
+        for (var fi = 0; fi < program.Functions.Count; fi++)
+        {
+            var fn = program.Functions[fi];
+            var mark = fi == program.EntryFunctionIndex ? "  ← entry" : string.Empty;
+            var display = fn.Name == CompilationArtifacts.TopLevelStatementsFunctionName
+                ? "top-level statements"
+                : fn.Name;
+            list.Add(new(IlListingLineKind.FunctionHeader, fi, -1, $"--- fn[{fi}] {display}{mark} ---"));
+            list.Add(new(IlListingLineKind.Meta, -1, -1,
+                $"    params={fn.ParameterCount} locals={fn.LocalSlotCount} void={fn.ReturnsVoid}"));
+            for (var ip = 0; ip < fn.Instructions.Count; ip++)
+            {
+                var insn = fn.Instructions[ip];
+                var line = $"    {ip,4}:  {FormatSharpLine(insn)}";
+                list.Add(new(IlListingLineKind.Instruction, fi, ip, line, insn.SourceStart, insn.SourceLength));
+            }
+
+            list.Add(new(IlListingLineKind.Meta, -1, -1, string.Empty));
+        }
+
+        return list;
+    }
+
+    /// <summary>Structured fake machine rows; instruction lines share fi/ip with the IL panel.</summary>
+    public static IReadOnlyList<IlListingLine> BuildFakeMachineListing(RoboProgram program)
+    {
+        var list = new List<IlListingLine>
+        {
+            new(IlListingLineKind.Meta, -1, -1,
+                "; Machine words — synthetic 32-bit encodings of opcode + operands (not x86, ARM, RISC-V, or CLR)."),
+            new(IlListingLineKind.Meta, -1, -1,
+                "; Same instructions as IL; hex is only for “what machine code might feel like” in the classroom."),
+            new(IlListingLineKind.Meta, -1, -1, string.Empty),
+        };
+
+        for (var fi = 0; fi < program.Functions.Count; fi++)
+        {
+            var fn = program.Functions[fi];
+            var mark = fi == program.EntryFunctionIndex ? "  ← entry" : string.Empty;
+            var display = fn.Name == CompilationArtifacts.TopLevelStatementsFunctionName
+                ? "top-level statements"
+                : fn.Name;
+            list.Add(new(IlListingLineKind.FunctionHeader, fi, -1, $"--- fn[{fi}] {display}{mark} ---"));
+            for (var ip = 0; ip < fn.Instructions.Count; ip++)
+            {
+                var insn = fn.Instructions[ip];
+                var w = EncodeTeachingWord(insn, ip, fi);
+                var line =
+                    $"    {ip,4}:  {w:X8}    {insn.Op,-16}  A={insn.A,4} B={insn.B,4} C={insn.C,4}";
+                list.Add(new(IlListingLineKind.Instruction, fi, ip, line, insn.SourceStart, insn.SourceLength));
+            }
+
+            list.Add(new(IlListingLineKind.Meta, -1, -1, string.Empty));
+        }
+
+        return list;
+    }
+
     /// <summary>SharpAssembly: one readable line per IL instruction (mnemonics + operands).</summary>
     public static string FormatSharpAssembly(RoboProgram program)
     {

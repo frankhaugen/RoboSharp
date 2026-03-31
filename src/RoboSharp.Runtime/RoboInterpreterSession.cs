@@ -21,6 +21,12 @@ public sealed class RoboInterpreterSession
     /// <summary>Instruction index within <see cref="ProgressHighlightFunctionIndex"/>.</summary>
     public int? ProgressHighlightInstructionIndex { get; private set; }
 
+    /// <summary>Source offset for the highlighted instruction when present on IL metadata.</summary>
+    public int? ProgressHighlightSourceStart { get; private set; }
+
+    /// <summary>Length paired with <see cref="ProgressHighlightSourceStart"/>.</summary>
+    public int? ProgressHighlightSourceLength { get; private set; }
+
     public void Start(RoboProgram program, RobotWorld world, TextWriter stdout, TextWriter stderr)
     {
         ArgumentNullException.ThrowIfNull(program);
@@ -30,6 +36,8 @@ public sealed class RoboInterpreterSession
         CurrentInstructionDescription = null;
         ProgressHighlightFunctionIndex = null;
         ProgressHighlightInstructionIndex = null;
+        ProgressHighlightSourceStart = null;
+        ProgressHighlightSourceLength = null;
         var err = _engine.Initialize(program, world, stdout, stderr);
         if (err is not null)
             throw new InvalidOperationException(err.Fault?.Message ?? "Initialization failed.");
@@ -60,12 +68,28 @@ public sealed class RoboInterpreterSession
 
     private void CaptureProgressHighlight()
     {
+        ProgressHighlightSourceStart = null;
+        ProgressHighlightSourceLength = null;
         if (_engine.HasActiveFrames &&
             _engine.CurrentFunctionIndex is { } fi &&
             _engine.CurrentInstructionPointer is { } ip)
         {
             ProgressHighlightFunctionIndex = fi;
             ProgressHighlightInstructionIndex = ip;
+            if (_program is not null &&
+                fi >= 0 && fi < _program.Functions.Count)
+            {
+                var fn = _program.Functions[fi];
+                if (ip >= 0 && ip < fn.Instructions.Count)
+                {
+                    var insn = fn.Instructions[ip];
+                    if (insn.SourceStart >= 0 && insn.SourceLength > 0)
+                    {
+                        ProgressHighlightSourceStart = insn.SourceStart;
+                        ProgressHighlightSourceLength = insn.SourceLength;
+                    }
+                }
+            }
         }
     }
 

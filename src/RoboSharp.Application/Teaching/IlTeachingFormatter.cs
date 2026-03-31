@@ -33,7 +33,7 @@ public static class IlTeachingFormatter
             {
                 var i = fn.Instructions[ip];
                 var line = FormatInstructionLine(ip, i, loopHeads);
-                list.Add(new(IlListingLineKind.Instruction, fi, ip, line));
+                list.Add(new(IlListingLineKind.Instruction, fi, ip, line, i.SourceStart, i.SourceLength));
             }
 
             list.Add(new(IlListingLineKind.Meta, -1, -1, string.Empty));

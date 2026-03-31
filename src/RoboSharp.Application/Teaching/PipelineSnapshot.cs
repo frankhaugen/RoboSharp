@@ -31,4 +31,6 @@ public sealed record PipelineSnapshot(
     int? LessonScore = null,
     int? IlInstructionsExecuted = null,
     string? IlExecutionFootnote = null,
-    RoboProgram? IlProgram = null);
+    RoboProgram? IlProgram = null,
+    IReadOnlyList<TeachingPipelineListingLine>? SyntaxTeachingLines = null,
+    IReadOnlyList<TeachingPipelineListingLine>? BoundTeachingLines = null);

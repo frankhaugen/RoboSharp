@@ -50,6 +50,8 @@ public static class RoboExecutableJsonSerializer
                     A = i.A,
                     B = i.B,
                     C = i.C,
+                    SourceStart = i.SourceStart >= 0 ? i.SourceStart : null,
+                    SourceLength = i.SourceLength > 0 ? i.SourceLength : null,
                 }).ToList(),
             }).ToList(),
         };
@@ -67,7 +69,9 @@ public static class RoboExecutableJsonSerializer
                 Enum.Parse<RoboOpcode>(i.Op, ignoreCase: true),
                 i.A,
                 i.B,
-                i.C)).ToList(),
+                i.C,
+                i.SourceStart ?? -1,
+                i.SourceLength ?? 0)).ToList(),
         }).ToList();
 
         var program = new RoboProgram
@@ -109,5 +113,7 @@ public static class RoboExecutableJsonSerializer
         public int A { get; set; }
         public int B { get; set; }
         public int C { get; set; }
+        public int? SourceStart { get; set; }
+        public int? SourceLength { get; set; }
     }
 }

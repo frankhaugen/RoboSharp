@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <ProjectReference Include="..\RoboSharp.Language\RoboSharp.Language.csproj" />
     <ProjectReference Include="..\RoboSharp.Semantics\RoboSharp.Semantics.csproj" />
   </ItemGroup>
 </Project>

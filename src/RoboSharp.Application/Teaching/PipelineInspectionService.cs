@@ -221,7 +221,9 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
             session.InstructionsExecuted,
             session.CurrentInstructionDescription,
             session.ProgressHighlightFunctionIndex,
-            session.ProgressHighlightInstructionIndex));
+            session.ProgressHighlightInstructionIndex,
+            session.ProgressHighlightSourceStart,
+            session.ProgressHighlightSourceLength));
     }
 
     private string BuildProfileHelp(StudioPipelineOptions options) =>
@@ -274,6 +276,26 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
         string? asmText = compile.Program is not null ? MacroLayerTeachingFormatters.FormatSharpAssembly(compile.Program) : null;
         string? machineText = compile.Program is not null ? MacroLayerTeachingFormatters.FormatFakeMachineCode(compile.Program) : null;
 
+        var syntaxLines = SyntaxTreeTeachingListing.Build(syntaxTree.Root)
+            .Select(l => new TeachingPipelineListingLine(
+                l.Text,
+                l.AssociatedSource.IsValid ? l.AssociatedSource.Start : -1,
+                l.AssociatedSource.IsValid ? l.AssociatedSource.Length : 0))
+            .ToList();
+
+        IReadOnlyList<TeachingPipelineListingLine>? boundLines = null;
+        if (compile.SemanticModel is not null)
+        {
+            try
+            {
+                boundLines = BoundTreeTeachingFormatter.BuildListing(compile.SemanticModel.Root);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Bound tree listing build failed");
+            }
+        }
+
         return new BuiltPipeline(
             source,
             tokens,
@@ -284,7 +306,9 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
             boundText,
             ilText,
             asmText,
-            machineText);
+            machineText,
+            syntaxLines,
+            boundLines);
     }
 
     private static PipelineSnapshot FinalizeSnapshot(
@@ -329,7 +353,9 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
             lessonScore,
             ilSteps,
             ilFootnote,
-            built.Compile.Program);
+            built.Compile.Program,
+            built.SyntaxTeachingLines,
+            built.BoundTeachingLines);
     }
 
     private static IReadOnlyList<SourceDiagnosticSpan> CollectDiagnosticSpans(BuiltPipeline built)
@@ -381,5 +407,7 @@ public sealed class PipelineInspectionService : IPipelineInspectionService
         string? BoundTreeText,
         string? IlDisassemblyText,
         string? SharpAssemblyText,
-        string? FakeMachineCodeText);
+        string? FakeMachineCodeText,
+        IReadOnlyList<TeachingPipelineListingLine> SyntaxTeachingLines,
+        IReadOnlyList<TeachingPipelineListingLine>? BoundTeachingLines);
 }

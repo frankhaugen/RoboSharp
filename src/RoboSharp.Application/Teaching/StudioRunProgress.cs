@@ -8,4 +8,6 @@ public readonly record struct StudioRunProgress(
     int InstructionsExecutedSoFar,
     string? InstructionDescription,
     int? IlHighlightFunctionIndex,
-    int? IlHighlightInstructionIndex);
+    int? IlHighlightInstructionIndex,
+    int? SourceStepStart,
+    int? SourceStepLength);

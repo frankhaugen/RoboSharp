@@ -1278,14 +1278,8 @@ public sealed class MainWindow : Window
         }
     }
 
-    private IEnumerable<IStudioPanel> VisiblePanelsOrdered()
-    {
-        var lesson = _locale.Lessons.Get(_viewModel.SelectedLessonId);
-        var allow = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var id in lesson.VisiblePanelIds)
-            allow.Add(id);
-        return _panels.Where(p => allow.Contains(p.PanelId)).OrderBy(p => p.Order);
-    }
+    private IEnumerable<IStudioPanel> VisiblePanelsOrdered() =>
+        _panels.OrderBy(p => p.Order);
 
     private static Control BuildInspectorFlyoutBody(IStudioPanel panel)
     {
@@ -1303,6 +1297,7 @@ public sealed class MainWindow : Window
         foreach (var panel in _panels)
             panel.OnSnapshotChanged(snapshot);
 
+        _sourceEditor?.ApplyStepHighlight(null, null);
         _sourceEditor?.ApplyDiagnosticSpans(snapshot.SourceDiagnosticSpans);
 
         if (snapshot.WorldVisualization is { } w)
@@ -1314,6 +1309,7 @@ public sealed class MainWindow : Window
     private void OnRunProgress(StudioRunProgress progress)
     {
         ApplyWorldGridPreviewSnapshot(progress.World);
+        _sourceEditor?.ApplyStepHighlight(progress.SourceStepStart, progress.SourceStepLength);
         foreach (var panel in _panels)
             panel.OnRunProgress(progress);
     }

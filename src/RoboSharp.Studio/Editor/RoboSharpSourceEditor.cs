@@ -13,6 +13,7 @@ public sealed class RoboSharpSourceEditor : Border
 {
     private readonly TextEditor _editor;
     private StudioDiagnosticColorizer? _diagnosticColorizer;
+    private StudioStepSpanColorizer? _stepColorizer;
     private bool _suspendTextEvents;
 
     public RoboSharpSourceEditor()
@@ -111,6 +112,25 @@ public sealed class RoboSharpSourceEditor : Border
 
         _diagnosticColorizer = new StudioDiagnosticColorizer(spans);
         tv.LineTransformers.Add(_diagnosticColorizer);
+        tv.Redraw();
+    }
+
+    /// <summary>Highlights the source range for the current interpreter step; pass invalid range to clear.</summary>
+    public void ApplyStepHighlight(int? start, int? length)
+    {
+        var tv = _editor.TextArea.TextView;
+        if (_stepColorizer is not null)
+        {
+            tv.LineTransformers.Remove(_stepColorizer);
+            _stepColorizer = null;
+        }
+
+        if (start is >= 0 && length is > 0)
+        {
+            _stepColorizer = new StudioStepSpanColorizer(start.Value, length.Value);
+            tv.LineTransformers.Add(_stepColorizer);
+        }
+
         tv.Redraw();
     }
 

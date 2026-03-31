@@ -5,4 +5,6 @@ public readonly record struct IlListingLine(
     IlListingLineKind Kind,
     int FunctionIndex,
     int InstructionIndex,
-    string Text);
+    string Text,
+    int SourceStart = -1,
+    int SourceLength = 0);

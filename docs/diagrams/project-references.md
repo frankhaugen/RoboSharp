@@ -34,6 +34,7 @@ flowchart TD
   RoboSharp_Architecture_Tests["RoboSharp.Architecture.Tests"] --> RoboSharp_World["RoboSharp.World"]
   RoboSharp_Hosting["RoboSharp.Hosting"] --> RoboSharp_Application["RoboSharp.Application"]
   RoboSharp_Hosting["RoboSharp.Hosting"] --> RoboSharp_Workspaces["RoboSharp.Workspaces"]
+  RoboSharp_IL["RoboSharp.IL"] --> RoboSharp_Language["RoboSharp.Language"]
   RoboSharp_IL["RoboSharp.IL"] --> RoboSharp_Semantics["RoboSharp.Semantics"]
   RoboSharp_IL_Tests["RoboSharp.IL.Tests"] --> RoboSharp_IL["RoboSharp.IL"]
   RoboSharp_IL_Tests["RoboSharp.IL.Tests"] --> RoboSharp_Language["RoboSharp.Language"]
