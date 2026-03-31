@@ -57,6 +57,15 @@ Trimming (`PublishTrimmed`) is **not** enabled by default; turning it on may bre
 
 Tag-driven releases (`.github/workflows/release.yml`) publish **Studio**, **Player**, and **Web** and attach archives. Player and Studio use the same single-file switch when publishing.
 
+**Version tags** use **`vyyyy.MM.dd.#`** (four parts, dot-separated). Example: `v2026.03.31.1` — year, month, day, and a per-day **build index** (`.1`, `.2`, …). Push the tag to `main` (or the branch you release from):
+
+```bash
+git tag v2026.03.31.1
+git push origin v2026.03.31.1
+```
+
+The release’s **title** is `RoboSharp yyyy.MM.dd.#` (without the leading `v`). The **body** starts with a short intro (what each archive contains, how to verify `SHA256SUMS.txt`, links to docs at that tag), then GitHub appends **auto-generated** notes from commits and merged pull requests.
+
 ## See also
 
 - [build.md](build.md) — day-to-day build and test

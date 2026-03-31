@@ -1,10 +1,10 @@
-namespace RoboSharp.Locales;
+namespace RoboSharp.Locales.English;
 
 /// <summary>
 /// Longer teaching paragraphs about the pipeline. All copy lives in code (no .resx) so learners can
-/// jump to definitions and hosts can swap <see cref="ITeachingLocale"/> for another language.
+/// jump to definitions and hosts can swap <see cref="ITeachingLocale"/> for another language pack (for example <see cref="RoboSharp.Locales.Latin.LatinTeachingLocale"/>).
 /// </summary>
-public static class TeachingExplainer
+public static class EnglishTeachingExplainer
 {
     /// <summary>Why we split lexer output from the parser tree.</summary>
     public static string LexerToParser =>

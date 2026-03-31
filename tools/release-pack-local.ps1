@@ -8,10 +8,10 @@
   Matches .github/workflows/release.yml publish and package steps (RIDs linux-x64, win-x64 for Studio/Player; Web linux-x64).
 
 .PARAMETER Version
-  Semantic version without leading v (e.g. 1.2.3), same as the tag body after stripping v.
+  Assembly/package version without leading v (e.g. **2026.03.31.1** for calendar-style releases). Use the same value as the `YYYY.MM.DD.#` tag after stripping the leading `v`.
 
 .EXAMPLE
-  ./tools/release-pack-local.ps1 -Version 0.1.0
+  ./tools/release-pack-local.ps1 -Version 2026.03.31.1
 #>
 param(
     [Parameter(Mandatory)]

@@ -1,4 +1,4 @@
-namespace RoboSharp.Locales;
+namespace RoboSharp.Locales.English;
 
 /// <summary>Default English teaching copy. Swap <see cref="ITeachingLocale"/> in DI for another language pack (also code-based).</summary>
 public sealed class EnglishTeachingLocale : ITeachingLocale

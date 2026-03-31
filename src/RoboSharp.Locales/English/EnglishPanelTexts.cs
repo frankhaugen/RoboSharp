@@ -1,4 +1,4 @@
-namespace RoboSharp.Locales;
+namespace RoboSharp.Locales.English;
 
 internal sealed class EnglishPanelTexts : IStudioPanelTexts
 {
@@ -7,7 +7,7 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
         "Keywords, literals, and comments tinted from the last Build. The main editor updates live; this panel is a lexer snapshot when you Build.";
     public string ColoredSourcePreamble =>
         "# Syntax colors (lexer snapshot)\r\n" +
-        TeachingExplainer.LexerToParser +
+        EnglishTeachingExplainer.LexerToParser +
         "\r\n\r\nThis panel shows the same source text with colors from the lexer. Press Build to refresh after edits.\r\n\r\n";
     public string ColoredSourceEmpty => "(Nothing to show — source is empty or Build has not run yet.)";
 
@@ -16,7 +16,7 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
         "Built-ins allowed by the profile you chose. Smaller profiles keep puzzles focused; unknown names usually mean the profile, not a typo in the grammar.";
     public string LessonToolboxPreamble =>
         "# Lesson toolbox\r\n" +
-        TeachingExplainer.ProfilesVsGrammar +
+        EnglishTeachingExplainer.ProfilesVsGrammar +
         "\r\n\r\nThe list below matches the Lesson profile dropdown.\r\n\r\n";
     public string LessonToolboxBuildPrompt =>
         "(Build once to load the active profile and world labels into the snapshot.)";
@@ -27,7 +27,7 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
     public string TokensPreamble =>
         "# Lexer tokens (lexical analysis)\r\n" +
         "Each line is one token: kind, @start character index, length, and the exact characters (\\r, \\n, \\t shown escaped).\r\n" +
-        TeachingExplainer.LexerToParser +
+        EnglishTeachingExplainer.LexerToParser +
         "\r\n\r\n";
 
     public string SyntaxTreeTitle => "Syntax tree";
@@ -36,7 +36,7 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
     public string SyntaxTreePreamble =>
         "# Syntax tree (parsing)\r\n" +
         "Concrete syntax: indentation shows how tokens were grouped into declarations, statements, and expressions.\r\n" +
-        TeachingExplainer.PhasesDependOnEachOther +
+        EnglishTeachingExplainer.PhasesDependOnEachOther +
         "\r\n\r\n";
 
     public string DiagnosticsTitle => "Diagnostics";
@@ -44,11 +44,11 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
         "Parse, semantic (binder), and runtime messages from the last Build or Run. Each line is labeled by phase so you know which compiler part spoke.";
     public string DiagnosticsPreamble =>
         "# Diagnostics (compiler & interpreter)\r\n" +
-        TeachingExplainer.WhatIsASourceSpan +
+        EnglishTeachingExplainer.WhatIsASourceSpan +
         "\r\n\r\n" +
         "• parse — lexer/parser could not produce a valid syntax tree.\r\n" +
-        "• semantic — binder/type rules failed after a successful parse. " + TeachingExplainer.WhatIsBinding + "\r\n" +
-        "• runtime — interpreter reported a fault while executing lowered IL (after Run). " + TeachingExplainer.StdoutVsDiagnostics + "\r\n" +
+        "• semantic — binder/type rules failed after a successful parse. " + EnglishTeachingExplainer.WhatIsBinding + "\r\n" +
+        "• runtime — interpreter reported a fault while executing lowered IL (after Run). " + EnglishTeachingExplainer.StdoutVsDiagnostics + "\r\n" +
         "\r\n";
 
     public string DiagnosticsNone =>
@@ -61,7 +61,7 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
         "Semantic analysis: each name resolved to a symbol, every expression typed. This is what lowering turns into fake IL.";
     public string BoundTreePreamble =>
         "# Bound tree (semantic analysis)\r\n" +
-        TeachingExplainer.WhatIsBinding +
+        EnglishTeachingExplainer.WhatIsBinding +
         "\r\n\r\nThe dump below is the meaning layer the IL lowering step consumes.\r\n\r\n";
 
     public string BoundTreeNeedParseFirst =>
@@ -77,7 +77,7 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
         "Fake IL disassembly: opcodes and operands the interpreter executes. Not CLR IL — see explainer in the trace footnote after Run.";
     public string IlPreamble =>
         "# Fake IL (lowering)\r\n" +
-        TeachingExplainer.FakeIlVersusDotNet +
+        EnglishTeachingExplainer.FakeIlVersusDotNet +
         "\r\n\r\n";
 
     public string IlWaitingForLowering =>
@@ -101,7 +101,7 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
         var doc =
             "# World & interpreter\r\n" +
             "Build compiles only. Run compiles again, then executes IL on the Karel world step by step.\r\n" +
-            TeachingExplainer.StdoutVsDiagnostics +
+            EnglishTeachingExplainer.StdoutVsDiagnostics +
             "\r\n\r\n";
 
         if (runtimeSucceeded is null)
@@ -137,7 +137,7 @@ internal sealed class EnglishPanelTexts : IStudioPanelTexts
                 "(not available until compile succeeds)\r\n" +
                 "\r\n" +
                 "Tip: add top-level calls at file scope (for example move();) and clear parse/semantic diagnostics. " +
-                TeachingExplainer.PhasesDependOnEachOther +
+                EnglishTeachingExplainer.PhasesDependOnEachOther +
                 "\r\n";
         }
 

@@ -1,4 +1,4 @@
-namespace RoboSharp.Locales;
+namespace RoboSharp.Locales.Latin;
 
 /// <summary>
 /// Playful classroom Latin for the optional <see cref="LatinTeachingLocale"/> demo pack (not a formal translation).

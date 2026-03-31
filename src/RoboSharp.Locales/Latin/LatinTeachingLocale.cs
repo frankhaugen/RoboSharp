@@ -1,4 +1,4 @@
-namespace RoboSharp.Locales;
+namespace RoboSharp.Locales.Latin;
 
 /// <summary>
 /// Optional demo locale: playful Latin for classrooms and tests. Enable Studio with environment variable

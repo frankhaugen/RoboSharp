@@ -1,4 +1,4 @@
-namespace RoboSharp.Locales;
+namespace RoboSharp.Locales.Latin;
 
 internal sealed class LatinPanelTexts : IStudioPanelTexts
 {

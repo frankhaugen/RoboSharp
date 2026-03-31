@@ -25,6 +25,9 @@ if (!Directory.Exists(root))
     return 1;
 }
 
+// Canonical root so GetRelativePath matches EnumerateFiles on all OS (Linux CI vs Windows dev).
+root = Path.GetFullPath(root.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+
 var outDir = Path.Combine(root, "docs", "diagrams");
 Directory.CreateDirectory(outDir);
 
@@ -44,7 +47,9 @@ foreach (var (relPath, fullPath) in projects)
         var inc = pr.Attribute("Include")?.Value;
         if (string.IsNullOrWhiteSpace(inc))
             continue;
-        var targetPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fullPath)!, inc));
+        // MSBuild allows backslashes in Include; Path.Combine on Unix does not normalize them — breaks CI on Linux.
+        var incNormalized = inc.Replace('\\', Path.DirectorySeparatorChar);
+        var targetPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fullPath)!, incNormalized));
         var targetRel = ToRepoRelative(root, targetPath).Replace('\\', '/');
         if (!projects.TryGetValue(targetRel, out _))
             continue;
@@ -99,8 +104,9 @@ static Dictionary<string, string> DiscoverProjectPaths(string root)
             continue;
         foreach (var full in Directory.EnumerateFiles(dir, "*.csproj", SearchOption.AllDirectories))
         {
-            var rel = ToRepoRelative(root, full).Replace('\\', '/');
-            map[rel] = full;
+            var canonical = Path.GetFullPath(full);
+            var rel = ToRepoRelative(root, canonical).Replace('\\', '/');
+            map[rel] = canonical;
         }
     }
 

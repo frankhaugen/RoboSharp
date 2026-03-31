@@ -156,7 +156,7 @@ Contains **code-first** teaching copy for hosts:
 
 - `ITeachingLocale` and language-specific implementations (English default; optional playful Latin demo via `ROBOSHARP_LOCALE=la`) with hardcoded strings — **no .resx**
 - panel preambles, shell chrome, pipeline footers, and kid-friendly status lines
-- `TeachingExplainer` static paragraphs about lexer/parser/binder/IL/runtime
+- `EnglishTeachingExplainer` / `LatinTeachingExplainer` static paragraphs about lexer/parser/binder/IL/runtime (under `English/` and `Latin/` in `RoboSharp.Locales`)
 
 No dependency on Avalonia, Language, or IL. Hosts reference this project and inject `ITeachingLocale` at composition roots.
 

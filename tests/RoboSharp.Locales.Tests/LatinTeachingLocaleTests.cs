@@ -1,4 +1,6 @@
 using RoboSharp.Locales;
+using RoboSharp.Locales.English;
+using RoboSharp.Locales.Latin;
 
 namespace RoboSharp.Locales.Tests;
 

@@ -1,4 +1,5 @@
 using RoboSharp.Locales;
+using RoboSharp.Locales.English;
 
 namespace RoboSharp.Locales.Tests;
 
@@ -32,9 +33,9 @@ public class EnglishTeachingLocaleTests
     }
 
     [Test]
-    public async Task TeachingExplainer_paragraphs_have_substance()
+    public async Task EnglishTeachingExplainer_paragraphs_have_substance()
     {
-        await Assert.That(TeachingExplainer.LexerToParser.Length).IsGreaterThan(80);
-        await Assert.That(TeachingExplainer.FakeIlVersusDotNet).Contains(".NET", StringComparison.Ordinal);
+        await Assert.That(EnglishTeachingExplainer.LexerToParser.Length).IsGreaterThan(80);
+        await Assert.That(EnglishTeachingExplainer.FakeIlVersusDotNet).Contains(".NET", StringComparison.Ordinal);
     }
 }

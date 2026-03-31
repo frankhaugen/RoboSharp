@@ -115,9 +115,9 @@ The GitHub Actions **CI** job (`.github/workflows/ci.yml`) delegates build, test
 
 - **Windows (PowerShell):** [`tools/ci-local.ps1`](../tools/ci-local.ps1) (uses Git Bash’s `bash` when available so behavior matches CI; otherwise runs equivalent `dotnet`/`git` commands).
 - **Bash (Git Bash, WSL, Linux, macOS):** `bash tools/ci-verify.sh`  
-  Optional release-style versioned build: `PACKAGE_VERSION=1.2.3 bash tools/ci-verify.sh`
+  Optional release-style versioned build: `PACKAGE_VERSION=2026.03.31.1 bash tools/ci-verify.sh`
 
-The **Release** workflow adds versioned publish, tarballs, and `SHA256SUMS.txt` (see [`.github/workflows/release.yml`](../.github/workflows/release.yml)). To reproduce that packaging locally (without creating a GitHub Release): [`tools/release-pack-local.ps1`](../tools/release-pack-local.ps1) `-Version` `1.2.3`.
+The **Release** workflow (see [`.github/workflows/release.yml`](../.github/workflows/release.yml)) runs on tags **`vyyyy.MM.dd.#`** (four parts, calendar-style; **example** `v2026.03.31.1` for the first release of that day). It adds versioned publish, tarballs, `SHA256SUMS.txt`, and a GitHub Release whose **description** is a human-written intro (table of assets, verify command, doc links) **prepended** to GitHub’s auto-generated notes. To reproduce packaging locally (without creating a GitHub Release): [`tools/release-pack-local.ps1`](../tools/release-pack-local.ps1) `-Version` `2026.03.31.1` (no leading `v`).
 
 ## Continuous integration
 

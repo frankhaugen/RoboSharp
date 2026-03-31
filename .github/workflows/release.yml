@@ -1,12 +1,12 @@
-# Semantic version tags (vMAJOR.MINOR.PATCH): same checks as CI, then publish Studio / Player / Web
-# as tar.gz assets with SHA256SUMS on the GitHub Release.
+# Calendar-style tags (vyyyy.MM.dd.#): same checks as CI, then publish Studio / Player / Web
+# as tar.gz assets with SHA256SUMS on the GitHub Release. Example: git tag v2026.03.31.1 && git push origin v2026.03.31.1
 
 name: Release
 
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*.*.*.*"
 
 permissions:
   contents: write
@@ -45,6 +45,44 @@ jobs:
           VER="${TAG#v}"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "release_title=RoboSharp $VER" >> "$GITHUB_OUTPUT"
+          echo "released_at_utc=$(date -u '+%Y-%m-%d %H:%M UTC')" >> "$GITHUB_OUTPUT"
+
+      - name: Write release description (prepended to auto-generated notes)
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
+          TITLE: ${{ steps.version.outputs.release_title }}
+          RELEASED_AT: ${{ steps.version.outputs.released_at_utc }}
+          REPO: ${{ github.repository }}
+          SERVER_URL: ${{ github.server_url }}
+        run: |
+          set -euo pipefail
+          DOCS_ROOT="${SERVER_URL}/${REPO}/blob/${TAG}"
+          TREE_URL="${SERVER_URL}/${REPO}/tree/${TAG}"
+          {
+            printf '%s\n' "## ${TITLE}" ""
+            printf '%s\n' "Packaged **${RELEASED_AT}** from tag \`${TAG}\`." ""
+            printf '%s\n' "**RoboSharp** is a teaching compiler and runtime: **source → lexer → parser → binder → fake IL → interpreter** on a Karel grid. Every stage stays visible in tooling." ""
+            printf '%s\n' "### What is in the archives" ""
+            printf '%s\n' "| Archive | Description |"
+            printf '%s\n' "| --- | --- |"
+            printf '%s\n' "| \`RoboSharp.Studio-*-linux-x64.tar.gz\` / \`*-win-x64.tar.gz\` | **RoboSharp Studio** — Avalonia desktop IDE (self-contained single-file style publish) |"
+            printf '%s\n' "| \`RoboSharp.Player-*-*.tar.gz\` | **RoboSharp Player** — run a compiled \`.roboexe\` (JSON) from the command line |"
+            printf '%s\n' "| \`RoboSharp.Web-*-linux-x64.tar.gz\` | **RoboSharp.Web** — ASP.NET Core host (folder deploy, not a single executable) |"
+            printf '%s\n' "| \`SHA256SUMS.txt\` | SHA-256 checksum for each \`.tar.gz\` |" ""
+            printf '%s\n' "### Verify downloads" ""
+            printf '%s\n' '```bash'
+            printf '%s\n' "sha256sum -c SHA256SUMS.txt"
+            printf '%s\n' '```' ""
+            printf '%s\n' "### Documentation" ""
+            printf '%s\n' "- [Build and test](${DOCS_ROOT}/docs/build.md)"
+            printf '%s\n' "- [Publishing](${DOCS_ROOT}/docs/publishing.md)"
+            printf '%s\n' "- [Repository README](${TREE_URL})" ""
+            printf '%s\n' "---" ""
+            printf '%s\n' "*Below: GitHub-generated release notes (commits and merged pull requests since the previous release).*"
+          } > release-body.md
 
       - name: Restore, build, test, verify generated files
         uses: ./.github/actions/robo-build-verify
@@ -96,7 +134,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.release_title }}
+          body_path: release-body.md
           generate_release_notes: true
           files: |
             release-dist/*.tar.gz

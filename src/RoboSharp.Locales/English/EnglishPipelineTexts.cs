@@ -1,4 +1,4 @@
-namespace RoboSharp.Locales;
+namespace RoboSharp.Locales.English;
 
 internal sealed class EnglishPipelineTexts : IPipelineTeachingTexts
 {
@@ -42,7 +42,7 @@ internal sealed class EnglishPipelineTexts : IPipelineTeachingTexts
         var foot =
             "# Execution trace (last Run)\r\n" +
             $"IL instructions executed: {instructionsExecuted}\r\n" +
-            TeachingExplainer.FakeIlVersusDotNet +
+            EnglishTeachingExplainer.FakeIlVersusDotNet +
             "\r\n";
         if (lastInstructionDescription is { } d)
             foot += $"Last stepped instruction: {d}\r\n";

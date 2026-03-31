@@ -1,4 +1,4 @@
-namespace RoboSharp.Locales;
+namespace RoboSharp.Locales.English;
 
 internal sealed class EnglishShellTexts : IStudioShellTexts
 {
