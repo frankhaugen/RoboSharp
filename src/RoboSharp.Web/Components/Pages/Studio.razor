@@ -1,0 +1,363 @@
+@page "/studio"
+@using System.Text
+@using RoboSharp.Application.Teaching
+@using RoboSharp.Language
+@using RoboSharp.Locales
+@using RoboSharp.Semantics
+@using RoboSharp.Toolchain
+@using RoboSharp.World
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IPipelineInspectionService Pipeline
+@inject ITeachingLocale Locale
+@inject ISyntaxTreeSerializer SyntaxSerializer
+
+<PageTitle>Teaching studio</PageTitle>
+
+<div class="studio-page">
+    <h1>Teaching studio</h1>
+    <p class="studio-live">
+        Blazor Server host: same compile/run pipeline as Studio, without the desktop editor or IL step highlighting.
+        Use <strong>Build</strong> for lexer → parser → binder → IL; use <strong>Run</strong> to execute with the chosen speed.
+    </p>
+
+    @if (_pageError is { } err)
+    {
+        <p class="text-danger">@err</p>
+    }
+
+    <div class="studio-toolbar">
+        <label>
+            Profile
+            <select @bind="_profileId" disabled="@_busy">
+                @foreach (var id in LessonBuiltinProfiles.OrderedProfileIds)
+                {
+                    <option value="@id">@LessonBuiltinProfiles.GetDisplayName(id)</option>
+                }
+            </select>
+        </label>
+        <label>
+            World
+            <select @bind="_worldPresetId" disabled="@_busy">
+                @foreach (var (id, name) in RobotWorldPresets.OrderedPresets)
+                {
+                    <option value="@id">@name</option>
+                }
+            </select>
+        </label>
+        <label>
+            Run speed
+            <select value="@((int)_runSpeed)" @onchange="OnRunSpeedChange" disabled="@_busy">
+                <option value="0">Realtime</option>
+                <option value="1">Slow</option>
+                <option value="2">Glacial</option>
+            </select>
+        </label>
+        <button type="button" class="studio-btn studio-btn-primary" disabled="@_busy" @onclick="BuildAsync">Build</button>
+        <button type="button" class="studio-btn studio-btn-run" disabled="@_busy" @onclick="RunAsync">Run</button>
+        <button type="button" class="studio-btn" disabled="@(!_busy)" @onclick="StopRun">Stop</button>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(_liveStatus))
+    {
+        <p class="studio-live">@_liveStatus</p>
+    }
+
+    <label class="w-100">
+        Source
+        <textarea class="studio-editor" @bind="_source" rows="14" disabled="@_busy"></textarea>
+    </label>
+
+    <div class="studio-panels">
+        <section class="studio-panel">
+            <h2>@Locale.Panels.LessonToolboxTitle</h2>
+            <textarea class="studio-readonly" readonly rows="12">@ToolboxText()</textarea>
+        </section>
+        <section class="studio-panel">
+            <h2>@Locale.Panels.TokensTitle</h2>
+            <textarea class="studio-readonly" readonly rows="12">@TokensText()</textarea>
+        </section>
+        <section class="studio-panel">
+            <h2>@Locale.Panels.SyntaxTreeTitle</h2>
+            <textarea class="studio-readonly" readonly rows="14">@SyntaxTreeText()</textarea>
+        </section>
+        <section class="studio-panel">
+            <h2>@Locale.Panels.DiagnosticsTitle</h2>
+            <textarea class="studio-readonly" readonly rows="12">@DiagnosticsText()</textarea>
+        </section>
+        <section class="studio-panel">
+            <h2>@Locale.Panels.BoundTreeTitle</h2>
+            <textarea class="studio-readonly" readonly rows="14">@BoundTreeText()</textarea>
+        </section>
+        <section class="studio-panel">
+            <h2>@Locale.Panels.IlTitle</h2>
+            <textarea class="studio-readonly" readonly rows="16">@IlText()</textarea>
+        </section>
+        <section class="studio-panel">
+            <h2>World map (ASCII)</h2>
+            <pre>@WorldAscii()</pre>
+        </section>
+        <section class="studio-panel">
+            <h2>@Locale.Panels.WorldRuntimeTitle</h2>
+            <textarea class="studio-readonly" readonly rows="18">@WorldRuntimeText()</textarea>
+        </section>
+    </div>
+</div>
+
+@code {
+    private const string DefaultSource = """
+        print(7);
+        """;
+
+    private string _source = DefaultSource;
+    private string _profileId = LessonBuiltinProfiles.MovementAndPrintId;
+    private string _worldPresetId = RobotWorldPresets.Arena12Id;
+    private StudioRunSpeed _runSpeed = StudioRunSpeed.Slow;
+    private PipelineSnapshot? _snapshot;
+    private RobotWorldSnapshot? _liveWorld;
+    private string? _pageError;
+    private string _liveStatus = "";
+    private bool _busy;
+    private CancellationTokenSource? _runCts;
+    private DateTimeOffset _lastProgressUi = DateTimeOffset.MinValue;
+
+    private void OnRunSpeedChange(ChangeEventArgs e)
+    {
+        if (e.Value is string s && int.TryParse(s, out var n) && Enum.IsDefined(typeof(StudioRunSpeed), n))
+            _runSpeed = (StudioRunSpeed)n;
+    }
+
+    private StudioPipelineOptions CreateOptions() =>
+        new(
+            LessonBuiltinProfiles.GetProvider(_profileId),
+            () => RobotWorldPresets.Create(_worldPresetId),
+            LessonBuiltinProfiles.GetDisplayName(_profileId),
+            RobotWorldPresets.GetDisplayName(_worldPresetId));
+
+    private async Task BuildAsync()
+    {
+        _pageError = null;
+        _liveWorld = null;
+        _liveStatus = "";
+        try
+        {
+            _snapshot = Pipeline.InspectBuildOnly(_source, CreateOptions());
+        }
+        catch (Exception ex)
+        {
+            _pageError = ex.Message;
+        }
+
+        await InvokeAsync(StateHasChanged).ConfigureAwait(false);
+    }
+
+    private async Task RunAsync()
+    {
+        _pageError = null;
+        _runCts?.Cancel();
+        _runCts?.Dispose();
+        _runCts = new CancellationTokenSource();
+        var token = _runCts.Token;
+        _busy = true;
+        _liveWorld = null;
+        _liveStatus = Locale.Shell.LiveRunInProgress;
+        await InvokeAsync(StateHasChanged).ConfigureAwait(false);
+
+        try
+        {
+            var progress = new Progress<StudioRunProgress>(p =>
+            {
+                var now = DateTimeOffset.UtcNow;
+                if ((now - _lastProgressUi).TotalMilliseconds < 48)
+                    return;
+                _lastProgressUi = now;
+
+                _liveWorld = p.World;
+                _liveStatus = Locale.Shell.FormatLiveRunProgress(
+                    p.InstructionsExecutedSoFar,
+                    p.InstructionDescription);
+                _ = InvokeAsync(StateHasChanged);
+            });
+
+            var snap = await Pipeline
+                .InspectBuildAndRunAsync(_source, _runSpeed, CreateOptions(), progress, token)
+                .ConfigureAwait(false);
+
+            _snapshot = snap;
+            _liveWorld = null;
+
+            if (snap.LessonOutcomeSummary is { } story)
+                _liveStatus = Locale.Shell.FormatLessonOutcomeLine(story, snap.LessonScore);
+            else if (snap.RuntimeSucceeded == true)
+                _liveStatus = Locale.Shell.LiveRunFinished;
+            else
+                _liveStatus = snap.RuntimeFaultMessage ?? Locale.Shell.LiveRunFaultFallback;
+        }
+        catch (OperationCanceledException)
+        {
+            _liveStatus = "Run cancelled.";
+        }
+        catch (Exception ex)
+        {
+            _pageError = ex.Message;
+            _liveStatus = "";
+        }
+        finally
+        {
+            _busy = false;
+            await InvokeAsync(StateHasChanged).ConfigureAwait(false);
+        }
+    }
+
+    private void StopRun()
+    {
+        _runCts?.Cancel();
+    }
+
+    private string ToolboxText()
+    {
+        if (_snapshot is null)
+            return Locale.Panels.LessonToolboxPreamble + Locale.Panels.LessonToolboxBuildPrompt;
+
+        var help = _snapshot.LessonProfileHelpText;
+        return Locale.Panels.LessonToolboxPreamble
+               + (string.IsNullOrWhiteSpace(help) ? Locale.Panels.LessonToolboxBuildPrompt : help);
+    }
+
+    private string TokensText()
+    {
+        if (_snapshot is null)
+            return Locale.Panels.TokensPreamble + "(Build to populate tokens.)";
+
+        var rows = _snapshot.Tokens.Select(t =>
+            $"{t.Kind,-22}  @{t.Span.Start,4} len {t.Span.Length,3}  {VisualizeTokenText(t.Text)}");
+        return Locale.Panels.TokensPreamble + string.Join(Environment.NewLine, rows);
+    }
+
+    private string SyntaxTreeText()
+    {
+        if (_snapshot is null)
+            return Locale.Panels.SyntaxTreePreamble + "(Build to populate the syntax tree.)";
+
+        try
+        {
+            return Locale.Panels.SyntaxTreePreamble + SyntaxSerializer.Serialize(_snapshot.SyntaxTree.Root);
+        }
+        catch (Exception ex)
+        {
+            return Locale.Panels.SyntaxTreePreamble + ex.Message;
+        }
+    }
+
+    private string DiagnosticsText()
+    {
+        if (_snapshot is null)
+            return Locale.Panels.DiagnosticsPreamble + "(Build or Run to populate diagnostics.)";
+
+        var lines = new List<string>();
+        foreach (var d in _snapshot.ParseDiagnostics)
+        {
+            var loc = SourceLocationFormatter.FormatLine(_snapshot.Source, d.Span);
+            lines.Add(Locale.Pipeline.FormatParseDiagnosticLine(d.Span.Start, d.Span.Length, loc, d.Message));
+        }
+
+        foreach (var s in _snapshot.SemanticDiagnosticLines)
+            lines.Add(s);
+
+        if (_snapshot.RuntimeFaultMessage is not null)
+            lines.Add(Locale.Panels.DiagnosticsRuntimePrefix + _snapshot.RuntimeFaultMessage);
+
+        if (lines.Count == 0)
+            lines.Add(Locale.Panels.DiagnosticsNone);
+
+        return Locale.Panels.DiagnosticsPreamble + string.Join(Environment.NewLine, lines);
+    }
+
+    private string BoundTreeText()
+    {
+        if (_snapshot is null)
+            return Locale.Panels.BoundTreePreamble + Locale.Panels.BoundTreeBuildPrompt;
+
+        if (_snapshot.BoundTreeText is { Length: > 0 } body)
+            return Locale.Panels.BoundTreePreamble + body;
+
+        var note = _snapshot.CompileReachedPhase switch
+        {
+            CompilePhase.Parse => Locale.Panels.BoundTreeNeedParseFirst,
+            CompilePhase.Semantics => Locale.Panels.BoundTreeSemanticsStopped,
+            CompilePhase.Lowered => Locale.Panels.BoundTreeUnexpectedEmpty,
+            _ => Locale.Panels.BoundTreeBuildPrompt,
+        };
+
+        return Locale.Panels.BoundTreePreamble + note;
+    }
+
+    private string IlText()
+    {
+        if (_snapshot is null)
+            return Locale.Panels.IlPreamble + "(Build to populate IL.)";
+
+        if (_snapshot.IlDisassemblyText is { Length: > 0 } il)
+        {
+            var body = il;
+            if (_snapshot.IlExecutionFootnote is { Length: > 0 } foot)
+                body += Environment.NewLine + Environment.NewLine + foot;
+            return Locale.Panels.IlPreamble + body;
+        }
+
+        return Locale.Panels.IlPreamble + (_snapshot.CompileReachedPhase < CompilePhase.Lowered
+            ? Locale.Panels.IlWaitingForLowering
+            : Locale.Panels.IlNoTextUnexpected);
+    }
+
+    private string WorldAscii()
+    {
+        var vis = _liveWorld ?? _snapshot?.WorldVisualization;
+        if (vis is null)
+            return "(Build or Run to see the world grid.)";
+
+        return RobotWorldSnapshotAscii.Format(vis);
+    }
+
+    private string WorldRuntimeText()
+    {
+        if (_snapshot is null)
+            return Locale.Panels.FormatWorldRuntimePanel(
+                null,
+                false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        return Locale.Panels.FormatWorldRuntimePanel(
+            _snapshot.RuntimeSucceeded,
+            _snapshot.IlDisassemblyText is { Length: > 0 },
+            _snapshot.LessonOutcomeSummary,
+            _snapshot.LessonScore,
+            _snapshot.WorldAfterRunSummary,
+            _snapshot.RuntimeFaultMessage,
+            _snapshot.RuntimeStdout,
+            _snapshot.RuntimeStderr);
+    }
+
+    private static string VisualizeTokenText(string text)
+    {
+        if (text.Length == 0)
+            return "∅";
+
+        return text
+            .Replace("\r", "\\r", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal)
+            .Replace("\t", "\\t", StringComparison.Ordinal);
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _runCts?.Cancel();
+        _runCts?.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}

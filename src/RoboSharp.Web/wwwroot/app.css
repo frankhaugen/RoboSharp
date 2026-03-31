@@ -1,3 +1,127 @@
+.app-nav {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #ccc;
+    background: #f8f9fa;
+    font-family: system-ui, sans-serif;
+}
+
+.app-nav a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.app-nav a:hover {
+    text-decoration: underline;
+}
+
+.studio-page {
+    padding: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.studio-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.studio-toolbar label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
+    gap: 0.2rem;
+}
+
+.studio-editor {
+    width: 100%;
+    min-height: 12rem;
+    font-family: ui-monospace, monospace;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.studio-panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1rem;
+}
+
+.studio-panel {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.75rem;
+    background: #fff;
+}
+
+.studio-panel h2 {
+    font-size: 1rem;
+    margin: 0 0 0.5rem;
+}
+
+.studio-panel pre,
+.studio-panel textarea.studio-readonly {
+    margin: 0;
+    max-height: 22rem;
+    overflow: auto;
+    font-size: 0.8rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.studio-panel textarea.studio-readonly {
+    width: 100%;
+    min-height: 10rem;
+    resize: vertical;
+    font-family: ui-monospace, monospace;
+    border: 1px solid #e9ecef;
+    padding: 0.5rem;
+    background: #fafafa;
+}
+
+.studio-live {
+    font-size: 0.85rem;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.studio-toolbar .studio-btn {
+    padding: 0.4rem 0.85rem;
+    border-radius: 4px;
+    border: 1px solid #adb5bd;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.studio-toolbar .studio-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.studio-toolbar .studio-btn-primary {
+    background: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+}
+
+.studio-toolbar .studio-btn-run {
+    background: #198754;
+    border-color: #198754;
+    color: #fff;
+}
+
+.text-danger {
+    color: #b02a37;
+}
+
 h1:focus {
     outline: none;
 }

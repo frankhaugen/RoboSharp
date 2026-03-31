@@ -55,6 +55,19 @@ Trimming (`PublishTrimmed`) is **not** enabled by default; turning it on may bre
 
 ## GitHub Releases
 
+### CI prereleases (every push to `main`)
+
+When the **CI** workflow completes successfully on a **push** to `main`, a follow-up job creates a **GitHub prerelease** tagged `ci-<workflow_run_id>` (for example `ci-12345678901`). It attaches the same archives as a tagged release:
+
+- `RoboSharp.Studio-ci-<id>-linux-x64.tar.gz`, `…-win-x64.tar.gz`
+- `RoboSharp.Player-ci-<id>-linux-x64.tar.gz`, `…-win-x64.tar.gz`
+- `RoboSharp.Web-ci-<id>-linux-x64.tar.gz`
+- `SHA256SUMS.txt`
+
+Embedded assembly version uses `0.0.0-ci.<run_number>`. Pull-request CI does **not** publish a release (only pushes to `main` do). For a formal, calendar-versioned release, use tags and `release.yml` below.
+
+### Tagged releases (`release.yml`)
+
 Tag-driven releases (`.github/workflows/release.yml`) publish **Studio**, **Player**, and **Web** and attach archives. Player and Studio use the same single-file switch when publishing.
 
 **Version tags** use **`vyyyy.MM.dd.#`** (four parts, dot-separated). Example: `v2026.03.31.1` — year, month, day, and a per-day **build index** (`.1`, `.2`, …). Push the tag to `main` (or the branch you release from):

@@ -3,7 +3,11 @@
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RoboSharp.Application\RoboSharp.Application.csproj" />
     <ProjectReference Include="..\RoboSharp.Hosting\RoboSharp.Hosting.csproj" />
+    <ProjectReference Include="..\RoboSharp.Language\RoboSharp.Language.csproj" />
+    <ProjectReference Include="..\RoboSharp.Locales\RoboSharp.Locales.csproj" />
+    <ProjectReference Include="..\RoboSharp.Semantics\RoboSharp.Semantics.csproj" />
     <ProjectReference Include="..\RoboSharp.World\RoboSharp.World.csproj" />
   </ItemGroup>
 </Project>

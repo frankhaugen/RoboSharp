@@ -8,6 +8,7 @@ This page summarizes **allowed dependencies and dependency direction** for RoboS
 - **`Microsoft.Extensions.*`** — configuration, DI, hosting primitives where needed.
 - **`TUnit`** — tests only.
 - **Avalonia** (`Avalonia`, `Avalonia.Desktop`, `Avalonia.AvaloniaEdit`, `Avalonia.Themes.*`, `Avalonia.Fonts.*`) — **`RoboSharp.Studio` only**, as the approved code-first desktop UI.
+- **Spectre.Console** — **`RoboSharp.Player` only**, for the CLI TUI when running a `.roboexe`.
 
 No other third-party frameworks, ORMs, serializers, UI stacks, mocking libraries, or utility package creep unless **AGENTS.md** is updated deliberately.
 

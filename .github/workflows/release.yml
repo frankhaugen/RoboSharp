@@ -1,8 +1,8 @@
 # Calendar-style tags (vyyyy.MM.dd.#): same checks as CI, then publish Studio / Player / Web
 # as tar.gz assets with SHA256SUMS on the GitHub Release. Example: git tag v2026.03.31.1 && git push origin v2026.03.31.1
 #
-# This workflow is not triggered by the CI workflow finishing (no workflow_run). Merges and pushes
-# to main only run ci.yml. CD runs when you push a version tag — see docs/publishing.md.
+# Pushes to main also produce a prerelease via the CI workflow’s publish-release job (tag ci-<run_id>).
+# This workflow is for explicit versioned (non-prerelease) releases — see docs/publishing.md.
 
 name: Release
 

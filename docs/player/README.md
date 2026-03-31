@@ -8,7 +8,8 @@ Implementation: [`src/RoboSharp.Player/Program.cs`](../../src/RoboSharp.Player/P
 
 - **Input:** path to a v1 **JSON** `.roboexe` (same interchange as the toolchain writes; see [`../toolchain/roboexe-format.md`](../toolchain/roboexe-format.md)), plus optional flags (see `--help`).
 - **Behavior:** deserialize, create a bordered empty world (16×16), run via `RoboSharpExecutionService.RunExecutableJsonAsync` (optional instruction cap), exit with [`RoboSharpExitCode`](../../src/RoboSharp.Application/RoboSharpExitCode.cs).
-- **Flags:** `--max-steps <n>` — stop after *n* IL instructions (structured fault if the program has not finished). `--headless` is accepted as a no-op placeholder for future hosts.
+- **Default UI:** [Spectre.Console](https://spectreconsole.net/) TUI — panels for an ASCII world grid (from [`RobotWorldSnapshotAscii`](../../src/RoboSharp.World/RobotWorldSnapshotAscii.cs)), captured program stdout/stderr, and run outcome. Implementation: [`PlayerTui.cs`](../../src/RoboSharp.Player/PlayerTui.cs).
+- **Flags:** `--max-steps <n>` — stop after *n* IL instructions (structured fault if the program has not finished). **`--plain`** or **`--headless`** — skip the TUI and stream program stdout/stderr to the real console (scripts / CI).
 
 From the repo root, using the sample artifact:
 
