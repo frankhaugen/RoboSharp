@@ -21,7 +21,7 @@ public static class StudioServiceRegistration
 
         services.AddRoboSharpHosting();
 
-        services.AddSingleton<ITeachingLocale, EnglishTeachingLocale>();
+        services.AddSingleton<ITeachingLocale>(_ => TeachingLocaleResolver.FromEnvironment());
         services.AddSingleton<IPipelineInspectionService, PipelineInspectionService>();
         services.AddSingleton<ISyntaxTreeSerializer, SyntaxTreeSerializer>();
 

@@ -154,7 +154,7 @@ Keep rendering itself out of the core world model.
 ### `RoboSharp.Locales`
 Contains **code-first** teaching copy for hosts:
 
-- `ITeachingLocale` and language-specific implementations (e.g. English) with hardcoded strings — **no .resx**
+- `ITeachingLocale` and language-specific implementations (English default; optional playful Latin demo via `ROBOSHARP_LOCALE=la`) with hardcoded strings — **no .resx**
 - panel preambles, shell chrome, pipeline footers, and kid-friendly status lines
 - `TeachingExplainer` static paragraphs about lexer/parser/binder/IL/runtime
 

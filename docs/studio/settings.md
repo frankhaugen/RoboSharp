@@ -2,6 +2,7 @@
 
 ## Application settings
 
+- **UI locale (Studio):** optional environment variable `ROBOSHARP_LOCALE`. Set to `la` or `latin` to load the playful **Latin** demo pack in `RoboSharp.Locales` (menus, panel copy, diagnostic labels). Omit or use any other value for English. Example (PowerShell): `$env:ROBOSHARP_LOCALE='la'; dotnet run --project src/RoboSharp.Studio/RoboSharp.Studio.csproj`.
 - theme
 - font size
 - default layout
