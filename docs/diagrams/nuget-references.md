@@ -21,6 +21,7 @@ flowchart LR
   RoboSharp_Studio["RoboSharp.Studio"] --> pkg_Avalonia["Avalonia v11.2.5"]
   RoboSharp_Studio["RoboSharp.Studio"] --> pkg_Avalonia_AvaloniaEdit["Avalonia.AvaloniaEdit v11.2.0"]
   RoboSharp_Studio["RoboSharp.Studio"] --> pkg_Avalonia_Desktop["Avalonia.Desktop v11.2.5"]
+  RoboSharp_Studio["RoboSharp.Studio"] --> pkg_Avalonia_Diagnostics["Avalonia.Diagnostics v11.2.5"]
   RoboSharp_Studio["RoboSharp.Studio"] --> pkg_Avalonia_Fonts_Inter["Avalonia.Fonts.Inter v11.2.5"]
   RoboSharp_Studio["RoboSharp.Studio"] --> pkg_Avalonia_Themes_Fluent["Avalonia.Themes.Fluent v11.2.5"]
   RoboSharp_Studio["RoboSharp.Studio"] --> pkg_Microsoft_Extensions_DependencyInjection["Microsoft.Extensions.DependencyInjection v10.0.5"]

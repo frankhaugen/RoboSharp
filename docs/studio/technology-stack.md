@@ -14,6 +14,14 @@ Reasons:
 - cross-platform option preserved
 - works naturally with `Microsoft.Extensions.DependencyInjection` patterns in official guidance
 
+### Developer tools (Debug configuration only)
+
+`RoboSharp.Studio` references **`Avalonia.Diagnostics` only when `$(Configuration)` is `Debug`** (see the project file). `StudioApp.OnFrameworkInitializationCompleted()` calls **`AttachDevTools()`** on the main window under `#if DEBUG`, which wires Avalonia’s built-in inspector.
+
+Run Studio under the debugger (or `dotnet run` on a Debug build), focus the main window, and press **F12** to open DevTools: **visual tree**, **layout bounds**, property inspection, and event logging—useful for nitpicking spacing, alignment, and control boundaries without guessing from code.
+
+Release builds omit the package and the hook so published/self-contained Studio binaries stay slimmer.
+
 ## DI container
 
 Use only:

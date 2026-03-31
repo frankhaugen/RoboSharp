@@ -1,5 +1,8 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+#if DEBUG
+using Avalonia.Diagnostics;
+#endif
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Styling;
 using Avalonia.Themes.Fluent;
@@ -23,7 +26,12 @@ public sealed class StudioApp : global::Avalonia.Application
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
             desktop.MainWindow = CompositionRoot.GetRequiredService<MainWindow>();
+#if DEBUG
+            desktop.MainWindow?.AttachDevTools();
+#endif
+        }
 
         base.OnFrameworkInitializationCompleted();
     }
